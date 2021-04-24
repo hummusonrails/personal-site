@@ -1,0 +1,88 @@
+{% from "../macros/cards.njk" import project_card %}
+{% from "../macros/headers.njk" import header_with_background %}
+
+{{
+    header_with_background(
+        "../assets/images/columns.jpeg",
+        "Projects",
+        "Writing code. Mostly getting it right."
+    )
+}}
+
+<div class="bg-white">
+  <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 gap-8 md:grid-cols-6 lg:grid-cols-5">
+      <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
+        <img class="h-12" src="../assets/images/languages/ruby.png" alt="Ruby">
+      </div>
+      <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
+        <img class="h-12" src="../assets/images/languages/js.png" alt="JS">
+      </div>
+      <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
+        <img class="h-12" src="../assets/images/languages/elixir.png" alt="Elixir">
+      </div>
+      <div class="col-span-1 flex justify-center md:col-span-3 lg:col-span-1">
+        <img class="h-12" src="../assets/images/languages/python.png" alt="Python">
+      </div>
+      <div class="col-span-2 flex justify-center md:col-span-3 lg:col-span-1">
+        <img class="h-12" src="../assets/images/languages/ts.png" alt="TypeScript">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
+  <div class="max-w-5xl mx-auto">
+    <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {{
+            project_card(
+                "School Form Automation",
+                "Automate filling out of school health forms",
+                "https://github.com/bencgreenberg/school-health-declaration-automation",
+                "https://dev.to/bengreenberg/automate-school-forms-with-web-scraping-in-ruby-2c3j"
+            )
+        }}
+        {{
+            project_card(
+                "Video Chat Watch Party",
+                "Watch a video with friends",
+                "https://github.com/bencgreenberg/video-watch-party",
+                "https://dev.to/vonagedev/create-a-video-party-app-with-rails-part-1-building-the-backend-2p4k"
+            )
+        }}
+        {{
+            project_card(
+                "dev_orbit",
+                "Integrate DEV Interactions into your Orbit workspace",
+                "https://github.com/bencgreenberg/dev_orbit",
+                "https://dev.to/bengreenberg"
+            )
+        }}
+        {{
+            project_card(
+                "Monday.com Ruby API Explorer",
+                "Monday.com GraphQL API Client",
+                "https://github.com/bencgreenberg/monday_ruby_api_explorer",
+                "https://dev.to/bengreenberg"
+            )
+        }}
+        {{
+            project_card(
+                "Vonage Ruby SDK",
+                "Custom-built API client",
+                "https://github.com/vonage/vonage-ruby-sdk",
+                "https://dev.to/vonagedev/announcing-vonage-ruby-sdk-version-7-4-0-19n1"
+            )
+        }}
+        {{
+            project_card(
+                "Station",
+                "Fully featured developer platform",
+                "https://github.com/nexmo/station",
+                "https://apithedocs.org/virtual/ben-greenberg"
+            )
+        }}        
+    </ul>
+  </div>
+</div>

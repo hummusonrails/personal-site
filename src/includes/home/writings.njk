@@ -1,0 +1,177 @@
+{% from "../macros/cards.njk" import project_card, blog_card %}
+{% from "../macros/headers.njk" import header_with_background %}
+
+{{
+    header_with_background(
+        "../assets/images/columns.jpeg",
+        "Writings",
+        "Putting pen to paper, or fingers to keys."
+    )
+}}
+
+
+<!-- book !-->
+
+<div class="relative bg-gray-50 pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
+  <div class="absolute inset-0">
+    <div class="bg-white h-1/3 sm:h-2/3"></div>
+  </div>
+  <div class="relative max-w-7xl mx-auto">
+    <div class="text-center">
+      <h2 class="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
+        Books
+      </h2>
+      <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+        Find out more about books authored by Ben
+      </p>
+    </div>
+</div>
+
+<div class="relative py-16 bg-white">
+  <div class="hidden absolute top-0 inset-x-0 h-1/2 bg-gray-50 lg:block" aria-hidden="true"></div>
+  <div class="max-w-7xl mx-auto bg-indigo-600 lg:bg-transparent lg:px-8">
+    <div class="lg:grid lg:grid-cols-12">
+      <div class="relative z-10 lg:col-start-1 lg:row-start-1 lg:col-span-4 lg:py-16 lg:bg-transparent">
+        <div class="absolute inset-x-0 h-1/2 bg-gray-50 lg:hidden" aria-hidden="true"></div>
+        <div class="max-w-md mx-auto px-4 sm:max-w-3xl sm:px-6 lg:max-w-none lg:p-0">
+          <div class="aspect-w-10 aspect-h-6 sm:aspect-w-2 sm:aspect-h-1 lg:aspect-w-1">
+            <img class="object-cover object-center rounded-3xl shadow-2xl" src="../assets/images/book_3d.png" alt="Torah && Tech book">
+          </div>
+        </div>
+      </div>
+
+      <div class="relative bg-indigo-600 lg:col-start-3 lg:row-start-1 lg:col-span-10 lg:rounded-3xl lg:grid lg:grid-cols-10 lg:items-center">
+        <div class="hidden absolute inset-0 overflow-hidden rounded-3xl lg:block" aria-hidden="true">
+          <svg class="absolute bottom-full left-full transform translate-y-1/3 -translate-x-2/3 xl:bottom-auto xl:top-0 xl:translate-y-0" width="404" height="384" fill="none" viewBox="0 0 404 384" aria-hidden="true">
+            <defs>
+              <pattern id="64e643ad-2176-4f86-b3d7-f2c5da3b6a6d" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                <rect x="0" y="0" width="4" height="4" class="text-indigo-500" fill="currentColor" />
+              </pattern>
+            </defs>
+            <rect width="404" height="384" fill="url(#64e643ad-2176-4f86-b3d7-f2c5da3b6a6d)" />
+          </svg>
+          <svg class="absolute top-full transform -translate-y-1/3 -translate-x-1/3 xl:-translate-y-1/2" width="404" height="384" fill="none" viewBox="0 0 404 384" aria-hidden="true">
+            <defs>
+              <pattern id="64e643ad-2176-4f86-b3d7-f2c5da3b6a6d" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                <rect x="0" y="0" width="4" height="4" class="text-indigo-500" fill="currentColor" />
+              </pattern>
+            </defs>
+            <rect width="404" height="384" fill="url(#64e643ad-2176-4f86-b3d7-f2c5da3b6a6d)" />
+          </svg>
+        </div>
+        <div class="relative max-w-md mx-auto py-12 px-4 space-y-6 sm:max-w-3xl sm:py-16 sm:px-6 lg:max-w-none lg:p-0 lg:col-start-4 lg:col-span-6">
+          <h2 class="text-3xl font-extrabold text-white" id="join-heading">Torah && Tech</h2>
+          <p class="text-lg text-white">A book that invites you into discussions at the intersection of Torah and technology.</p>
+          <a class="block w-full py-3 px-5 text-center bg-white border border-transparent rounded-md shadow-md text-base font-medium text-indigo-700 hover:bg-gray-50 sm:inline-block sm:w-auto" href="https://torahandtech.dev">Find Out More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- blog section !-->
+
+<div class="relative bg-gray-50 pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
+  <div class="absolute inset-0">
+    <div class="bg-white h-1/3 sm:h-2/3"></div>
+  </div>
+  <div class="relative max-w-7xl mx-auto">
+    <div class="text-center">
+      <h2 class="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
+        Blog Articles
+      </h2>
+      <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+        Read the latest blog posts published on <a href="https://dev.to/bengreenberg" class="underline">DEV</a>
+      </p>
+    </div>
+    <div class="mt-12 max-w-lg mx-auto grid gap-5 lg:grid-cols-3 lg:max-w-none">
+        {{
+            blog_card(
+                "https://res.cloudinary.com/practicaldev/image/fetch/s---461Df9F--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://cdn.sanity.io/images/cad8jutx/production/4aa06ff849d702ec996ad0bed98e2be458f70721-1220x694.png",
+                "https://dev.to/orbit/my-surprising-journey-to-working-at-orbit-4djd",
+                "My Surprising Journey To Working At Orbit",
+                "A conversation that starts with product feedback can end up in unexpected places. You may even walk away with a brand new job.",
+                "April 19, 2021"
+            )
+        }}
+
+        {{
+            blog_card(
+                "https://res.cloudinary.com/practicaldev/image/fetch/s--CP0cyWpp--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yqrptf8igzvqqujpyf36.png",
+                "https://dev.to/orbit/how-to-add-docs-feedback-to-your-orbit-workspace-with-ruby-on-rails-4hbd",
+                "How To Add Docs Feedback To Your Orbit Workspace with Ruby on Rails",
+                "The documentation of an API, product, or service is one of the pivotal meeting places between the people that orbit the community and the product that the community gravitates around. Capturing that engagement is crucial to gaining a more full understanding of a community. Orbit provides a platform and an open API to enable and grow the work of developer engagement.",
+                "April 21, 2021"
+            )
+        }}
+
+        {{
+            blog_card(
+                "https://res.cloudinary.com/practicaldev/image/fetch/s--9O5NdF4u--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/i/9m73qaetuse3nm3y3it8.png",
+                "https://dev.to/bengreenberg/49-days-of-ruby-day-1-intro-4pc7",
+                "49 Days of Ruby - Day 1",
+                "Each day I will publish a new article covering a specific topic in Ruby and I will update this section with the link. You can also follow along with the #49daysofruby hashtag on Twitter.",
+                "March 28, 2021"
+            )
+        }}
+
+        {{
+            blog_card(
+                "https://res.cloudinary.com/practicaldev/image/fetch/s--IL9fzLmP--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/q65c0jabpilfk3iomexy.png",
+                "https://dev.to/bengreenberg/technical-communities-are-made-of-people-too-5685",
+                "Technical Communities Are Made of People, Too",
+                "The growth of your community, and your product, is inextricably bound up with the people invested in it. Empower them, get to know them, build a shared currency of communication, drive the value they derive from it, and your product/tool/framework will experience the benefits.",
+                "February 23, 2021"
+            )
+        }}
+
+        {{
+            blog_card(
+                "https://res.cloudinary.com/practicaldev/image/fetch/s--hJ14AZTY--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/i/sxle491vk1kegkkr9van.jpg",
+                "https://dev.to/vonagedev/build-a-voice-text-to-speech-application-with-hanami-5on",
+                "Build a Text-To-Speech Application with Hanami",
+                "This tutorial will show how to make a text-to-speech voice application using Hanami, the Vonage Ruby SDK, and the Voice API. This tutorial will require creating a Vonage application with voice capabilities.",
+                "February 2, 2021"
+            )
+        }}
+
+        {{
+            blog_card(
+                "https://res.cloudinary.com/practicaldev/image/fetch/s--P8b0tLsH--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/i/j9zyesffszx72345y7g5.png",
+                "https://dev.to/vonagedev/build-a-speech-translation-app-on-deno-with-azure-and-vonage-ooh",
+                "Build a Speech Translation App on Deno with Microsoft Azure",
+                "We are building using Deno as our runtime environment because Deno lets us build a server-side app in TypeScript with lightweight dependencies. It allows us to both integrate only the external code we actually need and to give it only the runtime permissions we desire it to have.",
+                "June 9, 2020"
+            )
+        }}
+
+    </div>
+  </div>
+</div>
+
+<!-- newsletter sign up !-->
+
+<div class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:py-16 lg:px-8">
+    <div class="px-6 py-6 bg-indigo-700 rounded-lg md:py-12 md:px-12 lg:py-16 lg:px-16 xl:flex xl:items-center">
+      <div class="xl:w-0 xl:flex-1">
+        <h2 class="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+          Torah && Tech Weekly Newsletter
+        </h2>
+        <p class="mt-3 max-w-3xl text-lg leading-6 text-indigo-200">
+          Sign up for weekly emails at the intersection of tech and ethics
+        </p>
+      </div>
+      <div class="mt-8 sm:w-full sm:max-w-md xl:mt-0 xl:ml-8">
+        <form action="https://twitter.us19.list-manage.com/subscribe/post?u=30eae9068398a251f4e180849&amp;id=98ea64e095" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" target="_blank" novalidate class="sm:flex">
+          <label for="emailAddress" class="sr-only">Email address</label>
+          <input name="EMAIL" id="mce-EMAIL" class="w-full border-white px-5 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-700 focus:ring-white rounded-md" type="email" placeholder="example@sample.com" required>
+          <button type="submit" value="Subscribe" id="mc-embedded-subscribe" class="mt-3 w-full flex items-center justify-center px-5 py-3 border border-transparent shadow text-base font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-700 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:flex-shrink-0">
+            Sign up
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
