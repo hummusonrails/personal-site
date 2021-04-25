@@ -9,7 +9,7 @@
             {%- if seo.title -%}
                 {{ seo.title }}
             {%- else -%}
-                "Ben Greenberg | Developer Advocate"
+                Ben Greenberg | Developer Advocate
             {%- endif -%}
         </title>
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
@@ -27,5 +27,15 @@
         </div>
         <script src="{{ '/assets/main.js' | url }}" defer="defer"></script>
         <!-- LAST BUILD: {{ build.env}} {{ build.timestamp | dateToISO }} -->
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-102303776-1"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-102303776-1');
+        </script>
+
     </body>
 </html>
