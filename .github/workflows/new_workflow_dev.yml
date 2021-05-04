@@ -20,12 +20,10 @@ jobs:
     - name: Bundle Install
       run: |
         gem update --system 3.1.4 -N
-        gem install --no-document bundler
         gem install --no-document dev_orbit
-        bundle config path vendor/bundle
     - name: Check for New Comments
       run: |
-        bundle exec dev_orbit --check-comments
+        dev_orbit --check-comments
       env:
         DEV_API_KEY: ${{ secrets.DEV_API_KEY }}
         DEV_USERNAME: ${{ secrets.DEV_USERNAME }}
