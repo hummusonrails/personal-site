@@ -9,6 +9,10 @@ const transforms = require('./utils/transforms')
 const shortcodes = require('./utils/shortcodes')
 const markdown = require('./utils/markdown')
 
+// posthost
+import posthog from 'posthog-js'
+posthog.init('phc_6rkVY4selTsUXWY1FqrleCwjqbX1mkm8eCIzBnDo3nh', { api_host: 'http://174.138.125.11' })
+
 // You can now require config options using @config
 const config = require('@config')
 
