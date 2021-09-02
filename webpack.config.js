@@ -21,4 +21,9 @@ module.exports = {
       },
     ],
   },
+  externals: {
+    // define newrelic as an external library
+    // http://webpack.github.io/docs/configuration.html#externals
+    newrelic: 'newrelic'
+  }
 }

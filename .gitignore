@@ -17,3 +17,5 @@ npm-debug.log*
 
 # output
 /dist
+
+newrelic_agent.log
