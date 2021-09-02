@@ -1,7 +1,6 @@
 import 'focus-visible'
 import 'alpinejs'
-require('newrelic');
-
+require('./newrelic')
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
