@@ -61,8 +61,8 @@
           </a>
         </p>
         <div class="flex space-x-1 text-sm text-gray-500">
-          <time datetime="2020-03-16">
-            {{ published_date }}
+          <time datetime="{{ postDate }}">
+            {{ published_date | postDate }}
           </time>
         </div>
       </div>

@@ -1,6 +1,11 @@
 ---
 layout: base
 ---
-<div class="max-w-5xl mx-auto">
+
+{% if canonical %}
+  <link rel="canonical" href="{{ canonical }}" />
+{% endif %}
+
+<div class="prose max-w-5xl mx-auto">
     {{ content | safe }}
 </div>
