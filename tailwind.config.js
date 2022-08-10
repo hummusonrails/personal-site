@@ -5,6 +5,9 @@ module.exports = {
   },
   purge: {
     enabled: false,
+    content: [
+      './src/posts/**/*.md',
+    ]
   },
   theme: {
     extend: {

@@ -9,6 +9,8 @@ const transforms = require('./utils/transforms')
 const shortcodes = require('./utils/shortcodes')
 const markdown = require('./utils/markdown')
 
+const { DateTime } = require("luxon");
+
 // You can now require config options using @config
 const config = require('@config')
 
@@ -56,6 +58,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addWatchTarget('./tailwind.config.js')
   eleventyConfig.addWatchTarget('./src/assets')
   eleventyConfig.addWatchTarget('./src/media')
+  eleventyConfig.addWatchTarget('./src/posts/assets/images')
 
   /**
    * Passthrough file copy
@@ -69,6 +72,8 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/robots.txt')
   eleventyConfig.addPassthroughCopy('src/favicon.ico')
   eleventyConfig.addPassthroughCopy('src/media')
+  eleventyConfig.addPassthroughCopy('posts/**/*.md')
+  eleventyConfig.addPassthroughCopy('src/posts/assets/images')
 
   /**
    * Set custom markdown library instance
@@ -76,6 +81,14 @@ module.exports = function (eleventyConfig) {
    * @link https://www.11ty.dev/docs/languages/liquid/#optional-set-your-own-library-instance
    */
   eleventyConfig.setLibrary('md', markdown)
+
+  /**
+   * Add date formatting:
+   * ex. Nov 23, 2020 instead of 2020-11-23T00:00:00.000Z
+   */
+  eleventyConfig.addFilter("postDate", (dateObj) => {
+    return DateTime.fromJSDate(dateObj).toLocaleString(DateTime.DATE_MED);
+  });
 
   /**
    * Add layout aliases
