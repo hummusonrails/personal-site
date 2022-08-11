@@ -2,9 +2,9 @@
 layout: page 
 tags: ['posts']
 title: Measuring DevRel Success - Thinking Outside the Funnel
-date: 2022-08-10
+date: 2022-08-11
 canonical: https://newrelic.com/blog/how-to-relic/synthetic-user-testing
-teaser: A resilient testing suite for your application includes unit tests, integration tests, acceptance tests, and more. All those tests go a long way in ensuring the reliability of your application and providing confidence when you deploy code changes. But there’s another kind of testing that’s important to add to your suite if you haven’t already - simulating the behavior of your users. 
+teaser: Companies whose primary audience is developers will usually seek to build a developer relations team early on because they have heard they need one to be successful. Yet, they often go into the endeavor without a clear understanding of what that team is meant to do besides "going to events" and "speaking to developers".
 image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yorcl0fsntpzsknjjtc3.png
 ---
 
