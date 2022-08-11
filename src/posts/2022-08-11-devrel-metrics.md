@@ -75,7 +75,7 @@ How do you measure this work then if it is so intrinsically important to the bus
 
 ## Measuring developer relations
 
-The work of developer relations must be measured against its purpose and goals. Indeed, every organization in a business must be measured against its own goals. The problem becomes when a company decides to impose the same measure of success on every aspect of the business. This is complex sometimes with DevRel because it often exists inside a well-established organization, like product or marketing, and is it quite simple to apply the measure of success of the parent organization to the DevRel initiative, try to avoid doing that if you want your DevRel team to be as "sticky" as the community you hope it will foster.
+The work of developer relations must be measured against its purpose and goals. Indeed, every organization in a business must be measured against its own goals. The problem becomes when a company decides to impose the same measure of success on every aspect of the business. This is complex sometimes with DevRel because it often exists inside a well-established organization, like product or marketing, and it is quite simple to apply the measure of success of the parent organization to the DevRel initiative, try to avoid doing that if you want your DevRel team to be as "sticky" as the community you hope it will foster.
 
 What does it mean to measure developer relations against its purpose and goals? It means going back to the first principles of DevRel in your business and drawing indicators of success from there. What are the biggest needs for the DevRel team in your business?
 
