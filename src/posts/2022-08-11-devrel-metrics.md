@@ -38,7 +38,7 @@ This is not accurate though, and let's describe why. We'll begin by offering a s
 
 Developer marketing is crafting engaging advertising content with the explicit aim of attracting new customers from a developer persona. 
 
-As [Pratim shares this in this tweet thread](https://twitter.com/BhosalePratim/status/1502562825281044483) the very terms elucidate the distinction. Marketing is transactional whereas relations is a long-term investment of mutuality.
+As [Pratim shares in this tweet thread](https://twitter.com/BhosalePratim/status/1502562825281044483), the very terms elucidate the distinction. Marketing is transactional whereas relations is a long-term investment of mutuality.
 
 ![screenshot of tweet about the difference between developer marketing and developer relations](assets/images/posts/devrel_metrics/image_1.png)
 <figcaption align = "center"><b>Screenshot of tweet from Pratim</b></figcaption>
