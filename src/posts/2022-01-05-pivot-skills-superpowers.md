@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Are You a Second Career Dev? Your Pivot Skills Are Your Superpowers
 date: 2022-01-05

@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Monitor Rails 7 applications with New Relic One
 date: 2022-01-21

@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Navigating NerdGraph with the New Relic Postman API collection
 date: 2022-06-22

@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Thriving as a Remote-First Team
 date: 2021-10-13

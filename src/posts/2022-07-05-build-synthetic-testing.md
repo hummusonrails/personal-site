@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Build your own synthetic user testing
 date: 2022-07-05

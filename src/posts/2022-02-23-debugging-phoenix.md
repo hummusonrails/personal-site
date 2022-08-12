@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Debugging Phoenix web applications with New Relic and CodeStream
 date: 2022-02-23

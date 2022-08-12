@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Measuring DevRel Success - Thinking Outside the Funnel
 date: 2022-08-11

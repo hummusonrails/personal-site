@@ -1,5 +1,5 @@
 ---
-layout: page 
+layout: post 
 tags: ['posts']
 title: Lessons learned from maintaining a fork
 date: 2022-02-14
