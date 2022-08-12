@@ -49,10 +49,12 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     minitest (5.14.4)
-    nokogiri (1.11.3-arm64-darwin)
+    nokogiri (1.13.8-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.13.8-x86_64-linux)
       racc (~> 1.4)
     public_suffix (4.0.6)
-    racc (1.5.2)
+    racc (1.6.0)
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
@@ -69,6 +71,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   dev_orbit (~> 0.0.10)
