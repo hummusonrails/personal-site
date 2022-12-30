@@ -38,31 +38,38 @@ Let's take a look at a straightforward code example to show how ownership and bo
 
 ```rust
 fn main() {
-    let s = String::from("hello");  // s is a String type and has ownership of the value inside of it
+    let s = String::from("hello");  
+    // s is a String type and has ownership of the value inside of it
 
     // We can give s to a function as a param, and this transfers ownership to that function
-    let t = take_ownership(s);  // s is no longer valid and cannot be used anymore
+    let t = take_ownership(s);  
+    // s is no longer valid and cannot be used anymore
 
     // However, we can also borrow s instead of transferring
-    let u = borrow_only(&s);  // u is a reference to s using the special keyword &, but s remains valid and can still be used
+    let u = borrow_only(&s); 
+     // u is a reference to s using the special keyword &, but s remains valid and can still be used
 
     // We can also move ownership back by returning the value from the function
-    let v = give_it_back(t);  // t is invalid and cannot be used, but v is a valid value
+    let v = give_it_back(t);  
+    // t is invalid and cannot be used, but v is a valid value
 }
 
 fn take_ownership(s: String) -> String {
     println!("s: {}", s);
-    s  // s is returned and ownership is transferred back to the caller
+    s  
+    // s is returned and ownership is transferred back to the caller
 }
 
 fn borrow_only(s: &String) -> &String {
     println!("s: {}", s);
-    s  // a reference to s is returned, but ownership is not transferred
+    s  
+    // a reference to s is returned, but ownership is not transferred
 }
 
 fn give_it_back(s: String) -> String {
     println!("s: {}", s);
-    s  // s is returned and ownership is transferred back to the caller
+    s  
+    // s is returned and ownership is transferred back to the caller
 }
 ```
 
