@@ -73,7 +73,7 @@ fn give_it_back(s: String) -> String {
 }
 ```
 
-The example above uses small functions to try to concisely demonstrate how ownership and borrowing work. As we see, a variable can quickly become invalid if it loses ownership, and the special keyword `&` allows us to create a `Reference` to the value and borrow it, instead of directly claiming ownership of it. While this system takes a while to get used to to, it greatly reduces the chance of errors for dangling references and other problems.
+The example above uses small functions to try to concisely demonstrate how ownership and borrowing work. As we see, a variable can quickly become invalid if it loses ownership, and the special keyword `&` allows us to create a `Reference` to the value and borrow it, instead of directly claiming ownership of it. While this system takes a while to get used to, it greatly reduces the chance of errors for dangling references and other problems.
 
 Now that we have covered some of the basics of Rust's syntax and type system, let's take a look at how Rust handles errors.
 
