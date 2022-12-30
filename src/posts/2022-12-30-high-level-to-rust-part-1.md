@@ -101,7 +101,7 @@ fn main() {
 }
 ```
 
-In this example, the `divide` function returns a `Result` with an integer value if the division is successful, or a string error message if the denominator is zero. The main function uses a `match` expression to handle the `Result` value and either print the result or the error message.
+In this example, the `divide` function returns a `Result` with an integer value if the division is successful, or a string error message if the denominator is zero. The main function uses the `?` keyword to handle the `Result` value and either print the result or the error message.
 
 By using the `Result` type and the `?` operator, Rust encourages you to explicitly handle errors and provides a clear and concise way to do so.
 
