@@ -24,21 +24,19 @@ We will also look at how Rust allows developers to have low-level control over t
 
 Finally, we will introduce Rust's support for concurrent programming and provide examples of how to write concurrent code in Rust.
 
-By the end of this post, you should have a good understanding of Rust's capabilities for systems programming and how to use Rust to build efficient reliable systems-level applications.
+By the end of this post, you should have a good beginning understanding of Rust's capabilities for systems programming and how to use Rust to build efficient reliable systems-level applications.
 
 ## Rust for Systems Programming
 
-Rust is particularly well-suited for systems programming tasks due to its focus on safety and efficiency. Some of the reasons why Rust is a good choice for systems programming include:
+Rust is particularly well-suited for systems programming tasks due to its focus on safety and efficiency. Rust has a number of features that make it well-suited for systems programming, including:
 
-Memory safety: Rust's ownership and borrowing system helps to prevent common memory errors such as null or dangling pointer references. This is particularly important for systems programming tasks, where such errors can have serious consequences. In Rust, every value has a single owner, and when the owner goes out of scope, the value is automatically deallocated. This helps to prevent memory leaks and other errors.
-
-Concurrent programming capabilities: Rust has strong support for concurrent programming, including a threading model and synchronization primitives such as mutexes and atomic variables. This makes it well-suited for building systems that need to handle multiple tasks concurrently. Rust's threading model is based on the concept of ownership and borrowing, which helps to prevent data races and other concurrent programming errors.
-
-Efficient code: Rust is designed to produce efficient code, with a focus on minimizing the overhead of runtime checks and garbage collection. This makes it well-suited for building systems that need to be fast and performant. Rust's static typing and lack of a runtime also contribute to its efficiency.
+* **Memory safety**: Rust's ownership and borrowing system helps to prevent common memory errors such as null or dangling pointer references. This is particularly important for systems programming tasks, where such errors can have serious consequences. In Rust, every value has a single owner, and when the owner goes out of scope, the value is automatically deallocated. This helps to prevent memory leaks and other errors.
+* **Concurrent programming capabilities**: Rust has strong support for concurrent programming, including a threading model and synchronization primitives such as mutexes and atomic variables. This makes it well-suited for building systems that need to handle multiple tasks concurrently. Rust's threading model is based on the concept of ownership and borrowing, which helps to prevent data races and other concurrent programming errors.
+* **Efficient code**: Rust is designed to produce efficient code, with a focus on minimizing the overhead of runtime checks and garbage collection. This makes it well-suited for building systems that need to be fast and performant.
 
 Here are a few examples of how Rust can be used for systems programming tasks:
 
-* **Building operating systems**: Rust has been used to build some operating systems, including [Redox](https://www.redox-os.org/) and [Fuchsia](https://fuchsia.dev/). Its memory safety and concurrent programming capabilities make it well-suited for this type of task. For example, the Redox uses Rust's ownership and borrowing system to prevent memory errors and its threading model to support concurrency. 
+* **Building operating systems**: Rust has been used to build some operating systems, including [Redox](https://www.redox-os.org/) and [Fuchsia](https://fuchsia.dev/). Its memory safety and concurrent programming capabilities make it well-suited for this type of task. For example, the Redox OS uses Rust's ownership and borrowing system to prevent memory errors and its threading model to support concurrency. 
 * **Building web servers**: Rust has some libraries and frameworks for building web servers, such as [Rocket](https://rocket.rs/) and [Actix](https://actix.rs/). Its efficiency and concurrent programming capabilities make it a great choice for handling high levels of traffic and requests. For example, Rocket uses Rust's macro system to provide a clean and expressive API for building web applications.
 * **Building low-level applications**: Rust's low-level control and efficient code make it well-suited for building applications that need to interact directly with hardware or perform other low-level tasks. For example, Rust can be used to build device drivers or other applications that need to interface with hardware directly. It also has support for inline assembly and the ability to interoperate with C code, which gives developers the flexibility to use low-level features when needed.
 
@@ -50,7 +48,7 @@ Rust allows developers to have low-level control over their code through a numbe
 
 ### Inline assembly 
 
-Rust allows developers to use inline assembly in their code using the asm! macro. This allows developers to write assembly code directly in their Rust code, which can be useful for tasks that require precise control over the hardware:
+Rust allows developers to use inline assembly in their code using the `asm!` macro. This allows developers to write assembly code directly in their Rust code, which can be useful for tasks that require precise control over the hardware:
 
 ```rust
 let result: u32;
@@ -60,7 +58,9 @@ unsafe {
 assert_eq!(result, 3);
 ```
 
-In the above example, we use the `asm!` macro to execute some inline assembly code that adds two numbers and stores the result in a variable. An even more practical example with using inline assembly could be reading the exact time stamp counter on the machine itself. The time stamp counter is a hardware counter that goes forward in a constant rate and can be used as a high-resolution timer. With using inline assembly we can directly access this hardware time from our code in Rust!
+In the above example, we use the `asm!` macro to execute some inline assembly code that adds two numbers and stores the result in a variable. 
+
+An even more practical example of using inline assembly could be reading the exact time stamp counter (TSC) on the machine itself. The time stamp counter is a hardware counter that goes forward at a constant rate and can be used as a high-resolution timer. By using inline assembly we can directly access this hardware time from our code in Rust!
 
 ```rust
 let result: u32;
@@ -99,9 +99,9 @@ In the next section, we will introduce Rust's support for concurrent programming
 
 Rust has strong support for concurrent programming, with many built-in features and libraries for writing concurrent code.
 
-One of the key features of Rust's concurrency model is the concept of ownership and borrowing. In Rust, every value has a single owner, and when the owner goes out of scope, the value is automatically deallocated. This helps to prevent data races and other concurrent programming errors.
+One of the key features of Rust's concurrency model is the concept of ownership and borrowing as we've mentioned throughout this post and this entire series. In Rust, every value has a single owner, and when the owner goes out of scope, the value is automatically deallocated. This helps to prevent data races and other concurrent programming errors.
 
-Rust also has a number of synchronization primitives, such as mutexes and atomic variables, which can be used to protect shared data in a concurrent environment.
+Rust also has a number of [synchronization primitives](http://www.cs.columbia.edu/~hgs/os/sync.html), such as mutexes and atomic variables, which can be used to protect shared data in a concurrent environment.
 
 A mutex (short for "mutual exclusion") is a synchronization primitive that can be used to protect shared data from concurrent access. In Rust, the `Mutex` type provides a way to lock shared data and prevent multiple threads from accessing it at the same time. Using a mutex can help to prevent data races and other concurrent programming errors, but it comes with a performance cost. Acquiring and releasing a mutex can be relatively expensive, so it's important to use them wisely and only when necessary.
 
@@ -132,33 +132,33 @@ fn main() {
 
 In this example, we use an `Arc` (atomic reference count) to share a `Mutex`-protected value between multiple threads. We create a new thread for each iteration of the loop, and we pass a clone of the `Arc` to each thread. The threads increment the shared value using the mutex to protect the shared data.
 
-Here is another example of concurrent programming in Rust, using the `join` method to wait for multiple threads to complete:
+Here is another example using the `join` method to wait for multiple threads to complete:
 
 ```rust
 use std::thread;
 
 fn main() {
-    let handle1 = thread::spawn(|| {
+    let handle_one = thread::spawn(|| {
         println!("Thread 1");
     });
 
-    let handle2 = thread::spawn(|| {
+    let handle_two = thread::spawn(|| {
         println!("Thread 2");
     });
 
-    let handle3 = thread::spawn(|| {
+    let handle_three = thread::spawn(|| {
         println!("Thread 3");
     });
 
-    handle1.join().unwrap();
-    handle2.join().unwrap();
-    handle3.join().unwrap();
+    handle_one.join().unwrap();
+    handle_two.join().unwrap();
+    handle_three.join().unwrap();
 }
 ```
 
-In this example, we create three threads using the `thread::spawn` function and store the resulting `JoinHandle` values in variables `handle1`, `handle2`, and `handle3`. We then use the `join` method on each `JoinHandle` to wait for the corresponding thread to complete.
+In this example, we create three threads using the `thread::spawn` function and store the resulting `JoinHandle` values in variables `handle_one`, `handle_two`, and `handle_three`. We then use the `join` method on each `JoinHandle` to wait for the corresponding thread to complete.
 
-The `join` method blocks the current thread until the specified thread has completed, and it returns a `Result` containing the value returned by the thread's closure. In this example, we use the `unwrap` method to ignore the `Result` and simply wait for the threads to complete.
+The `join` method blocks the current thread until the specified thread has been completed, and it returns a `Result` containing the value returned by the thread's closure. In this example, we use the `unwrap` method to ignore the `Result` and simply wait for the threads to complete.
 
 Rust's concurrency model and synchronization primitives make it well-suited for building systems that need to handle multiple tasks concurrently. Its focus on safety and efficiency makes it a good choice for concurrent programming tasks, especially in the context of systems programming.
 
