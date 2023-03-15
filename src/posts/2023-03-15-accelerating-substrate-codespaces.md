@@ -7,6 +7,13 @@ teaser: Accelerate your Substrate blockchain development with GitHub Codespaces,
 image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zlfdb0dpk1lni6s4erwz.png
 ---
 
+## Accelerating Substrate Blockchain Testing with GitHub Codespaces
+
+![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zlfdb0dpk1lni6s4erwz.png)
+
+### Ben Greenberg
+#### March 15, 2023
+
 Building a blockchain is not always for the faint of heart. It can require extensive knowledge in an array of subjects. Thankfully, there are tools like [Substrate](https://substrate.io/), a Rust-based SDK for blockchains, that can help you in the process. Yet, even with Substrate, you may want to further accelerate the development testing of your blockchain. [GitHub Codespaces](https://github.com/features/codespaces) provides an environment that lets you do that and a whole lot more.
 
 Codespaces is a cloud-based development environment that allows developers to create and test their code in the cloud. Whether you are at home on your favorite work laptop or traveling and need to check something far from your development setup, you can standardize your dev setup with Codespaces and access it from anywhere. You can also share the container setup for Codespaces with anyone else working on the project, thereby saving lots of time used in recreating environments necessary to even build and run the code.
