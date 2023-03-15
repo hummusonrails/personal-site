@@ -26,7 +26,7 @@ Interested in giving it a try? Let's walk through how to set it up and get you s
 
 First, navigate to the GitHub repository of the [substrate-contracts-node](https://github.com/paritytech/substrate-contracts-node) and make a fork of the node under your own GitHub username by clicking on the Fork button on the upper-left corner of the page.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1678880491457/680e3966-90aa-4fda-b595-9617cb719cff.png align="center")
+![](https://cdn.hashnode.com/res/hashnode/image/upload/v1678880491457/680e3966-90aa-4fda-b595-9617cb719cff.png)
 
 Now, pull down your own forked copy of the node template on your machine. You are going to create a single new file called `postCreateCommand.sh` in a `.devcontainer` top-level folder. This file will have all the instructions necessary for setting up the Codespace environment for Substrate.
 
@@ -83,7 +83,7 @@ You are now ready to see your new Codespace all set up for Substrate hacking!
 
 Navigate in your browser to your copy of the Node template that you just pushed up to, and click on the `< > Code` green button, then click on the `Codespaces` tab.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1678881174323/a9f3989a-101e-47b9-ba6d-2e4817186eac.png align="center")
+![](https://cdn.hashnode.com/res/hashnode/image/upload/v1678881174323/a9f3989a-101e-47b9-ba6d-2e4817186eac.png)
 
 Finally, click on the `+` button to create a new Codespace. If you find you want an environment with more processing power, you can click on the `...` instead, and customize the virtual machine's memory and CPU.
 
