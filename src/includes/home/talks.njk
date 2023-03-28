@@ -18,10 +18,10 @@
   <div class="relative max-w-7xl mx-auto">
     <div class="text-center">
       <h2 class="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
-        Past Presentations
+        Presentations
       </h2>
       <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
-        Recent talks and workshops given around the world
+        Recent and upcoming talks and workshops given around the world
       </p>
     </div>
 
@@ -50,6 +50,36 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
+                            {{
+                                presentation_row(
+                                    "../assets/images/presentations/that.png",
+                                    "Rust for High-Level Developers",
+                                    "THAT Conference Wisconsin",
+                                    "NA",
+                                    "July 25, 2023",
+                                    "https://that.us/events/wi/2023/"
+                                )
+                            }}
+                            {{
+                                presentation_row(
+                                    "../assets/images/presentations/kcdc.png",
+                                    "Rust for High-Level Developers",
+                                    "KCDC",
+                                    "NA",
+                                    "June 22, 2023",
+                                    "https://www.kcdc.info/"
+                                )
+                            }}
+                            {{
+                                presentation_row(
+                                    "../assets/images/presentations/devoxx_greece.jpeg",
+                                    "Rust for High-Level Developers",
+                                    "Devoxx Greece",
+                                    "EMEA",
+                                    "May 4, 2023",
+                                    "https://devoxx.gr/"
+                                )
+                            }}
                             {{
                                 presentation_row(
                                     "../assets/images/presentations/codementor.png",
