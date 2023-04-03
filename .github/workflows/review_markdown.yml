@@ -53,10 +53,16 @@ jobs:
       uses: actions/github-script@v5
       with:
         script: |
-          const suggestions = `Suggested changes: ${process.env.SUGGESTIONS}`
+          const suggestionsList = process.env.SUGGESTIONS.split('\n').filter(suggestion => suggestion.trim() !== '');
+          let suggestionsMarkdown = '## Suggested Changes\n';
+          for (const suggestion of suggestionsList) {
+            const [file, ...suggestionText] = suggestion.split(':');
+            suggestionsMarkdown += `### Reviewed File: **${file.trim()}**\n\n`;
+            suggestionsMarkdown += `- ${suggestionText.join(':').trim()}\n\n`;
+          }
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: suggestions
+            body: suggestionsMarkdown
           });
