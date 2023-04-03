@@ -41,7 +41,7 @@ Why is it important that people know about your successes? There are numerous re
 
 Likewise, it is equally vital to share the moments that did not go well. Just as it can feel awkward to share your wins, it can also feel awkward to share your failures. Perhaps, it is embarrassing or you wonder what people will think about you after. 
 
-However, cultivating the sharing muscle, especially during moments of failure, is vital. Why? Because it normalizes the idea that we don't always succeed, and builds a culture of learning in public within the team. This needs to happen in both in-person teams and remote-first teams, but because of the distributed nature of remote teams, we must be even more deliberate about it.
+However, cultivating the sharing muscle, especially during moments of failure, is truly vital. Why? Because it normalizes the idea that we don't always succeed, and builds a culture of learning in public within the team. This needs to happen in both in-person teams and remote-first teams, but because of the distributed nature of remote teams, we must be even more deliberate about it.
 
 ![Trust Your Colleagues](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/edbf0h866zz0xh0khp0s.png)
 
