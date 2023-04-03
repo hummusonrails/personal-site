@@ -13,28 +13,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Get the latest release URL
-      id: get_latest_release
-      uses: actions/github-script@v5
-      with:
-        script: |
-          const response = await github.rest.repos.getLatestRelease({
-            owner: 'bencgreenberg',
-            repo: 'github-action-gpt-language-check'
-          });
-          const asset = response.data.assets.find(asset => asset.name === 'github-action-gpt-language-check');
-          if (!asset) {
-            throw new Error('Binary not found in the latest release');
-          }
-          return { url: asset.browser_download_url };
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
     - name: Download pre-built Rust script from remote repository
       run: |
-        wget "${{ steps.get_latest_release.outputs.url }}" -O github-action-gpt-language-check
+        # Fetch the latest release information from the GitHub API
+        release_info=$(curl -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/bencgreenberg/github-action-gpt-language-check/releases/latest)
+        
+        # Extract the binary's download URL using 'jq' 
+        binary_url=$(echo $release_info | jq -r '.assets[] | select(.name == "github-action-gpt-language-check") | .browser_download_url')
+
+        # Download the binary using 'wget'
+        wget "$binary_url" -O github-action-gpt-language-check
+
+        # Make the binary executable
         chmod +x github-action-gpt-language-check
+      shell: bash
 
     - name: Run Rust script for each markdown file
       env:
