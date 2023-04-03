@@ -32,20 +32,20 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        echo "Length of OPENAI_API_KEY: ${#OPENAI_API_KEY}"
         suggestions=""
-        for file in $(find . -type f -iname "*.md"); do
-          echo "Reviewing: $file"
-          suggestion=$(./github-action-gpt-language-check "$file")
-          if [[ ! -z "$suggestion" ]]; then
-            suggestions+="- $file: $suggestion\n"
-            echo "Suggestion found"
-            echo "SUGGESTION_FOUND=true" >> $GITHUB_ENV
+        pr_files=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/${{ github.event.number }}/files | jq -r '.[].filename')
+        for file in $pr_files; do
+          if [[ $file == *.md ]]; then
+            echo "Reviewing: $file"
+            suggestion=$(./github-action-gpt-language-check "$file")
+            if [[ ! -z "$suggestion" ]]; then
+              suggestions+="- $file: $suggestion\n"
+              echo "Suggestion found"
+              echo "SUGGESTION_FOUND=true" >> $GITHUB_ENV
+            fi
           fi
         done
         echo "SUGGESTIONS=$suggestions" >> $GITHUB_ENV
-
-
 
     - name: Add a comment to the pull request
       if: ${{ env.SUGGESTION_FOUND == 'true' }}
