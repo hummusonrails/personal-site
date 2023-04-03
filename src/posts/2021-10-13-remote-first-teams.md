@@ -14,7 +14,7 @@ image: https://res.cloudinary.com/practicaldev/image/fetch/s--4TX6BqOY--/c_imagg
 ### Ben Greenberg
 #### October 13, 2021
 
-It has now been several years since I began working for fully remote-first teams in software. My journey in a completely distributed team began before the pandemic, and before countless numbers of people were thrust into this territory unprepared.
+It has now been several years since I began working for fully remote-first teams in software. My journey in a completely distributed team began before the pandemic arrived, and before countless numbers of people were thrust into this area unprepared.
 
 Over the years I have observed several habits of remote-first teams that enable productivity, happiness and success. What I describe here is what has worked for me, and what I have seen work best in the places I've been. It does not mean that it is the only way. I encourage you to experiment and find the paths that fit your and your team.
 
@@ -22,9 +22,9 @@ Over the years I have observed several habits of remote-first teams that enable 
 
 A team separated by time and space needs to adopt one of the best practices of asynchronous work, which is to be over-sharers of information.
 
-Whereas, teams that inhabit the same office space everyday can organize in-person meetings often and verbally share updates, seek input and ideate on an idea, that is not possible for teams spanning time zones.
+Whereas, teams that inhabit the same office space everyday can organize in-person meetings often and verbally share updates with each other, seek input and ideate on an idea, that is not possible for teams spanning time zones.
 
-It may be possible to organize a meeting of all the team once in a while and ask people to work late in the evening or early in the morning within their timezones, but that is not sustainable. The answer is to become avid collaborators on team docs.
+It may be possible to organize a meeting of all the team once in a while and ask people to work late in the evening or early in the morning within their timezones, but that is not sustainable long term. The answer is to become avid collaborators on team docs.
 
 Use docs to deliberate async on a new project plan. Use docs to share updates from working groups. Use docs to figure out a bug that you just cannot resolve on your own. As much as possible lean into async written records. They not only allow for team work sustainably, but they also provide a phenomenal repository of information for new hires.
 
@@ -41,7 +41,7 @@ Why is it important that people know about your successes? There are numerous re
 
 Likewise, it is equally vital to share the moments that did not go well. Just as it can feel awkward to share your wins, it can also feel awkward to share your failures. Perhaps, it is embarrassing or you wonder what people will think about you after. 
 
-However, cultivating the sharing muscle, especially during moments of failure, is vital. Why? Because it normalizes the idea that we don't always succeed, and builds a culture of learning in public within the team. This needs to happen in both in-person teams and remote-first teams, but because of the distributed nature of remote teams, we must be even more deliberate about it.
+However, cultivating the sharing muscle, especially during moments of failure, is truly vital. Why? Because it normalizes the idea that we don't always succeed, and builds a culture of learning in public within the team. This needs to happen in both in-person teams and remote-first teams, but because of the distributed nature of remote teams, we must be even more deliberate about it.
 
 ![Trust Your Colleagues](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/edbf0h866zz0xh0khp0s.png)
 
