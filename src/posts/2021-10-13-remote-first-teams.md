@@ -30,7 +30,7 @@ Use docs to deliberate async on a new project plan. Use docs to share updates fr
 
 ![Share Your Wins and Losses](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/psy8sm9dr7xfy7ciodb5.png)
 
-It can feel a bit awkward to celebrate yourself publicly. Many of us were raised to not brag, and celebrating a success can very much feel like a brag. Yet, in a remote-first team, if you don't share your win, no one else might know about it.
+It can often feel a bit awkward to celebrate yourself publicly. Many of us were raised to not brag, and celebrating a success can very much feel like a brag. Yet, in a remote-first team, if you don't share your win, no one else might know about it.
 
 Why is it important that people know about your successes? There are numerous reasons:
 
