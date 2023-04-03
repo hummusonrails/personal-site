@@ -24,7 +24,7 @@ A team separated by time and space needs to adopt one of the best practices of a
 
 Whereas, teams that inhabit the same office space everyday can organize in-person meetings often and verbally share updates with each other, seek input and ideate on an idea, that is not possible for teams spanning time zones.
 
-It may be possible to organize a meeting of all the team once in a while and ask people to work late in the evening or early in the morning within their timezones, but that is not sustainable. The answer is to become avid collaborators on team docs.
+It may be possible to organize a meeting of all the team once in a while and ask people to work late in the evening or early in the morning within their timezones, but that is not sustainable long term. The answer is to become avid collaborators on team docs.
 
 Use docs to deliberate async on a new project plan. Use docs to share updates from working groups. Use docs to figure out a bug that you just cannot resolve on your own. As much as possible lean into async written records. They not only allow for team work sustainably, but they also provide a phenomenal repository of information for new hires.
 
