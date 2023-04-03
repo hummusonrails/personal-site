@@ -32,6 +32,7 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
+        echo "Length of OPENAI_API_KEY: ${#OPENAI_API_KEY}"
         suggestions=""
         for file in $(find . -type f -iname "*.md"); do
           echo "Reviewing: $file"
