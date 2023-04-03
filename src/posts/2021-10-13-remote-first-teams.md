@@ -14,7 +14,7 @@ image: https://res.cloudinary.com/practicaldev/image/fetch/s--4TX6BqOY--/c_imagg
 ### Ben Greenberg
 #### October 13, 2021
 
-It has now been several years since I began working for fully remote-first teams in software. My journey in a completely distributed team began before the pandemic, and before countless numbers of people were thrust into this territory unprepared.
+It has now been several years since I began working for fully remote-first teams in software. My journey in a completely distributed team began before the pandemic arrived, and before countless numbers of people were thrust into this territory unprepared.
 
 Over the years I have observed several habits of remote-first teams that enable productivity, happiness and success. What I describe here is what has worked for me, and what I have seen work best in the places I've been. It does not mean that it is the only way. I encourage you to experiment and find the paths that fit your and your team.
 
