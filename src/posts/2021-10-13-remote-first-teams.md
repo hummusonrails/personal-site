@@ -22,7 +22,7 @@ Over the years I have observed several habits of remote-first teams that enable 
 
 A team separated by time and space needs to adopt one of the best practices of asynchronous work, which is to be over-sharers of information.
 
-Whereas, teams that inhabit the same office space everyday can organize in-person meetings often and verbally share updates, seek input and ideate on an idea, that is not possible for teams spanning time zones.
+Whereas, teams that inhabit the same office space everyday can organize in-person meetings often and verbally share updates with each other, seek input and ideate on an idea, that is not possible for teams spanning time zones.
 
 It may be possible to organize a meeting of all the team once in a while and ask people to work late in the evening or early in the morning within their timezones, but that is not sustainable. The answer is to become avid collaborators on team docs.
 
