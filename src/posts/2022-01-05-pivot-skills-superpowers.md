@@ -18,7 +18,7 @@ We are living in the midst of the [great resignation](https://hbr.org/2021/09/wh
 
 A lot of those people are choosing software as their next career. You may even be among them.
 
-Why software?
+Why are they choosing software?
 
 There is a myriad of reasons why people choose to enter software development:
 
