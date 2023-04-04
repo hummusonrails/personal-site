@@ -39,7 +39,11 @@ jobs:
             echo "Reviewing: $file"
             suggestion=$(./github-action-gpt-language-check "$file")
             if [[ ! -z "$suggestion" ]]; then
-              suggestions+="- $file: $suggestion\n"
+              # Only add a newline if the suggestions variable is not empty
+              if [[ ! -z "$suggestions" ]]; then
+                suggestions+="\n"
+              fi
+              suggestions+="- $file: $suggestion"
               echo "Suggestion found"
               echo "SUGGESTION_FOUND=true" >> $GITHUB_ENV
             fi
