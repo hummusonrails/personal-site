@@ -6,14 +6,16 @@
 
 {# Open Graph #}
 <meta property="og:site_name" content="Ben Greenberg | Developer Advocate">
-<meta property="og:title" content="Ben Greenberg | Developer Advocate">
-<meta property="og:description" content="Actualizing Developer Happiness">
 <meta property="og:url" content="{{ absolutePageUrl }}">
 <meta property="og:locale" content="{{ meta.locale }}">
 <meta name="twitter:card" content="{% if seo.image or meta.image %}summary_large_image{% else %}summary{% endif %}">
+<meta property="og:title" content="{{ seo.title or meta.title }}">
+<meta property="og:description" content="{{ seo.description or meta.description }}">
 {% if seo.image or meta.image %}
     <meta property="og:image" content="{{ seo.image or meta.image | url | absoluteUrl(build.url) }}">
 {% endif %}
+
+
 
 {# Favicon #}
 <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/images/favicon/favicon.png' | url }}">
