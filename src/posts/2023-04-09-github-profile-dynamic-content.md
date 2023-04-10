@@ -48,7 +48,7 @@ Inside the top-level add a new folder called `.github` and inside `.github` add 
 Your file structure should now look like this:
 
 ```bash
-my_project/
+./
 ├── .github/
 │   ├── scripts/
 │   └── workflows/
@@ -177,7 +177,7 @@ Nowadays, your online presence is often the first point of contact for people lo
 
 By harnessing the power of GitHub Actions, we've demonstrated how you can transform your GitHub profile from a static Markdown document into a dynamic, ever-changing example of who you are. Through the example provided in this guide, you've learned how to scrape data from a website and use it to dynamically update your GitHub profile. And while our example was implemented in Ruby, the same principles can be applied using JavaScript, TypeScript, Python, or any other language of your choice.
 
-To recap, we walked through the process of creating a Ruby script that scrapes blog posts from a website, extracts relevant information, and updates the "Recent Blog Posts" section of your README.md file. Then, we used GitHub Actions to set up a workflow that runs the script on a regular schedule, ensuring that your profile remains current with your latest content.
+To recap, we walked through the process of creating a Ruby script that scrapes blog posts from a website, extracts relevant information, and updates the "Recent Blog Posts" section of your `README.md` file. Then, we used GitHub Actions to set up a workflow that runs the script on a regular schedule, ensuring that your profile remains current with your latest content.
 
 But our journey doesn't end here! The techniques and approaches shared in this guide can serve as a foundation for further exploration and creativity. Whether it's pulling in data from other sources, integrating with APIs, or experimenting with different content formats, the possibilities are endless.
 
