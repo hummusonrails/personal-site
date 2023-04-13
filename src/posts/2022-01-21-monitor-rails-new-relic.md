@@ -27,7 +27,7 @@ This tutorial assumes a working knowledge of:
 -   Running commands in the terminal
 -   GitHub
 
-_TL;DR You can find a complete working application on GitHub at_ [_https://github.com/bencgreenberg/new-relic-rails-7-demo_](https://github.com/bencgreenberg/new-relic-rails-7-demo) _if you want to clone the repository and try it out!_
+_TL;DR You can find a complete working application on GitHub at_ [_https://github.com/hummusonrails/new-relic-rails-7-demo_](https://github.com/hummusonrails/new-relic-rails-7-demo) _if you want to clone the repository and try it out!_
 
 ## Create a Rails application
 

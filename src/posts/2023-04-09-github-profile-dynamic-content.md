@@ -24,7 +24,7 @@ I'll show you an example of how you can do this quickly and without too much eff
 
 ## How Your GitHub Profile Works
 
-Your GitHub profile is found by going to `github.com/[your-username]` in a web browser, [here's mine](https://github.com/bencgreenberg) for example. Where does the content for that view come from?
+Your GitHub profile is found by going to `github.com/[your-username]` in a web browser, [here's mine](https://github.com/hummusonrails) for example. Where does the content for that view come from?
 
 It lives in a special repository in your account with the name of your account username. If you do not have this repository yet, you will not see any special content when you visit `github.com/[your-username]`, so the first step is to ensure you have that repository created, and if you do not, go ahead and create it.
 

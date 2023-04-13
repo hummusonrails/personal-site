@@ -14,7 +14,7 @@ image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m72rh6rjtl7vj02x
 ### Ben Greenberg
 #### March 31, 2023
 
-As DevRel professionals, we know it's crucial to stay in touch with the community and offer valuable learning resources that cater to their needs. One of the tricky parts of this is figuring out the most relevant topics for tutorials or guides. That's where my latest project, the [StackExchange Tutorial Themes app](https://github.com/bencgreenberg/stackexchange-tutorial-themes), steps in. By using the potential of OpenAI's ChatGPT with the StackExchange API, I've put together an app that checks out the newest questions from a StackExchange forum and comes up with approachable tutorial topics based on common and recurring themes.
+As DevRel professionals, we know it's crucial to stay in touch with the community and offer valuable learning resources that cater to their needs. One of the tricky parts of this is figuring out the most relevant topics for tutorials or guides. That's where my latest project, the [StackExchange Tutorial Themes app](https://github.com/hummusonrails/stackexchange-tutorial-themes), steps in. By using the potential of OpenAI's ChatGPT with the StackExchange API, I've put together an app that checks out the newest questions from a StackExchange forum and comes up with approachable tutorial topics based on common and recurring themes.
 
 In this blog post, I'll give a rundown on how the StackExchange Tutorial Themes app can help DevRel folks, making it easier to spot relevant tutorial topics, create outlines for those topics, and ultimately provide better support to the developer community.
 
@@ -33,7 +33,7 @@ Let's dive into what we'll cover:
 
 ## StackExchange Tutorial Themes: A Quick Intro
 
-The [StackExchange Tutorial Themes app](https://github.com/bencgreenberg/stackexchange-tutorial-themes) is about helping DevRel folks spot relevant tutorial topics based on the newest questions popping up in various StackExchange forums. It's put together using the ChatGPT API and StackExchange API.
+The [StackExchange Tutorial Themes app](https://github.com/hummusonrails/stackexchange-tutorial-themes) is about helping DevRel folks spot relevant tutorial topics based on the newest questions popping up in various StackExchange forums. It's put together using the ChatGPT API and StackExchange API.
 
 Here's the rundown of what the application does:
 
@@ -143,4 +143,4 @@ By following these steps and integrating the StackExchange Tutorial Themes appli
 
 The StackExchange Tutorial Themes application is an interesting and practical way for DevRel professionals to find tutorial topics that truly resonate with the developer community. By tapping into the potential of AI with ChatGPT and the StackExchange API, we're able to come up with relevant and helpful learning resources that empower developers and encourage community engagement.
 
-I encourage you to get involved and give it a try - help [contribute to the code](https://github.com/bencgreenberg/stackexchange-tutorial-themes) and share your experiences using the tool. It's a great opportunity to learn from each other and explore how AI can make a difference in developer relations. As AI technology keeps progressing, it's going to have an even bigger impact on our field, and I'm genuinely excited to see where it takes us. So, let's join forces and work together to create an even better, more efficient, and user-centered DevRel experience.
+I encourage you to get involved and give it a try - help [contribute to the code](https://github.com/hummusonrails/stackexchange-tutorial-themes) and share your experiences using the tool. It's a great opportunity to learn from each other and explore how AI can make a difference in developer relations. As AI technology keeps progressing, it's going to have an even bigger impact on our field, and I'm genuinely excited to see where it takes us. So, let's join forces and work together to create an even better, more efficient, and user-centered DevRel experience.
