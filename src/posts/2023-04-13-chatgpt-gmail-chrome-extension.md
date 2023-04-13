@@ -4,12 +4,12 @@ tags: ['posts']
 title: "ChatGPT for Gmail: The Chrome Extension to Fine-Tune Your Emails"
 date: 2023-04-13
 teaser: "Transform Your Gmail Drafts with Style: An Open Source Chrome Extension Powered by ChatGPT"
-image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rvu5yjbuqtsu6je83id1.png
+image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/shdqscanh9wyou3mfy0h.png
 ---
 
 ## ChatGPT for Gmail: The Chrome Extension to Fine-Tune Your Emails
 
-![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rvu5yjbuqtsu6je83id1.png)
+![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/shdqscanh9wyou3mfy0h.png)
 
 ### Ben Greenberg
 #### April 13, 2023

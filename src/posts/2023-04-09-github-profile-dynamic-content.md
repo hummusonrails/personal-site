@@ -4,12 +4,12 @@ tags: ['posts']
 title: "Use GitHub Actions to Make Your GitHub Profile Dynamic"
 date: 2023-04-09
 teaser: Automatically Update Your Profile with Fresh Content and Showcase Your Latest Work
-image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/t3ggg3o8so8btyijcxg3.png
+image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/shdqscanh9wyou3mfy0h.png
 ---
 
 ## Use GitHub Actions to Make Your GitHub Profile Dynamic
 
-![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/t3ggg3o8so8btyijcxg3.png)
+![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/shdqscanh9wyou3mfy0h.png)
 
 ### Ben Greenberg
 #### April 9, 2023
