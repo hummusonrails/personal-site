@@ -100,7 +100,7 @@ In addition to transparency in data and on-chain governance, Polkadot's interope
 
 The public nature of blockchain data, coupled with on-chain governance and interoperability, empowers developers to build applications that are accountable, traceable, and shaped by collective decision-making. The governance model, including the upcoming OpenGov framework, ensures transparent and community-driven decision-making processes. Together, these aspects of transparency pave the way for new possibilities and drive the adoption of innovative and trustworthy applications on the Polkadot network.
 
-Let's now look at another issue that is important for devs when considering any choice for their tech stack, namely accessibility across all devices. Blockchains can be often notoriously resource intensive, which can make them hard to access and participate in with mobile devices and other less computationally powerfu machines. How can this be addressed?
+Let's now look at another issue that is important for devs when considering any choice for their tech stack, namely accessibility across all devices. Blockchains can be often notoriously resource intensive, which can make them hard to access and participate in with mobile devices and other less computationally powerful machines. How can this be addressed?
 
 ## Ensuring compatibility with all devices
 
@@ -116,10 +116,10 @@ In the context of Polkadot, light clients are empowered even further through [Su
 
 By enabling compatibility across various devices, enhancing synchronization speed, and promoting decentralization, light clients, especially when combined with [Substrate Connect](https://substrate.io/developers/substrate-connect/), offer an important solution for achieving broad accessibility and compatibility. Developers can leverage light clients to ensure seamless integration across smartphones, IoT devices, and other resource-constrained devices, facilitating the widespread adoption of decentralized applications. Additionally, the faster synchronization and decentralized validation process offered by light clients enhance the user experience while maintaining the integrity and security of the underlying blockchain network.
 
-There's [a great video](https://www.youtube.com/watch?v=D0c2s-FYmgA) from the [Sub0 developer event](https://sub0.polkadot.network/) not so long ago that explains how to use Substrate Connect and how it is a faster and more reliable replacement for other alternatives:
+There's [a great video](https://www.youtube.com/watch?v=D0c2s-FYmgA) from the [Sub0 developer event](https://sub0.polkadot.network/) not so long ago that explains how to use Substrate Connect and how it is a faster and more reliable replacement for other alternatives.
 
 By adopting light client solutions, developers can empower users to seamlessly access blockchain technology across diverse devices, fostering the adoption of decentralized applications and expanding the reach of blockchain networks across different device types, providing a range of benefits for developers and users.
 
-We've covered a substantial amount in this post! If it seems like a whirlwind, that's because it is. There will be two more posts in this series that delve deeper into Polkadot's architecture and how to begin building applications within its ecosystem. We haven't even scratched the surface on those topics, and there's so much to discuss regarding Substrate, the modular framework for building blockchains, and ink!, the Rust-based DSL for writing smart contracts. Don't worry, we'll get there!
+We've covered a substantial amount in this post! If it seems like a whirlwind, that's because it is. There will be two more posts in this series that delve deeper into Polkadot's architecture and how to begin building applications within its ecosystem. We haven't even scratched the surface on those topics, and there's so much to discuss regarding [Substrate](https://substrate.io), the modular framework for building blockchains, and [ink!](https://use.ink), the Rust-based DSL for writing smart contracts. Don't worry, we'll get there!
 
 In the meantime, I encourage you to check out the [Polkadot Wiki](https://wiki.polkadot.network/), the [Substrate documentation](https://docs.substrate.io/) and the [ink! documentation](https://use.ink/) to continue your learning.
