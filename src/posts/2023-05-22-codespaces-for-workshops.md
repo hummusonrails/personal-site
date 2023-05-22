@@ -18,7 +18,7 @@ I remember the first time I taught a technical workshop. It involved building in
 
 This problem has not become any simpler over the years. In fact, it has only become more challenging, as the requirements for many projects have become more complex involving a lot more dependencies and specific configurations on local machines before anyone can even touch the code of the project. All of this does not even mention the often enormous amount of data that needs to be downloaded during a local environment configuration. If you have ever tried to watch a movie on hotel WiFi, now imagine trying to install an entire Rust environment on that same connection.
 
-This is where GitHub Codespaces comes in. Codespaces is a cloud-based development environment that allows you to create a development environment that is accessible from anywhere. This means you can have Codespaces do all the heavy-lifting for your workshop setup for you, so your attendees can spend more time learning and less time configuring their local machines.
+This is where [GitHub Codespaces](https://github.com/features/codespaces) comes in. Codespaces is a cloud-based development environment that allows you to create a development environment that is accessible from anywhere. This means you can have Codespaces do all the heavy-lifting for your workshop setup for you, so your attendees can spend more time learning and less time configuring their local machines.
 
 Doing so, though, requires a bit of configuration to get things ready. In this article we're going to explore how I set up Codespaces to teach an intro to smart contracts workshop for attendees from all over the world and from all different skill levels. People who had never touched a line of code before in their lives had the chance to build their own smart contract and deploy it to their own local node and see firsthand how it works without hours of setup before they could even get started.
 
@@ -109,7 +109,7 @@ To enable prebuilds you only need to choose the option from within the settings 
 
 ![Prebuild Option in GitHub](assets/images/posts/codespaces_workshops/github_menu_option_for_prebuilds.png)
 
-This seems simple enoguh, yet if someone doesn't have *any* experience with GitHub it can be still quite overwhelming. Think about it. Just to get to that point, you need to create a GitHub account, fork the repositority, enter into its options, navigate to the Codespaces section of those options, and enable Prebuilds. That is a lot of steps for someone who has never used GitHub before.
+This seems simple enough, yet if someone doesn't have *any* experience with GitHub it can be still quite overwhelming. Think about it. Just to get to that point, you need to create a GitHub account, fork the repositority, enter into its options, navigate to the Codespaces section of those options, and enable Prebuilds. That is a lot of steps for someone who has never used GitHub before.
 
 I wanted to make this as manageable as possible, so I included a step-by-step guide in a Google Doc, that included pictures similar to the above that walked attendees through that process from creating an account all the way until they enabled the prebuild.
 
