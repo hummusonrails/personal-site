@@ -14,9 +14,9 @@ image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kcn4uyjw5utqa87w
 ### Ben Greenberg
 #### May 30, 2023
 
-In [the first post](https://www.bengreenberg.dev/posts/2023-05-16-importance-of-blockchain-for-new-devs/) of this three-part series, we broke down some of the major features of blockchain that could be useful for developers building applications. We discussed how blockchains in general can boost trust and security, increase transparency and ways in which we can ensure compatibility across all device types. In this blog post, we are going to dive into some of the design decisions of Polkadot, and what makes it a compelling place to build.
+In [the first post](https://parity.link/2O6tS) of this three-part series, we broke down some of the major features of blockchain that could be useful for developers building applications. We discussed how blockchains in general can boost trust and security, increase transparency and ways in which we can ensure compatibility across all device types. In this blog post, we are going to dive into some of the design decisions of Polkadot, and what makes it a compelling place to build.
 
-The core offering of Polkadot for developers is blockspace. You may be wondering what exactly blockspace is? It is the "raw material created from decentralized trust," [according to Robert Habermeier](https://youtu.be/e1vISppPwe4), the co-founder of Polkadot. In other words, it is what blockchains provide as its fundamental product. It is the space to build applications, store data and execute transactions. If that's the case, let's take a look at Polkadot's blockspace and try to understand more of the decisions behind how it was designed and how that impacts you as you begin to build and develop on its blockspace.
+The core offering of Polkadot for developers is blockspace. You may be wondering what exactly blockspace is? It is the "raw material created from decentralized trust," [according to Robert Habermeier](https://parity.link/l8bcq), the co-founder of Polkadot. In other words, it is what blockchains provide as its fundamental product. It is the space to build applications, store data and execute transactions. If that's the case, let's take a look at Polkadot's blockspace and try to understand more of the decisions behind how it was designed and how that impacts you as you begin to build and develop on its blockspace.
 
 We are going to discuss three specific areas:
 
@@ -28,7 +28,7 @@ We are going to discuss three specific areas:
 
 Sharding is a term that is used to describe breaking a database into smaller pieces. When you break up a database into smaller bits then the database can become more efficient, particularly as it grows in size. The reason for this is that it allows you to run queries in parallel, which gives you the ability to run many queries on the database at the same time. This has been a useful feature in data management for a very long time, and it is also just as useful in blockchains. 
 
-Polkadot uses sharding to accomplish similar throughput and speed efficiency, but it does it through heterogeneous shards. Imagine if you had a PostgreSQL database and you sharded it to allow for more parallelization, but instead of creating exactly identical duplicative shards of the database, you created shards that were optimized for specific types of data. You could have a shard that was perfect for storing images, another for text, and yet another for video. This is precisely what Polkadot was designed to do. Each shard is its own application-specific blockchain that connects to the Polkadot relay chain. These shards are called parachains. You can discover all the current parachains by visiting [parachains.info](https://parachains.info/).
+Polkadot uses sharding to accomplish similar throughput and speed efficiency, but it does it through heterogeneous shards. Imagine if you had a PostgreSQL database and you sharded it to allow for more parallelization, but instead of creating exactly identical duplicative shards of the database, you created shards that were optimized for specific types of data. You could have a shard that was perfect for storing images, another for text, and yet another for video. This is precisely what Polkadot was designed to do. Each shard is its own application-specific blockchain that connects to the Polkadot relay chain. These shards are called parachains. You can discover all the current parachains by visiting [parachains.info](https://parity.link/YObvS).
 
 It seems obvious why Polkadot architected its blockspace to be a sharded network. It creates the ability for parallelization of queries, thereby increasing the overall speed and efficiency of the network. But, why make it a heterogeneously sharded network? The heterogeneity, if anything, only increases the complexity of the architecture. The reason why the builders of Polkadot bet big on heterogenity is because at the center of all of Polkadot is a big bet on a multi-chain future.
 
@@ -44,12 +44,12 @@ In other words, the trade-off for the increased complexity in a heterogeneous sh
 
 In a context of a multi-chain network where each chain is an independent sovereign blockchain optimized for its own use case, it can become very hard to share data and assets between those chains. This is where cross-consensus messaging comes in. When we talk about cross-consensus messaging in Polkadot, we typically talk about two related but distinct concepts:
 
-* [XCMP - Cross-Consensus Message Passing](https://wiki.polkadot.network/docs/learn-xcm-transport)
-* [XCM - Cross-Consensus Message Format](https://wiki.polkadot.network/docs/learn-xcm)
+* [XCMP - Cross-Consensus Message Passing](https://parity.link/aLALy)
+* [XCM - Cross-Consensus Message Format](https://parity.link/QeoNb)
 
 It is important to not confuse the two. The first, XCMP, is the transport protocol that allows for cross-consensus communication. The latter, XCM, is the formatting of those messages. XCMP can be seen as another communications layer, similar to HTTP or similar protocols in their own context. XCM is the format of the messages that are passed through XCMP.
 
-FRAME, the Substrate runtime module library *(we'll discuss FRAME and Substrate in the final post in this three-part series)* [has a pallet (the name for modules in FRAME) to help make working with XCM easier called `pallet-xcm`](https://wiki.polkadot.network/docs/learn-xcm-pallet) that provides pre-defined commonly used extrinsics to build XCM messages. When building cross-consensus asset transfers or cross-consensus calls, you can use `pallet-xcm` to make it easier to build those messages.
+FRAME, the Substrate runtime module library *(we'll discuss FRAME and Substrate in the final post in this three-part series)* [has a pallet (the name for modules in FRAME) to help make working with XCM easier called `pallet-xcm`](https://parity.link/NjrtN) that provides pre-defined commonly used extrinsics to build XCM messages. When building cross-consensus asset transfers or cross-consensus calls, you can use `pallet-xcm` to make it easier to build those messages.
 
 For example, this is what it might look like to deposit an asset into a parachain using `pallet-xcm`:
 
@@ -64,7 +64,7 @@ DepositAsset {
 }
 ```
 
-If all of that did not entirely make sense to you, that's ok! You can dig deep into the format specs [on GitHub](https://github.com/paritytech/xcm-format), read Dr. Gavin Wood's detailed and thorough [paper on the format](https://medium.com/polkadot-network/xcm-the-cross-consensus-message-format-3b77b1373392) and also read through [the code for the pallet](https://github.com/paritytech/polkadot/blob/master/xcm/pallet-xcm/src/lib.rs) along with the code comments to get a fuller understanding. The important thing to understand for right now is that XCM is the format of the messages that are passed through XCMP, and that XCMP is the transport protocol that allows for cross-consensus communication.
+If all of that did not entirely make sense to you, that's ok! You can dig deep into the format specs [on GitHub](https://parity.link/7IRhY), read Dr. Gavin Wood's detailed and thorough [paper on the format](https://parity.link/We15Q) and also read through [the code for the pallet](https://parity.link/2ICpZ) along with the code comments to get a fuller understanding. The important thing to understand for right now is that XCM is the format of the messages that are passed through XCMP, and that XCMP is the transport protocol that allows for cross-consensus communication.
 
 We have seen that heterogeneous sharding and cross-consensus messaging lays at the heart of the value proposition of Polkadot, but we are missing another critical component of that value proposition: shared security.
 
@@ -72,11 +72,11 @@ We have seen that heterogeneous sharding and cross-consensus messaging lays at t
 
 Building anything is hard. It's hard to get the fundamentals of your project right. It does not matter if we're talking about the schema for your database, the frontend framework you choose, the authentication layer you incorporate, or anything else. This is especially true when we talk about security. Your code, your architecture, your design and your implementation all have to be secure. There are lots of tools and IDE extensions you can use to help you write secure code. But, just one security breach, and you could dramatically erode user trust, and when you are just starting out, an erosion of user confidence could be fatal to your project.
 
-What does [shared security](https://wiki.polkadot.network/docs/learn-parachains#shared-security) mean on Polkadot?
+What does [shared security](https://parity.link/zz1SV) mean on Polkadot?
 
 It means that when you build your own heterogeneous shard on Polkadot-- your own parachain -- it inherits the full security of the Polkadot relay chain. This also enables secure message passing between parachains. This is not the same thing as other protocols that rely on a bridge architecture to connect to other chains. In those architectures, the security of the bridge is only as strong as the security of the weakest chain. In Polkadot, the security of the parachain is as strong as the security of the Polkadot relay chain. This is because the parachain is not a bridge, it is a shard. It is a shard that is connected to the Polkadot relay chain, and it inherits the full security of the relay chain.
 
-Shawn Tabrizi offered a fantastic overview of the shared security model recently at ETHDenver, and you can watch the recording of it [on YouTube](https://youtu.be/uKQOSPfM-W0). I highly recommend taking the 20 minutes and watching the presentation.
+Shawn Tabrizi offered a fantastic overview of the shared security model recently at ETHDenver, and you can watch the recording of it [on YouTube](https://parity.link/FO73l). I highly recommend taking the 20 minutes and watching the presentation.
 
 The shared security model of Polkadot rests on three "building blocks" as Shawn calls them:
 
@@ -84,15 +84,15 @@ The shared security model of Polkadot rests on three "building blocks" as Shawn 
 * Parachains Protocol
 * Relay Chain
 
-WebAssembly is a binary instruction format that is designed to be secure, fast and highly portable. It can take code written in many languages and compile it into a binary format that can be run in the browser, on a server, a mobile device, an IoT device, and more. In Polkadot, the state transition function for each chain is compiled into a [Wasm blob](https://wiki.polkadot.network/docs/learn-wasm) that then lives on the chain itself. This introduces transparency into the state transition function, and it also allows for the state transition function to be upgraded without having to hard fork the chain. 
+WebAssembly is a binary instruction format that is designed to be secure, fast and highly portable. It can take code written in many languages and compile it into a binary format that can be run in the browser, on a server, a mobile device, an IoT device, and more. In Polkadot, the state transition function for each chain is compiled into a [Wasm blob](https://parity.link/4lEfj) that then lives on the chain itself. This introduces transparency into the state transition function, and it also allows for the state transition function to be upgraded without having to hard fork the chain. 
 
-The [parachains protocol](https://wiki.polkadot.network/docs/learn-parachains-protocol) is the process for a block to go from being authored to included in the ledger of the chain. This is the way that the Polkadot network efficiently is sharded amongst parachains. It includes roles such as validators who validate the proposed blocks by checking the proof of validity of the blocks, and collators who create the proof of validity that the validators check. 
+The [parachains protocol](https://parity.link/ud3l3) is the process for a block to go from being authored to included in the ledger of the chain. This is the way that the Polkadot network efficiently is sharded amongst parachains. It includes roles such as validators who validate the proposed blocks by checking the proof of validity of the blocks, and collators who create the proof of validity that the validators check. 
 
 ![Representation of a parachain with collators and validators](https://wiki.polkadot.network/assets/images/parachain-protocol-summary-1e262cdee5cfa5b1f576962f12b0b8a5.png)
 
-There's a lot more to be said about the parachain protocol and I encourage you to read the [Polkadot Wiki](https://wiki.polkadot.network/docs/learn-parachains-protocol) on the subject to go deeper. The Wiki has explanations for each aspect along with helpful illustrations like the one I shared above.
+There's a lot more to be said about the parachain protocol and I encourage you to read the [Polkadot Wiki](https://parity.link/ud3l3) on the subject to go deeper. The Wiki has explanations for each aspect along with helpful illustrations like the one I shared above.
 
-The last building block in the shared security model is the [relay chain](https://wiki.polkadot.network/docs/learn-architecture#relay-chain). The relay chain is the center of the Polkadot network. It is the chain that all the parachains, the heterogeneous shards, connect to. The types of transactions that can be done on the relay chain are limited, mainly to governance, parachain auctions and staking. In Polkadot, applications exist on the parachains, not on the relay chain. The relay chain is the central chain that provides security to the application layer. 
+The last building block in the shared security model is the [relay chain](https://parity.link/0pLux). The relay chain is the center of the Polkadot network. It is the chain that all the parachains, the heterogeneous shards, connect to. The types of transactions that can be done on the relay chain are limited, mainly to governance, parachain auctions and staking. In Polkadot, applications exist on the parachains, not on the relay chain. The relay chain is the central chain that provides security to the application layer. 
 
 ![Representation of the Polkadot network with the relay chain at the center](https://wiki.polkadot.network/assets/images/polkadot_relay_chain-c411a282aa36af0f20d04389919a6275.png)
 
