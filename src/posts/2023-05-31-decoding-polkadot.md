@@ -2,17 +2,17 @@
 layout: post 
 tags: ['posts']
 title: "Decoding Polkadot"
-date: 2023-05-31
+date: 2023-05-30
 teaser: "Breaking down the core concepts of Polkadot for developers"
-image: 
+image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kcn4uyjw5utqa87wp1di.png
 ---
 
 ## Decoding Polkadot
 
-![header image]()
+![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kcn4uyjw5utqa87wp1di.png)
 
 ### Ben Greenberg
-#### May 31, 2023
+#### May 30, 2023
 
 In [the first post](https://www.bengreenberg.dev/posts/2023-05-16-importance-of-blockchain-for-new-devs/) of this three-part series, we broke down some of the major features of blockchain that could be useful for developers building applications. We discussed how blockchains in general can boost trust and security, increase transparency and ways in which we can ensure compatibility across all device types. In this blog post, we are going to dive into some of the design decisions of Polkadot, and what makes it a compelling place to build.
 
