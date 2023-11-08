@@ -21,7 +21,7 @@ In this blog post, we'll walk through how to verify yourself on Bluesky using [G
 
 tl;dr: You can follow the steps in this handy infographic below I put together without reading any of the next steps. If you need more detail though, please read on!
 
-![infographic](static/images/posts/bluesky_godaddy/bluesky_godaddy.png)
+![infographic](/static/images/posts/bluesky_godaddy/bluesky_godaddy.png)
 
 ### Step 1: Find your DNS Settings
 
@@ -29,7 +29,7 @@ The first thing you need to do is to find your DNS settings for the domain name 
 
 To do that navigate to **Accounts >> My Products** in the GoDaddy menu. You should see a list of your domain names. Click on the **Manage DNS** link for the domain name you want to use for Bluesky verification.
 
-![GoDaddy DNS Settings](static/images/posts/bluesky_godaddy/manage_dns.png)
+![GoDaddy DNS Settings](/static/images/posts/bluesky_godaddy/manage_dns.png)
 
 You should now see a settings page to manage the DNS records for your domain name. You will need to add one new record to your domain address to be verified.
 
@@ -52,6 +52,6 @@ First, click on the **Add New Record** button to add a new DNS record. This will
 
 Now that you have added the new DNS record, you need to wait for the DNS servers to update. This can take up to 24 hours, but usually takes much less time than that. Once the DNS servers have updated, you can go back to your Bluesky account and click the **Verify DNS Record** button. Make sure you put the domain name in the top field before doing so. 
 
-![Bluesky DNS Verification](static/images/posts/bluesky_godaddy/bluesky_verify_menu.png)
+![Bluesky DNS Verification](/static/images/posts/bluesky_godaddy/bluesky_verify_menu.png)
 
 That's it, you now have a verified Bluesky account! A bit less cumbersome than some of the more legacy social media platforms, right?

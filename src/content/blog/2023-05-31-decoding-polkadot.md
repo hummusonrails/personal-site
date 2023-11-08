@@ -83,13 +83,13 @@ WebAssembly is a binary instruction format that is designed to be secure, fast a
 
 The [parachains protocol](https://parity.link/ud3l3) is the process for a block to go from being authored to included in the ledger of the chain. This is the way that the Polkadot network efficiently is sharded amongst parachains. It includes roles such as validators who validate the proposed blocks by checking the proof of validity of the blocks, and collators who create the proof of validity that the validators check. 
 
-![Representation of a parachain with collators and validators](https://wiki.polkadot.network/assets/images/parachain-protocol-summary-1e262cdee5cfa5b1f576962f12b0b8a5.png)
+![Representation of a parachain with collators and validators](https://wiki.polkadot.network/images/parachain-protocol-summary-1e262cdee5cfa5b1f576962f12b0b8a5.png)
 
 There's a lot more to be said about the parachain protocol and I encourage you to read the [Polkadot Wiki](https://parity.link/ud3l3) on the subject to go deeper. The Wiki has explanations for each aspect along with helpful illustrations like the one I shared above.
 
 The last building block in the shared security model is the [relay chain](https://parity.link/0pLux). The relay chain is the center of the Polkadot network. It is the chain that all the parachains, the heterogeneous shards, connect to. The types of transactions that can be done on the relay chain are limited, mainly to governance, parachain auctions and staking. In Polkadot, applications exist on the parachains, not on the relay chain. The relay chain is the central chain that provides security to the application layer. 
 
-![Representation of the Polkadot network with the relay chain at the center](https://wiki.polkadot.network/assets/images/polkadot_relay_chain-c411a282aa36af0f20d04389919a6275.png)
+![Representation of the Polkadot network with the relay chain at the center](https://wiki.polkadot.network/images/polkadot_relay_chain-c411a282aa36af0f20d04389919a6275.png)
 
 Together, these three aspects of Wasm, the parachains protocol and the relay chain form the shared security model of Polkadot. In short, it provides you with the confidence to start building something new, introduce it to the world, and begin iterating on it with a community of users and developers. 
 

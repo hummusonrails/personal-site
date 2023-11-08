@@ -102,7 +102,7 @@ It was as if the creators of Codespaces understood these problems intuitively an
 
 To enable prebuilds you only need to choose the option from within the settings in the Codespaces options inside the repository.
 
-![Prebuild Option in GitHub](static/images/posts/codespaces_workshops/github_menu_option_for_prebuilds.png)
+![Prebuild Option in GitHub](/static/images/posts/codespaces_workshops/github_menu_option_for_prebuilds.png)
 
 This seems simple enough, yet if someone doesn't have *any* experience with GitHub it can be still quite overwhelming. Think about it. Just to get to that point, you need to create a GitHub account, fork the repositority, enter into its options, navigate to the Codespaces section of those options, and enable Prebuilds. That is a lot of steps for someone who has never used GitHub before.
 
@@ -110,7 +110,7 @@ I wanted to make this as manageable as possible, so I included a step-by-step gu
 
 The steps continued in the Google Doc until they reached the end, and just needed to click on one last button.
 
-![Prebuild Option in GitHub](static/images/posts/codespaces_workshops/github_prebuilds_final_step.png)
+![Prebuild Option in GitHub](/static/images/posts/codespaces_workshops/github_prebuilds_final_step.png)
 
 This build took time just like it would if the attendee was doing it during the workshop itself, approximately an hour of time. However, if they finished these steps up to two hours before the workshop began they were pretty much guaranteed to have a prebuild ready to go by the time the workshop started.
 
@@ -122,7 +122,7 @@ The primary pain points experienced by the attendees were about the limitations 
 
 Codespaces for free use is currently limited to 60 hours of free use and 15 GB of free storage per month. Rust projects can be resource intensive when they are compiling, and Substrate is not particularly small, which means that users of Codespaces on the free tier will run out of both time and storage relatively quickly. Of course, a user can purchase more of both on GitHub, and GitHub Pro accounts do get more time and storage included, but this is still a pain point. 
 
-![Codespaces pricing as of May 2023](static/images/posts/codespaces_workshops/github_codespaces_pricing.png)
+![Codespaces pricing as of May 2023](/static/images/posts/codespaces_workshops/github_codespaces_pricing.png)
 
 The other challenge can simply be stated as the finnicky nature of cloud environments. During the workshop of about 60 attendees, some attendees reported exceptionally slow access to their prebuilt Codespace environment, while other users had no speed issues at all. It is hard to know at any given time what the load on the Codespaces servers are, and how that will affect the performance of the Codespaces environment. This is not a problem unique to Codespaces, but it is a problem that is present in all cloud environments. Nonetheless, it is something to consider. I would still argue that that unknown beats the unknown of hotel or conference center WiFi. 
 

@@ -8,7 +8,7 @@ image: https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yorcl0fsntpzsknj
 authors: ['default']
 ---
 
-![header image](static/images/posts/devrel_metrics/measuring_devrel_success.png)
+![header image](/static/images/posts/devrel_metrics/measuring_devrel_success.png)
 
 I've been working in Developer Relations now going on 5 years and I've seen a lot of attempts to measure the activities of DevRel teams. There is often a lot of ambiguity about how best to measure the work that DevRel does. Do you utilize the [AAARRRP model](https://www.leggetter.co.uk/aaarrrp/) from Phil Leggetter, the [Orbit Model](https://orbitmodel.com/) from the Orbit team, the [traditional sales funnel](https://www.pipedrive.com/en/blog/sales-funnel) or something else?
 
@@ -22,7 +22,7 @@ Before I explain why let me just take a moment to explain what the sales funnel 
 
 The sales funnel is essentially a visualization to describe the processes a potential customer goes through until they become a confirmed buyer. The "top of the funnel" is the widest opening and contains all the people that become aware of the product. It then proceeds through various stages in "the middle of the funnel" like interest, evaluation and desire, until it reaches the very "bottom of the funnel," which is making the purchase decision.
 
-![rendering of the sales funnel from DALL-E OpenAI project](static/images/posts/devrel_metrics/image_2.png)
+![rendering of the sales funnel from DALL-E OpenAI project](/static/images/posts/devrel_metrics/image_2.png)
 <figcaption align="center"><b>Rendering of the sales funnel created by the DALL-E OpenAI project</b></figcaption>
 
 It is quite tempting to put DevRel activities at the top of the funnel or near it. After all, what are all the community activities, presentations at conferences, tutorials produced and more if not to generate awareness, interest, evaluation and desire? 
@@ -35,7 +35,7 @@ Developer marketing is crafting engaging advertising content with the explicit a
 
 As [Pratim shares in this tweet thread](https://twitter.com/BhosalePratim/status/1502562825281044483), the very terms elucidate the distinction. Marketing is transactional whereas relations is a long-term investment of mutuality.
 
-![screenshot of tweet about the difference between developer marketing and developer relations](static/images/posts/devrel_metrics/image_1.png)
+![screenshot of tweet about the difference between developer marketing and developer relations](/static/images/posts/devrel_metrics/image_1.png)
 <figcaption align = "center"><b>Screenshot of tweet from Pratim</b></figcaption>
 
 A developer marketing campaign will always have a call to action (CTA) objective directly tied to an increase in purchases, sign-ups, data ingest or whatever the financial metric for the business is. An ad campaign in targeted developer podcasts will be measured against things like new customer acquisition goals and the journey of the customer can be very clearly tied from hearing the campaign on the podcast to making a new purchase.
