@@ -20,7 +20,7 @@ const blog = defineCollection({
     schema: z.object({
         title: z.string(),
         date: z.coerce.date(),
-        tags: z.array(reference('tags')).default(['default']),
+        tags: z.array(reference('tags')).default(['posts']),
         lastmod: z.coerce.date().optional(),
         draft: z.boolean().default(false),
         summary: z.string().optional(),

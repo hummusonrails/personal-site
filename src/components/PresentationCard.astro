@@ -1,0 +1,60 @@
+---
+interface Astro {
+    presentation: string;
+    conference: string;
+    region: string;
+    date: string;
+    image?: string;
+    link?: string;
+}
+
+const {presentation, conference, region, date, image, link} = Astro.props;
+---
+
+<tr>
+    <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 h-10 w-10">
+                <img class="h-10 w-10 rounded-full" src={image} alt="Presentation Image">
+            </div>
+            <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">
+                    {presentation}
+                </div>
+            </div>
+        </div>
+    </td>
+    
+    <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">{conference}</div>
+    </td>
+
+    <td class="px-6 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+            {region}
+        </span>
+    </td>
+
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        {date}
+    </td>
+
+    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <a href={link} class="text-indigo-600 hover:text-indigo-900" target=”_blank”>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" aria-labelledby="title" aria-describedby="desc" role="img" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <path 
+                    data-name="layer1" 
+                    d="M49.539 12H14.461A12.4 12.4 0 0 0 2 24.327v17.346A12.4 12.4 0 0 0 14.461 54h35.078A12.4 12.4 0 0 0 62 41.673V24.327A12.4 12.4 0 0 0 49.539 12z"
+                    fill="none" stroke="#202020" stroke-linecap="round" stroke-miterlimit="10"
+                    stroke-width="2" stroke-linejoin="round">
+                </path>
+                <path 
+                    data-name="layer2" 
+                    d="M41.111 33.844L24.7 41.585a.658.658 0 0 1-.938-.585V25.031a.659.659 0 0 1 .956-.581l16.407 8.225a.649.649 0 0 1-.014 1.169z"
+                    fill="none" stroke="#202020" stroke-linecap="round" stroke-miterlimit="10"
+                    stroke-width="2" stroke-linejoin="round">
+                </path>
+            </svg>
+        </a>
+    </td>
+</tr>

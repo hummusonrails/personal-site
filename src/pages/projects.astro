@@ -1,43 +1,101 @@
 ---
-import Card from "@/components/Card.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
 import RootLayout from "@/layouts/RootLayout.astro";
+import {SITE_METADATA} from '@/consts';
 
 const projectsData = [
     {
-        title: 'A Search Engine',
-        description: `What if you could look up any information in the world? Webpages, images, videos
-    and more. Google has many features to help you find exactly what you're looking
-    for.`,
-        imgSrc: '/public/static/images/google.png',
-        href: 'https://www.google.com',
+        title: 'Clinked.ai',
+        description: `Create meaningful speeches with the help of AI`,
+        github_link: 'https://github.com/hummusonrails',
+        blog_link: 'https://www.clinked.ai',
     },
     {
-        title: 'The Time Machine',
-        description: `Imagine being able to travel back in time or to the future. Simple turn the knob
-    to the desired date and press "Go". No more worrying about lost keys or
-    forgotten headphones with this simple yet affordable solution.`,
-        imgSrc: '/static/images/time-machine.jpg',
-        href: '/blog/the-time-machine',
+        title: 'hirethePIVOT',
+        description: `Reverse job board for second career developers`,
+        github_link: 'https://github.com/hummusonrails/hirethepivot.com',
+        blog_link: 'https://www.hirethepivot.com',
+    },
+    {
+        title: 'School Form Automation',
+        description: `Automate filling out of school health forms`,
+        github_link: 'https://github.com/hummusonrails/school-health-declaration-automation',
+        blog_link: 'https://dev.to/hummusonrails/automate-school-forms-with-web-scraping-in-ruby-2c3j',
+    },
+    {
+        title: 'dev_orbit',
+        description: `Integrate DEV Interactions into your Orbit workspace`,
+        github_link: 'https://github.com/hummusonrails/dev_orbit',
+        blog_link: 'https://dev.to/hummusonrails',
+    },
+    {
+        title: 'Monday.com Ruby GraphQL API Explorer',
+        description: `Monday.com GraphQL API Client`,
+        github_link: 'https://github.com/hummusonrails/monday_ruby_api_explorer',
+        blog_link: 'https://dev.to/hummusonrails',
+    },
+    {
+        title: 'Vonage Ruby SDK',
+        description: `Custom built API Client`,
+        github_link: 'https://github.com/vonage/vonage-ruby-sdk',
+        blog_link: 'https://dev.to/vonagedev/announcing-vonage-ruby-sdk-version-7-4-0-19n1',
+    },
+    {
+        title: 'Station',
+        description: `Fully featured developer platform`,
+        github_link: 'https://github.com/nexmo/station',
+        blog_link: 'https://apithedocs.org/virtual/ben-greenberg',
     },
 ]
 ---
 
-<RootLayout title="Projects">
-    <div class="divide-y divide-gray-200 dark:divide-gray-700">
-        <div class="space-y-2 pb-8 pt-6 md:space-y-5">
-            <h1 class="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
-                Projects
-            </h1>
-            <p class="text-lg leading-7 text-gray-500 dark:text-gray-400">
-                Showcase your projects with a hero image (16 x 9)
+<RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
+    <div class="bg-white">
+        <div class="text-center">
+            <h2 class="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
+            Projects
+            </h2>
+            <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+            Sample of projects that I have built or contributed towards
             </p>
         </div>
-        <div class="container py-12">
-            <div class="-m-4 flex flex-wrap">
-                {projectsData.map((d) => (
-                        <Card title={d.title} description={d.description} imgSrc={d.imgSrc} href={d.href}/>
-                ))}
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-2 gap-8 md:grid-cols-6 lg:grid-cols-6">
+            <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
+              <img class="h-12" src="static/images/languages/ruby.png" alt="Ruby">
             </div>
+            <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
+              <img class="h-12" src="static/images/languages/js.png" alt="JS">
+            </div>
+            <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
+              <img class="h-12" src="static/images/languages/elixir.png" alt="Elixir">
+            </div>
+            <div class="col-span-1 flex justify-center md:col-span-3 lg:col-span-1">
+              <img class="h-12" src="static/images/languages/python.png" alt="Python">
+            </div>
+            <div class="col-span-2 flex justify-center md:col-span-3 lg:col-span-1">
+              <img class="h-12" src="static/images/languages/ts.png" alt="TypeScript">
+            </div>
+            <div class="col-span-2 flex justify-center md:col-span-3 lg:col-span-1">
+                <img class="h-12" src="static/images/languages/rust.png" alt="Rust">
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
+        <div class="max-w-5xl mx-auto">
+          <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {projectsData.map((d) => (
+                <ProjectCard
+                    title={d.title},
+                    description={d.description},
+                    github_link={d.github_link},
+                    blog_link={d.blog_link}
+                />
+            ))}
+          </ul>
+        </div>
+      </div>
 </RootLayout>
