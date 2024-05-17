@@ -1,16 +1,17 @@
 ---
-import {getCollection} from 'astro:content';
-
-import {excludeDrafts} from "@/functions";
+import { getBlogPost, fetchAndSortBlogPosts, excludeDrafts } from '../../functions';
 import PostLayout from "@/layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
-    const posts = await getCollection('blog', excludeDrafts);
-    return posts.map((post, index) => ({
-        params: {slug: post.slug},
-        props: {post, next: posts[index + 1], prev: posts[index - 1]},
-    }));
+  const posts = await fetchAndSortBlogPosts();
+  const filteredPosts = posts.filter(excludeDrafts);
+  
+  return filteredPosts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
 }
----
 
-<PostLayout {...Astro.props}/>
+const { post } = Astro.props;
+---
+<PostLayout {...Astro.props} />
