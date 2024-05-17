@@ -1,34 +1,57 @@
 ---
-import {type Page, getCollection, type CollectionEntry} from 'astro:content';
-
-// import ListLayout from "@/layouts/ListLayout.astro";
-import {ITEMS_PER_PAGE} from "@/consts";
-import {excludeDrafts, sortBlogPosts} from "@/functions";
+import { type Page, type CollectionEntry } from 'astro:content';
 import ListWithTagsLayout from "../../../layouts/ListWithTagsLayout.astro";
+import { ITEMS_PER_PAGE } from "@/consts";
+import { getTagBySlug } from '../../../db/couchbase';
+import { fetchAndSortBlogPosts, excludeDrafts } from '../../../functions';
 
 interface Props {
     page: Page<CollectionEntry<'blog'>>;
-    entry: CollectionEntry<'tags'>;
+    tag: string;
+    slug: string;
 }
 
-export async function getStaticPaths({paginate}) {
-    const tags = await getCollection('tags');
-    const posts = await getCollection('blog', excludeDrafts).then(sortBlogPosts);
-
-    return tags.flatMap(entry => {
-        const tagPosts = posts.filter(post => post.data.tags.some(({slug}) => slug === entry.slug));
-        return paginate(tagPosts, {pageSize: ITEMS_PER_PAGE, params: {slug: entry.slug}, props: {entry}});
-    });
+function formatTagId(slug) {
+  const specialCases = {
+    'ai': 'AI',
+    'github': 'GitHub',
+    'devrel': 'DevRel',
+  };
+  if (specialCases[slug.toLowerCase()]) {
+    return `tag_${specialCases[slug.toLowerCase()]}`;
+  }
+  return `tag_${slug.charAt(0).toUpperCase() + slug.slice(1)}`;
 }
 
-const {page, entry} = Astro.props;
-const {Content} = await entry.render()
+export async function getStaticPaths({ paginate }) {
+  const posts = await fetchAndSortBlogPosts();
+  const filteredPosts = posts.filter(excludeDrafts);
+
+  // Get unique tags from posts
+  const tags = [...new Set(filteredPosts.flatMap(post => post.tags))];
+
+  const paths = tags.flatMap(tag => {
+    const tagPosts = filteredPosts.filter(post => post.tags.includes(tag));
+    const paginatedTagPosts = paginate(tagPosts, { pageSize: ITEMS_PER_PAGE, params: { slug: tag } });
+
+    return paginatedTagPosts.map(page => ({
+      params: { slug: tag, page: page.currentPage ? page.currentPage.toString() : '1' },
+      props: { page, tag }
+    }));
+  });
+
+  return paths;
+}
+
+const { page, tag } = Astro.props;
+const formattedTagId = formatTagId(tag);
+const tagData = await getTagBySlug(formattedTagId);
+
+if (!tagData) {
+  console.error(`Tag data not found for: ${formattedTagId}`);
+} else {
+  console.log(`Tag data: ${JSON.stringify(tagData, null, 2)}`);
+}
 ---
-
-<!--<ListLayout title={entry.data.name} description={entry.data.description} page={page}>-->
-<!--    <Content/>-->
-<!--</ListLayout>-->
-
-<ListWithTagsLayout title={entry.data.name} description={entry.data.description} page={page}>
-    <Content/>
+<ListWithTagsLayout title={`Posts tagged with "${tagData?.name || 'Unknown'}"`} page={page.props.page} description={tagData?.description || ''}>
 </ListWithTagsLayout>

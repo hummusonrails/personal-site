@@ -6,9 +6,9 @@ import RootLayout from "@/layouts/RootLayout.astro";
 import Link from "@/components/Link.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import Tag from "@/components/Tag.astro";
-import {excludeDrafts, sortBlogPosts} from "@/functions";
+import {excludeDrafts, fetchAndSortBlogPosts} from "@/functions";
 
-const posts = await getCollection('blog', excludeDrafts).then(sortBlogPosts)
+const posts = await getCollection('blog', excludeDrafts).then(fetchAndSortBlogPosts)
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>

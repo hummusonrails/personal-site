@@ -1,21 +1,23 @@
 import rss from '@astrojs/rss';
-import {getCollection} from 'astro:content';
-import {SITE_METADATA} from '../consts';
+import { SITE_METADATA } from '../consts';
+import { fetchAndSortBlogPosts, excludeDrafts } from '../functions';
 
-const {title, description} = SITE_METADATA;
+const { title, description } = SITE_METADATA;
 
 export async function GET(context) {
-    const posts = await getCollection('blog');
-    return rss({
-        title,
-        description,
-        site: context.site,
-        items: posts.map(({slug, data: {title, summary, tags, date}}) => ({
-            title,
-            categories: tags.map(({slug}) => slug), // TODO: add tags name in the future
-            pubDate: date,
-            description: summary,
-            link: `/blog/${slug}/`,
-        })),
-    });
+  const posts = await fetchAndSortBlogPosts();
+  const filteredPosts = posts.filter(excludeDrafts);
+
+  return rss({
+    title,
+    description,
+    site: context.site,
+    items: filteredPosts.map(post => ({
+      title: post.title,
+      categories: post.tags,
+      pubDate: new Date(post.date),
+      description: post.summary,
+      link: `/blog/${post.id}/`,
+    })),
+  });
 }
