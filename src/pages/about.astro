@@ -5,8 +5,6 @@ import {SITE_METADATA} from '@/consts';
 import AuthorLayout from "@/layouts/AuthorLayout.astro";
 import { ViewTransitions } from "astro:transitions";
 
-const author = await getEntry('authors', 'default')
-const {Content} = await author.render();
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
