@@ -1,6 +1,6 @@
 # Personal Portfolio Website
 
-This is my personal portfolio website built with [Astro](https://astro.build) and utilizing the [Tailwind Astro Starter Blog template](https://github.com/wanoo21/tailwind-astro-starting-blog).
+This is my personal portfolio website built with [Astro](https://astro.build) and utilizing the [Tailwind Astro Starter Blog template](https://github.com/wanoo21/tailwind-astro-starting-blog) for design and [Couchbase Capella](https://www.couchbase.com/products/capella/) for database as a service.
 
 ## Usage
 
@@ -10,11 +10,33 @@ This is my personal portfolio website built with [Astro](https://astro.build) an
 
 `src/functions.ts` contains a list of functions that changes the default behavior of the template, including default post sorting and exclude draft posts.
 
-`src/content/authors/default.mdx` contains the default author information. You can add more authors by adding more `.mdx` files in the `src/content/authors` folder.
+`src/db/couchbase.ts` contains connection functions to interact with Couchbase, including formatting tag capitalization for your specific needs and the name of the Couchbase bucket you created.
 
-`src/content/tags/default.mdx` contains the default tag information. You can add more tags by adding more `.mdx` files in the `src/content/tags` folder.
+### Blog
 
-`src/content/config.ts` contains all fields for author, blog and tags pages. Check what's required and what's not. You can also add more fields if you want to.
+The blog feature of this personal site uses [Couchbase](https://www.couchbase.com/) to store the blog data: blog posts, author information and blog tags.
+
+#### Environment Setup
+
+You need to provide several environment variables for your site for it to interact with Couchbase. To do so first create a `.env` file in the root of the project and add the following variables:
+
+```
+COUCHBASE_URL=<Your Couchbase Capella URL>
+COUCHBASE_USERNAME=<Your Couchbase Username>
+COUCHBASE_PASSWORD=<Your Couchbase Password>
+```
+
+Once you have setup your Couchbase cluster with your authentication information, you can fetch this information from the Couchbase dashboard.
+
+#### Couchbase Capella
+
+Capella is the Database as a Service (DBaaS) offering from Couchbase, and it is what this site uses for the blog. You can sign up for a free 30-day trial of Capella by doing the following:
+
+1. Visit the [Couchbase Capella website](https://www.couchbase.com/products/capella/).
+2. Sign up for a free trial.
+3. Set up your cluster and get the connection details for your .env file.
+
+**Please note the Couchbase bucket name is hardcoded into this project as `blogBucket`. You can rename it in the codebase to whatever you would like or set it up as a environment variable in your `.env` file and use the environment variable to introduce more flexibility.**
 
 ### 🧞 Commands
 
