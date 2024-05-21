@@ -9,6 +9,8 @@ export async function getStaticPaths({ paginate }) {
   return paginate(filteredPosts, { pageSize: ITEMS_PER_PAGE });
 }
 
+export const prerender = true;
+
 const { page } = Astro.props;
 ---
 <ListWithTagsLayout title="Blog" page={page} />

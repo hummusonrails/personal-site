@@ -20,8 +20,9 @@ interface Props {
 const { post, next, prev } = Astro.props as Props;
 const authors = await Promise.all(post.authors.map((author) => getAuthor(`authors_${author}`)));
 const tags = await Promise.all(post.tags.map((tag) => getTags(tag)));
-
 const content = post.content ? post.content : "";
+
+export const prerender = true;
 ---
 
 <RootLayout title={post.title} description={post.summary}>
