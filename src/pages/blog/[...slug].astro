@@ -13,5 +13,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
+
+export const prerender = true
 ---
 <PostLayout {...Astro.props} />

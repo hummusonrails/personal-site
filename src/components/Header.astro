@@ -1,5 +1,5 @@
 ---
-import {SITE_METADATA, NAVIGATION} from '@/consts';
+import { SITE_METADATA, NAVIGATION } from '@/consts';
 import HeaderLink from './HeaderLink.astro';
 import Logo from './Logo.astro';
 import MobileNav from "./MobileNav.astro";
@@ -35,8 +35,21 @@ import ThemeSwitcher from "./ThemeSwitcher.astro";
                     </HeaderLink>
             ))}
 
-        <!--TODO: add theme button-->
-        <!--<SearchButton />-->
+        <form action="/search" method="GET" class="flex">
+            <input 
+                type="text" 
+                name="q" 
+                placeholder="Search blog posts..." 
+                class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-l-md"
+            />
+            <button 
+                type="submit" 
+                class="px-4 py-2 bg-primary-500 text-white rounded-r-md"
+            >
+                Search
+            </button>
+        </form>
+
         <ThemeSwitcher />
         <MobileNav/>
     </div>

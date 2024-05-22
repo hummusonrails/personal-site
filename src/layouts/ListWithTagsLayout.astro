@@ -7,10 +7,24 @@ import RootLayout from "./RootLayout.astro";
 import Tag from "../components/Tag.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 
+interface PageData {
+    data: {
+        id: string;
+        date: string;
+        title: string;
+        summary: string;
+        tags: string[];
+    }[];
+    url: {
+        next: string | null;
+        prev: string | null;
+    };
+}
+
 interface Props {
     title: string;
     description: string;
-    page: Page<CollectionEntry<'blog'>[]>;
+    page: PageData;
 }
 
 const tags = await getTags();
@@ -25,11 +39,14 @@ function isSamePath(path) {
     return Astro.url.pathname === path;
 }
 
+export const prerender = true;
+
 const { title, description, page } = Astro.props;
 const hasDefaultSlot = Astro.slots.has('default');
 const isBlogPage = Astro.url.pathname.startsWith('/blog');
 
 ---
+
 <RootLayout {title} {description}>
     <div>
         <div class="pb-6 pt-6">
@@ -75,7 +92,7 @@ const isBlogPage = Astro.url.pathname.startsWith('/blog');
             </div>
             <div>
                 <ul>
-                    {page.data.map(({ id, date, title, summary, tags }) => {
+                    {page && page.data ? page.data.map(({ id, date, title, summary, tags }) => {
                         if (!id || !date || !title || !summary || !tags) {
                             console.error('Missing data for post:', id, { date, title, summary, tags });
                             return null;
@@ -109,9 +126,9 @@ const isBlogPage = Astro.url.pathname.startsWith('/blog');
                                 </article>
                             </li>
                         );
-                    })}
+                    }) : <p>Invalid page data.</p>}
                 </ul>
-                {(page.url.next || page.url.prev) && (
+                {(page && (page.url.next || page.url.prev)) && (
                     <Pagination page={page} />
                 )}
             </div>

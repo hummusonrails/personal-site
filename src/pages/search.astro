@@ -1,0 +1,70 @@
+---
+import RootLayout from '../layouts/RootLayout.astro';
+import { SITE_METADATA } from '@/consts';
+
+let searchResults = [];
+let searchTerm = '';
+
+// Get the query parameter on the server side
+if (Astro.request) {
+  const url = new URL(Astro.request.url);
+  searchTerm = url.searchParams.get('q') || '';
+
+  // Fetch data using the query parameter on the server side
+  if (searchTerm) {
+    const encodedSearchTerm = encodeURIComponent(searchTerm);
+    const response = await fetch(`${import.meta.env.SEARCH_URL}/search?q=${encodedSearchTerm}`);
+    searchResults = await response.json();
+  }
+}
+
+// Function to render search results
+const renderSearchResults = (results) => {
+  if (!results || results.length === 0) {
+    return `<p>No posts found.</p>`;
+  }
+
+  return results.map(post => `
+    <li class="py-4" key="${post.id}">
+      <article class="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
+        <dl>
+          <dt class="sr-only">Published on</dt>
+          <dd class="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+            ${new Date(post.date).toLocaleDateString()}
+          </dd>
+        </dl>
+        <div class="space-y-3 xl:col-span-3">
+          <div>
+            <h3 class="text-2xl font-bold leading-8 tracking-tight">
+              <a href="/blog/${post.id}" class="text-gray-900 dark:text-gray-100">
+                ${post.title}
+              </a>
+            </h3>
+            <div class="flex flex-wrap">
+              ${post.tags.map(tag => `
+                <a href="/tags/${tag}" class="mr-2 mb-2 inline-block px-2 py-1 text-sm font-medium leading-5 text-gray-800 dark:text-gray-200 bg-gray-200 dark:bg-gray-800 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors duration-200">
+                  #${tag}
+                </a>
+              `).join('')}
+            </div>
+          </div>
+          <div class="prose max-w-none text-gray-500 dark:text-gray-400">
+            ${post.summary}
+          </div>
+        </div>
+      </article>
+    </li>
+  `).join('');
+}
+---
+
+<RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
+  <div class="divide-y divide-gray-200 dark:divide-gray-700">
+    <div class="space-y-2 pb-8 pt-6 md:space-y-5">
+      <h1 class="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
+        Search Results for "{searchTerm}"
+      </h1>
+    </div>
+    <ul id="search-results" set:html={renderSearchResults(searchResults)}></ul>
+  </div>
+</RootLayout>

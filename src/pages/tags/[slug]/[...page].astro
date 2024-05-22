@@ -52,6 +52,9 @@ if (!tagData) {
 } else {
   console.log(`Tag data: ${JSON.stringify(tagData, null, 2)}`);
 }
+
+export const prerender = true;
+
 ---
 <ListWithTagsLayout title={`Posts tagged with "${tagData?.name || 'Unknown'}"`} page={page.props.page} description={tagData?.description || ''}>
 </ListWithTagsLayout>
