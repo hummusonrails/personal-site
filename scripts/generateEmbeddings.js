@@ -3,8 +3,9 @@ dotenv.config();
 
 import couchbase from 'couchbase';
 import { OpenAI } from "openai";
+import { encoding_for_model } from 'tiktoken';
 
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 let cluster;
 async function init() {
@@ -17,8 +18,6 @@ async function init() {
   }
   return cluster;
 }
-// const bucket = cluster.bucket('blogBucket');
-// const collection = bucket.defaultCollection();
 
 async function getBlogPosts() {
   const cluster = await init();
@@ -27,55 +26,12 @@ async function getBlogPosts() {
   return result.rows;
 }
 
-function splitTextIntoChunks(text, maxTokens = 8192) {
-    const words = text.split(' ');
-    const chunks = [];
-    let chunk = [];
-    let chunkLength = 0;
-  
-    for (const word of words) {
-      const wordLength = word.length + 1;
-      if (chunkLength + wordLength > maxTokens) {
-        chunks.push(chunk.join(' '));
-        chunk = [];
-        chunkLength = 0;
-      }
-      chunk.push(word);
-      chunkLength += wordLength;
-    }
-  
-    if (chunk.length > 0) {
-      chunks.push(chunk.join(' '));
-    }
-  
-    return chunks;
-}
-
 async function generateEmbeddings(text) {
-    const chunks = splitTextIntoChunks(text, 8192);
-    const embeddings = [];
-  
-    for (const chunk of chunks) {
-      const response = await openai.embeddings.create({
-        model: 'text-embedding-3-large',
-        input: chunk,
-      });
-      embeddings.push(response.data[0].embedding);
-    }
-  
-    // Average the embeddings of all chunks
-    // This combines the embeddings of all chunks into a single embedding
-    const combinedEmbedding = new Array(embeddings[0].length).fill(0);
-    embeddings.forEach(embedding => {
-      embedding.forEach((value, index) => {
-        combinedEmbedding[index] += value;
-      });
-    });
-    for (let i = 0; i < combinedEmbedding.length; i++) {
-      combinedEmbedding[i] /= embeddings.length;
-    }
-  
-    return combinedEmbedding;
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-ada-002',
+    input: text,
+  });
+  return response.data[0].embedding;
 }
 
 async function storeEmbeddings(postId, embeddings) {
@@ -87,10 +43,19 @@ async function storeEmbeddings(postId, embeddings) {
 }
 
 async function main() {
+  const MAX_TOKENS = 8192;
+  const encoding = encoding_for_model('text-embedding-ada-002');
   const posts = await getBlogPosts();
+
   for (const post of posts) {
     const postId = post.id;
-    const content = post.content;
+    let content = post.content;
+    
+    // Calculate tokens and shorten if necessary
+    while (encoding.encode(content).length > MAX_TOKENS) {
+      content = content.slice(0, -100);
+    }
+    
     const embeddings = await generateEmbeddings(content);
     await storeEmbeddings(postId, embeddings);
     console.log(`Processed and stored embeddings for post ${postId}`);
