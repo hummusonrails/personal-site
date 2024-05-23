@@ -12,5 +12,7 @@ export default defineConfig({
     site: SITE_METADATA.siteUrl,
     integrations: [mdx(), sitemap(), tailwind()],
     output: 'server',
-    adapter: vercel(),
+    adapter: vercel({
+        maxDuration: 60,
+      })
 });
