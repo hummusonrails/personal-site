@@ -3,6 +3,7 @@
 // all pages through the use of the <BaseHead /> component.
 import '@/styles/global.css';
 import {SITE_METADATA} from "@/consts";
+import GoogleTag from './GoogleTag.astro';
 
 interface Props {
     title: string;
@@ -35,6 +36,9 @@ const {title, description, image = '/blog-placeholder-1.jpg'} = Astro.props;
 <!-- Primary Meta Tags -->
 <title>{title}</title>
 <meta name="description" content={description}/>
+
+<!-- Google Tag -->
+<GoogleTag />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website"/>
