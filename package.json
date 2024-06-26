@@ -17,7 +17,6 @@
     "@astrojs/tailwind": "^5.0.0",
     "@astrojs/vercel": "^7.6.0",
     "astro": "^4.8.0",
-    "astro-embed": "^0.7.2",
     "couchbase": "^4.3.1",
     "dotenv": "^16.4.5",
     "gray-matter": "^4.0.3",
