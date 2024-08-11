@@ -22,6 +22,7 @@ export const SITE_METADATA = {
     github: 'https://github.com/hummusonrails',
     twitter: 'https://twitter.com/hummusonrails',
     linkedin: 'https://www.linkedin.com/in/hummusonrails/',
+    substack: 'https://codeplusconduct.substack.com/'
 
     // These are not supported yet
     // analytics: {
