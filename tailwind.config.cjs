@@ -8,7 +8,7 @@ module.exports = {
     theme: {
         extend: {
             screens: {
-                ipad: { min: '898px', max: '1020px' },
+                ipad: { raw: '(min-width: 1024px) and (max-width: 1366px) and (min-height: 1366px)' },
             },
             lineHeight: {
                 11: '2.75rem',
