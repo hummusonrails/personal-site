@@ -1,5 +1,5 @@
-const {fontFamily} = require('tailwindcss/defaultTheme')
-const colors = require('tailwindcss/colors')
+const { fontFamily } = require('tailwindcss/defaultTheme');
+const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -7,6 +7,9 @@ module.exports = {
     darkMode: 'class',
     theme: {
         extend: {
+            screens: {
+                ipad: { raw: '(min-width: 1024px) and (max-width: 1366px) and (min-height: 1366px)' },
+            },
             lineHeight: {
                 11: '2.75rem',
                 12: '3rem',
@@ -20,7 +23,7 @@ module.exports = {
                 primary: colors.pink,
                 gray: colors.gray,
             },
-            typography: ({theme}) => ({
+            typography: ({ theme }) => ({
                 DEFAULT: {
                     css: {
                         a: {
@@ -28,7 +31,7 @@ module.exports = {
                             '&:hover': {
                                 color: `${theme('colors.primary.600')}`,
                             },
-                            code: {color: theme('colors.primary.400')},
+                            code: { color: theme('colors.primary.400') },
                         },
                         'h1,h2': {
                             fontWeight: '700',
@@ -49,7 +52,7 @@ module.exports = {
                             '&:hover': {
                                 color: `${theme('colors.primary.400')}`,
                             },
-                            code: {color: theme('colors.primary.400')},
+                            code: { color: theme('colors.primary.400') },
                         },
                         'h1,h2,h3,h4,h5,h6': {
                             color: theme('colors.gray.100'),
@@ -60,4 +63,4 @@ module.exports = {
         },
     },
     plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
-}
+};
