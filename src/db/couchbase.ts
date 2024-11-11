@@ -23,10 +23,10 @@ const convertToDate = (post) => {
 
 const getBlogPosts = async () => {
   const cluster = await init();
-  const query = 'SELECT META().id, * FROM `blogBucket` WHERE type = "blogPost"';
+  const query = 'SELECT META().id, * FROM `blogBucket`.`_default`.`_default` WHERE `blogBucket`.type = "blogPost";';
   const result = await cluster.query(query);
   return result.rows.map((row) => {
-    const post = row.blogBucket;
+    const post = row._default?.blogBucket;
     return convertToDate({
       id: row.id,
       title: post.title || 'Untitled',
@@ -56,9 +56,20 @@ const getBlogPost = async (id) => {
 // Format the unique constraints of my tags to match the format of the tag IDs in the database
 // If you are using this for your own project, modify accordingly
 function formatTagId(slug) {
-  const tag = slug.split('_')[1];
-  let formattedTag;
+  const parts = slug.split('_');
+  if (parts.length < 2) {
+    console.error('Unexpected slug format:', slug);
+    return slug; 
+  }
+  
+  const tag = parts[1]; 
 
+  if (!tag) {
+    console.error('Tag is undefined:', slug);
+    return slug;
+  }
+
+  let formattedTag;
   if (tag.toLowerCase() === 'ai') {
     formattedTag = 'AI';
   } else if (tag.toLowerCase() === 'github') {
@@ -74,22 +85,46 @@ function formatTagId(slug) {
 
 const getTags = async () => {
   const cluster = await init();
-  const query = 'SELECT META().id, * FROM `blogBucket` WHERE type = "tag"';
+  const query = 'SELECT META().id, * FROM `blogBucket`.`_default`.`_default` WHERE `blogBucket`.type = "tag"';
   const result = await cluster.query(query);
+  
+  if (!result.rows) {
+    console.error('No rows returned from query.');
+    return [];
+  }
+  
   return result.rows.map(row => {
-    const tag = row.blogBucket;
-    const formattedTag = formatTagId(row.id);
+    const tag = row._default?.blogBucket; 
+    
+    if (!tag) {
+      console.error('Invalid tag structure:', row);
+      return null;
+    }
+
+    const formattedTag = formatTagId(row._default?.blogBucket.id);
     return {
       id: formattedTag.replace('tag_', ''),
       ...tag
     };
-  });
+  }).filter(Boolean); 
 };
 
 const getAuthors = async (authorIds) => {
   const cluster = await init();
-  const query = `SELECT META().id, * FROM \`blogBucket\` WHERE type = "author" AND META().id IN ${JSON.stringify(authorIds)}`;
+
+  const caseVariants = authorIds.flatMap(id => {
+    const [prefix, name] = id.split('_');
+    return [
+      `${prefix}_${name.toLowerCase()}`,
+      `${prefix}_${name.charAt(0).toUpperCase() + name.slice(1)}`
+    ];
+  });
+
+  const uniqueCaseVariants = [...new Set(caseVariants)];
+
+  const query = `SELECT META().id, * FROM \`blogBucket\` WHERE \`blogBucket\`.type = 'author' AND META().id IN ${JSON.stringify(uniqueCaseVariants)}`;
   const result = await cluster.query(query);
+
   return result.rows.map(row => {
     const author = row.blogBucket;
     return {
@@ -99,33 +134,83 @@ const getAuthors = async (authorIds) => {
   });
 };
 
-async function getAuthor(authorId) {
+
+async function getAuthor() {
   const cluster = await init();
-  const bucket = cluster.bucket('blogBucket');
-  const collection = bucket.defaultCollection();
+  const query = `
+    SELECT _default.blogBucket 
+    FROM \`blogBucket\`.\`_default\`.\`_default\`
+    WHERE _default.blogBucket.id = 'authors_default';
+  `;
 
   try {
-    const result = await collection.get(authorId);
-    return result.content;
+    const result = await cluster.query(query);
+
+    if (result.rows.length === 0) {
+      console.error('Author with ID "authors_default" not found');
+      return null;
+    }
+
+    const author = result.rows[0];
+    return author;
   } catch (err) {
-    console.error(`Error fetching author ${authorId}:`, err);
+    console.error('Error fetching author "authors_default":', err);
     return null;
   }
 }
 
 const getTagBySlug = async (slug) => {
+  console.log('Fetching tag with slug:', slug);
   const cluster = await init();
-  const bucket = cluster.bucket('blogBucket');
-  const collection = bucket.defaultCollection();
-  const tagId = formatTagId(slug);
 
-  try {
-    const result = await collection.get(tagId);
-    return result.content;
-  } catch (err) {
-    console.error(`Error fetching tag ${tagId}:`, err);
+  let formattedSlug;
+  let lowerSlug;
+  let upperSlug;
+
+  const baseSlug = slug.startsWith('tag_') ? slug.slice(4) : slug;
+
+  if (baseSlug.toLowerCase() === 'github') {
+    formattedSlug = 'tag_GitHub';
+  } else if (baseSlug.toLowerCase() === 'devrel') {
+    formattedSlug = 'tag_DevRel';
+  } else if (baseSlug.toLowerCase() === 'ai') {
+    formattedSlug = 'tag_AI';
+  } else {
+    lowerSlug = `tag_${baseSlug.toLowerCase()}`;
+    upperSlug = `tag_${baseSlug.charAt(0).toUpperCase() + baseSlug.slice(1).toLowerCase()}`;
+
+    console.log('Lower slug:', lowerSlug);
+    console.log('Upper slug:', upperSlug);
+
+    formattedSlug = [lowerSlug, upperSlug];
+  }
+
+  const query = `
+    SELECT META().id, * 
+    FROM \`blogBucket\`.\`_default\`.\`_default\` 
+    WHERE \`blogBucket\`.type = "tag" 
+    AND \`blogBucket\`.id IN $1
+  `;
+  
+  const formattedSlugs = Array.isArray(formattedSlug) ? formattedSlug : [formattedSlug];
+  console.log('Query parameters:', formattedSlugs);
+
+  const result = await cluster.query(query, {
+    parameters: [formattedSlugs],
+  });
+
+  if (result.rows.length === 0) {
+    console.error(`Tag with slug "${slug}" not found`);
     return null;
   }
+
+  const tag = result.rows[0]?._default?.blogBucket;
+  if (!tag) {
+    console.error(`Error: Expected blogBucket not found in result for slug "${slug}"`);
+    return null;
+  }
+
+  return tag;
 };
 
 export { getBlogPosts, getBlogPost, getTags, getAuthors, getAuthor, getTagBySlug };

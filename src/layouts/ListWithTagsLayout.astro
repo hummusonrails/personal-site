@@ -27,7 +27,7 @@ interface Props {
     page: PageData;
 }
 
-const tags = await getTags();
+const tags = (await getTags()) || [];
 const posts = await fetchAndSortBlogPosts();
 const filteredPosts = posts.filter(excludeDrafts);
 
