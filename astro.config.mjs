@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 import tailwind from "@astrojs/tailwind";
 
-import {SITE_METADATA} from "./src/consts.ts";
+import {SITE_METADATA} from "./src/consts.js";
 
 // https://astro.build/config
 export default defineConfig({

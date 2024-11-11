@@ -1,5 +1,6 @@
 ---
 import {getCollection} from "astro:content";
+import { fetchAndSortBlogPosts, excludeDrafts } from '../functions';
 
 import {SITE_METADATA, ITEMS_PER_PAGE} from '@/consts';
 import RootLayout from "@/layouts/RootLayout.astro";
@@ -10,7 +11,7 @@ import {excludeDrafts, fetchAndSortBlogPosts} from "@/functions";
 
 export const prerender = true;
 
-const posts = await getCollection('blog', excludeDrafts).then(fetchAndSortBlogPosts)
+const posts = await fetchAndSortBlogPosts();
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
