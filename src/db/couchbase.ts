@@ -159,31 +159,58 @@ async function getAuthor() {
   }
 }
 
-
-
 const getTagBySlug = async (slug) => {
+  console.log('Fetching tag with slug:', slug);
   const cluster = await init();
 
-  const [prefix, tagName] = slug.split('_');
-  const upperCaseSlug = `${prefix}_${tagName.charAt(0).toUpperCase() + tagName.slice(1)}`;
-  const lowerCaseSlug = `${prefix}_${tagName.toLowerCase()}`;
+  let formattedSlug;
+  let lowerSlug;
+  let upperSlug;
+
+  const baseSlug = slug.startsWith('tag_') ? slug.slice(4) : slug;
+
+  if (baseSlug.toLowerCase() === 'github') {
+    formattedSlug = 'tag_GitHub';
+  } else if (baseSlug.toLowerCase() === 'devrel') {
+    formattedSlug = 'tag_DevRel';
+  } else if (baseSlug.toLowerCase() === 'ai') {
+    formattedSlug = 'tag_AI';
+  } else {
+    lowerSlug = `tag_${baseSlug.toLowerCase()}`;
+    upperSlug = `tag_${baseSlug.charAt(0).toUpperCase() + baseSlug.slice(1).toLowerCase()}`;
+
+    console.log('Lower slug:', lowerSlug);
+    console.log('Upper slug:', upperSlug);
+
+    formattedSlug = [lowerSlug, upperSlug];
+  }
 
   const query = `
-    SELECT _default.blogBucket
-    FROM \`blogBucket\`.\`_default\`.\`_default\`
-    WHERE _default.blogBucket.id = $1 OR _default.blogBucket.id = $2
+    SELECT META().id, * 
+    FROM \`blogBucket\`.\`_default\`.\`_default\` 
+    WHERE \`blogBucket\`.type = "tag" 
+    AND \`blogBucket\`.id IN $1
   `;
+  
+  const formattedSlugs = Array.isArray(formattedSlug) ? formattedSlug : [formattedSlug];
+  console.log('Query parameters:', formattedSlugs);
 
-  const result = await cluster.query(query, { parameters: [upperCaseSlug, lowerCaseSlug] });
+  const result = await cluster.query(query, {
+    parameters: [formattedSlugs],
+  });
 
   if (result.rows.length === 0) {
     console.error(`Tag with slug "${slug}" not found`);
     return null;
   }
 
-  const tag = result.rows[0].blogBucket.id;
+  const tag = result.rows[0]?._default?.blogBucket;
+  if (!tag) {
+    console.error(`Error: Expected blogBucket not found in result for slug "${slug}"`);
+    return null;
+  }
+
   return tag;
 };
-
 
 export { getBlogPosts, getBlogPost, getTags, getAuthors, getAuthor, getTagBySlug };
