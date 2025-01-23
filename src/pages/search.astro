@@ -59,12 +59,60 @@ const renderSearchResults = (results) => {
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
-  <div class="divide-y divide-gray-200 dark:divide-gray-700">
-    <div class="space-y-2 pb-8 pt-6 md:space-y-5">
-      <h1 class="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
-        Search Results for "{searchTerm}"
+  <div class="retro-container">
+    <pre class="ascii-divider">
+ /================================\
+ |        SEARCH RESULTS          |
+ \================================/
+    </pre>
+    
+    <div class="space-y-2 pb-8 pt-6">
+      <h1 class="text-2xl font-mono text-terminal-bright">
+        > QUERY: "{searchTerm}"
       </h1>
+      <pre class="text-terminal-dim">
+Scanning database...
+{searchResults.length} matches found
+      </pre>
     </div>
-    <ul id="search-results" set:html={renderSearchResults(searchResults)}></ul>
+    
+    <ul id="search-results" class="border border-terminal-green p-4">
+      {searchResults.length === 0 ? (
+        <pre class="text-terminal-dim">
+ERROR: No matching documents found
+SYSTEM: Please try another search term
+        </pre>
+      ) : (
+        searchResults.map(post => (
+          <li class="py-4 border-b border-terminal-dim last:border-0" key={post.id}>
+            <article class="space-y-2">
+              <dl>
+                <dt class="sr-only">Published on</dt>
+                <dd class="text-terminal-dim font-mono">
+                  > DATE: {new Date(post.date).toLocaleDateString()}
+                </dd>
+              </dl>
+              <div>
+                <h3 class="text-xl font-bold">
+                  <a href={`/blog/${post.id}`} class="retro-link">
+                    {post.title}
+                  </a>
+                </h3>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  {post.tags.map(tag => (
+                    <a href={`/tags/${tag}`} class="retro-tag">
+                      [{tag}]
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div class="text-terminal-dim font-mono">
+                {post.summary}
+              </div>
+            </article>
+          </li>
+        ))
+      )}
+    </ul>
   </div>
 </RootLayout>

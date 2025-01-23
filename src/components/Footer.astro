@@ -4,22 +4,33 @@ import {SITE_METADATA} from '@/consts'
 
 import Link from "./Link.astro";
 ---
-
-<footer>
-    <div class="mt-16 flex flex-col items-center">
-        <div class="mb-3 flex space-x-4">
-            <SocialIcon kind="mail" href={`mailto:${SITE_METADATA.email}`} size={6}/>
-            <SocialIcon kind="github" href={SITE_METADATA.github} size={6}/>
-            <SocialIcon kind="linkedin" href={SITE_METADATA.linkedin} size={6}/>
-            <SocialIcon kind="twitter" href={SITE_METADATA.twitter} size={6}/>
-            <SocialIcon kind="substack" href={SITE_METADATA.substack} size={6}/>
+<footer class="retro-container mt-16">
+    <pre class="ascii-divider">
+ ____________________
+|   SYSTEM FOOTER    |
+|____________________|
+    </pre>
+    
+    <div class="flex flex-col items-center gap-4">
+        <div class="flex gap-4">
+            <a href={`mailto:${SITE_METADATA.email}`} class="retro-link">[MAIL]</a>
+            <a href={SITE_METADATA.github} class="retro-link">[GITHUB]</a>
+            <a href={SITE_METADATA.linkedin} class="retro-link">[LINKEDIN]</a>
+            <a href={SITE_METADATA.twitter} class="retro-link">[TWITTER]</a>
+            <a href={SITE_METADATA.youtube} class="retro-link">[YOUTUBE]</a>
+            <a href={SITE_METADATA.substack} class="retro-link">[SUBSTACK]</a>
         </div>
-        <div class="mb-2 flex space-x-2 text-sm text-gray-500 dark:text-gray-400">
-            <Link href="/about">{SITE_METADATA.author}</Link>
-            <div>{` • `}</div>
-            <div>{`© ${new Date().getFullYear()}`}</div>
-            <div>{` • `}</div>
-            <Link href="/">Actualizing Developer Happiness</Link>
+        
+        <pre class="text-terminal-dim">
+==================================
+| {SITE_METADATA.author} © {new Date().getFullYear()} |
+==================================
+        </pre>
+        
+        <div class="flex gap-2 text-sm font-mono">
+            <a href="/about" class="retro-link">ABOUT</a>
+            <span class="text-terminal-dim">|</span>
+            <a href="/" class="retro-link">HOME</a>
         </div>
     </div>
 </footer>

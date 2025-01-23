@@ -1,3 +1,66 @@
-<h1 {...Astro.props} class="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
-    <slot />
-</h1>
+---
+const props = Astro.props;
+---
+
+<div class="page-title-wrapper">
+    <pre class="ascii-divider">
+ /====================\
+ |    SYSTEM OUTPUT   |
+ \====================/
+    </pre>
+    
+    <h1 {...props} class="text-3xl font-mono leading-9 tracking-tight text-terminal-bright sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
+        > <slot />
+    </h1>
+    
+    <pre class="ascii-divider">
+ ====================
+    </pre>
+</div>
+
+<style>
+    .page-title-wrapper {
+        position: relative;
+        padding: 1rem;
+        border: 1px solid var(--terminal-green);
+        margin-bottom: 2rem;
+        animation: terminalBlink 0.5s ease-in-out;
+    }
+    
+    @keyframes terminalBlink {
+        0% {
+            border-color: var(--terminal-bright);
+        }
+        50% {
+            border-color: var(--terminal-dim);
+        }
+        100% {
+            border-color: var(--terminal-green);
+        }
+    }
+    
+    h1 {
+        position: relative;
+        padding-left: 1rem;
+    }
+    
+    h1::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 2px;
+        height: 100%;
+        background-color: var(--terminal-green);
+        animation: cursorBlink 1s infinite;
+    }
+    
+    @keyframes cursorBlink {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+    }
+</style>

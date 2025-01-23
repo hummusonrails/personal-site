@@ -1,26 +1,230 @@
-.task-list-item::before {
-    @apply hidden;
+@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
+
+:root {
+  --terminal-green: #00ff00;
+  --terminal-black: #000000;
+  --terminal-dim: #33ff7a; /* Brightened from #00cc00 for better contrast */
+  --terminal-bright: #00ff33;
 }
 
-.task-list-item {
-    @apply list-none;
+body {
+  background-color: var(--terminal-black);
+  color: var(--terminal-green);
+  font-family: "VT323", monospace;
+  line-height: 1.2;
+  position: relative;
 }
 
-.footnotes {
-    @apply mt-12 border-t border-gray-200 pt-8 dark:border-gray-700;
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 0, 0.03),
+    rgba(0, 255, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 999;
+  animation: scan 0.5s linear infinite;
 }
 
-.data-footnote-backref {
-    @apply no-underline;
+@keyframes scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(2px);
+  }
 }
 
-.csl-entry {
-    @apply my-5;
+.retro-container {
+  border: 1px solid var(--terminal-green);
+  padding: 1rem;
+  margin: 1rem 0;
+  position: relative;
+  animation: flicker 30s infinite;
 }
 
-/* https://stackoverflow.com/questions/61083813/how-to-avoid-internal-autofill-selected-style-to-be-applied */
-input:-webkit-autofill,
-input:-webkit-autofill:focus {
-    transition: background-color 600000s 0s,
-    color 600000s 0s;
+.retro-container::before {
+  content: "[SYSTEM]";
+  position: absolute;
+  top: -0.8em;
+  left: 1em;
+  background: var(--terminal-black);
+  padding: 0 0.5em;
+  color: var(--terminal-bright);
 }
+
+.retro-link {
+  color: var(--terminal-bright);
+  text-decoration: none;
+  position: relative;
+}
+
+.retro-link:hover {
+  color: var(--terminal-dim);
+  text-decoration: underline;
+}
+
+.retro-link::before {
+  content: ">";
+  margin-right: 0.5em;
+}
+
+.retro-button {
+  background: var(--terminal-black);
+  border: 1px solid var(--terminal-green);
+  color: var(--terminal-green);
+  padding: 0.5em 1em;
+  font-family: "VT323", monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retro-button:hover {
+  background: var(--terminal-green);
+  color: var(--terminal-black);
+}
+
+.ascii-divider {
+  color: var(--terminal-green);
+  font-family: monospace;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.retro-tag {
+  font-family: "VT323", monospace;
+  color: var(--terminal-green);
+  border: 1px solid var(--terminal-green);
+  padding: 0.25rem 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.retro-tag:hover {
+  background: var(--terminal-green);
+  color: var(--terminal-black);
+}
+
+img {
+  position: relative;
+}
+
+img::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 0, 0.1),
+    rgba(0, 255, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+  5% {
+    opacity: 0.95;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  15% {
+    opacity: 0.95;
+  }
+  20% {
+    opacity: 0.98;
+  }
+  25% {
+    opacity: 0.95;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  35% {
+    opacity: 0.95;
+  }
+  40% {
+    opacity: 0.98;
+  }
+  45% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  55% {
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.98;
+  }
+  65% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.95;
+  }
+  80% {
+    opacity: 0.98;
+  }
+  85% {
+    opacity: 0.95;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  95% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0.98;
+  }
+}
+
+.text-gray-500,
+.text-gray-600,
+.text-gray-700,
+.dark:text-gray-400,
+.dark:text-gray-300 {
+  color: var(--terminal-dim);
+}
+
+.text-gray-900,
+.dark:text-gray-100 {
+  color: var(--terminal-green);
+}
+
+.prose {
+  color: var(--terminal-green);
+}
+
+.prose strong {
+  color: var(--terminal-bright);
+}
+
+.prose a {
+  color: var(--terminal-bright);
+}
+
+.prose a:hover {
+  color: var(--terminal-dim);
+}
+
