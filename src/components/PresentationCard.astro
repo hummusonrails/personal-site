@@ -42,35 +42,4 @@ const {presentation, conference, region, date, image, link} = Astro.props;
             [WATCH]
         </a>
     </td>
-</tr><tr class="border-b border-terminal-dim hover:bg-terminal-black/20">
-    <td class="px-6 py-4">
-        <div class="flex items-center gap-4">
-            <div class="h-10 w-10 border border-terminal-green">
-                <img class="h-full w-full" src={image || "/placeholder.svg"} alt="" />
-            </div>
-            <div class="font-mono text-terminal-bright">
-                {presentation}
-            </div>
-        </div>
-    </td>
-    
-    <td class="px-6 py-4 font-mono text-terminal-dim">
-        {conference}
-    </td>
-
-    <td class="px-6 py-4">
-        <span class="retro-tag">
-            [{region}]
-        </span>
-    </td>
-
-    <td class="px-6 py-4 font-mono text-terminal-dim">
-        {date}
-    </td>
-
-    <td class="px-6 py-4 text-right">
-        <a href={link} class="retro-link" target="_blank">
-            [WATCH]
-        </a>
-    </td>
 </tr>
