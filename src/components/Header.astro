@@ -6,51 +6,57 @@ import MobileNav from "./MobileNav.astro";
 import ThemeSwitcher from "./ThemeSwitcher.astro";
 ---
 
-<header class="flex items-center justify-between py-10">
-    <div>
-        <a href="/" aria-label={SITE_METADATA.headerTitle}>
-            <div class="flex items-center justify-between">
+<header class="retro-container mb-8">
+    <pre class="ascii-divider">
+ ___________________
+|    SYSTEM MENU    |
+|___________________|
+    </pre>
+    
+    <div class="flex items-center justify-between py-4">
+        <a href="/" aria-label={SITE_METADATA.headerTitle} class="retro-link no-underline">
+            <div class="flex items-center">
                 <div class="mr-3">
                     <Logo/>
                 </div>
                 {typeof SITE_METADATA.headerTitle === 'string' ? (
-                        <div class="hidden h-6 text-2xl font-semibold sm:block">
-                            {SITE_METADATA.headerTitle}
-                        </div>
+                    <div class="hidden h-6 text-2xl font-mono sm:block">
+                        > {SITE_METADATA.headerTitle}
+                    </div>
                 ) : (
                     SITE_METADATA.headerTitle
                 )}
             </div>
         </a>
-    </div>
-    <div class="flex items-center leading-5 space-x-4 sm:space-x-6">
-        {NAVIGATION
-            .filter((link) => link.href !== '/')
-            .map((link) => (
-                    <HeaderLink
-                            href={link.href}
-                            class="hidden sm:block font-medium text-gray-900 dark:text-gray-100"
-                    >
-                        {link.title}
-                    </HeaderLink>
-            ))}
+        
+        <div class="flex items-center gap-4">
+            <nav class="hidden sm:flex gap-4">
+                {NAVIGATION
+                    .filter((link) => link.href !== '/')
+                    .map((link) => (
+                        <a href={link.href} class="retro-link">
+                            [{link.title}]
+                        </a>
+                    ))}
+            </nav>
 
-        <form action="/search" method="GET" class="flex">
-            <input 
-                type="text" 
-                name="q" 
-                placeholder="Ask the blog a question..." 
-                class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-l-md"
-            />
-            <button 
-                type="submit" 
-                class="px-4 py-2 bg-primary-500 text-white rounded-r-md"
-            >
-                Search
-            </button>
-        </form>
+            <form action="/search" method="GET" class="flex">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="SEARCH://"
+                    class="px-4 py-2 bg-terminal-black border border-terminal-green text-terminal-green font-mono focus:border-terminal-bright focus:outline-none"
+                />
+                <button 
+                    type="submit" 
+                    class="retro-button"
+                >
+                    [EXECUTE]
+                </button>
+            </form>
 
-        <ThemeSwitcher />
-        <MobileNav/>
+            <ThemeSwitcher />
+            <MobileNav/>
+        </div>
     </div>
 </header>

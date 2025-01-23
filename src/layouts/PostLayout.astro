@@ -27,95 +27,108 @@ export const prerender = true;
 <RootLayout title={post.title} description={post.summary}>
   <SectionContainer>
     <ScrollTopAndComments />
-    <article>
-      <div class="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
-        <header class="pt-6 xl:pb-6">
-          <div class="space-y-1 text-center">
-            <dl class="space-y-10">
-              <div>
-                <dt class="sr-only">Published on</dt>
-                <dd class="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                  <FormattedDate date={post.date} />
-                </dd>
-              </div>
-            </dl>
-            <div>
-              <PageTitle>{post.title}</PageTitle>
-            </div>
-          </div>
-        </header>
-        <div class="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 dark:divide-gray-700 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0">
-          <dl class="pb-10 pt-6 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700">
-            <dt class="sr-only">Authors</dt>
-            <dd>
-              <ul class="flex flex-wrap justify-center items-center gap-4 sm:space-x-12 xl:block xl:space-x-0 xl:space-y-8">
-                {authors.map(({ id, name, avatar, twitter }) => (
-                  <li class="flex items-center space-x-2" key={id}>
-                    {avatar && (
-                      <Image src={avatar} width={38} height={38} alt="avatar" class="h-10 w-10 rounded-full" />
-                    )}
-                    <dl class="whitespace-nowrap text-sm font-medium leading-5">
-                      <dt class="sr-only">Name</dt>
-                      <dd class="text-gray-900 dark:text-gray-100">{name}</dd>
-                      <dt class="sr-only">Twitter</dt>
-                      <dd>
-                        {twitter && (
-                          <Link href={twitter} class="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-                            {twitter.replace("https://twitter.com/", "@")}
-                          </Link>
-                        )}
-                      </dd>
-                    </dl>
-                  </li>
-                ))}
-              </ul>
+    <article class="retro-container">
+      <pre class="ascii-divider">
+ /========================\
+ |     SYSTEM ARTICLE     |
+ \========================/
+      </pre>
+      
+      <header class="pt-6 pb-6 border-b border-terminal-green">
+        <div class="space-y-4 text-center">
+          <dl>
+            <dt class="sr-only">Published on</dt>
+            <dd class="text-terminal-dim font-mono">
+              > DATE: <FormattedDate date={post.date} />
             </dd>
           </dl>
-          <div class="divide-y divide-gray-200 dark:divide-gray-700 xl:col-span-3 xl:row-span-2 xl:pb-0">
-            <div class="prose max-w-none pb-8 pt-10 dark:prose-invert">
-                <p set:html={marked.parse(content)} />
-            </div>
+          <div>
+            <PageTitle>{post.title}</PageTitle>
           </div>
-          <footer>
-            <div class="divide-gray-200 text-sm font-medium leading-5 dark:divide-gray-700 xl:col-start-1 xl:row-start-2 xl:divide-y">
-              {tags.length > 0 && (
-                <div class="py-4 xl:py-8">
-                  <h2 class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Tags</h2>
-                  <div class="flex flex-wrap">
-                    {tags.map((tag) => (
-                      <Tag tag={tag} slug={tag.id} key={tag.id} />
-                    ))}
+        </div>
+      </header>
+
+      <div class="grid xl:grid-cols-4 gap-6 py-8">
+        <dl class="xl:border-r border-terminal-green p-4">
+          <dt class="sr-only">Authors</dt>
+          <dd>
+            <ul class="flex flex-wrap justify-center items-center gap-4 xl:flex-col">
+              {authors.map(({ id, name, avatar, twitter }) => (
+                <li class="flex items-center gap-4" key={id}>
+                  {avatar && (
+                    <Image 
+                      src={avatar || "/placeholder.svg"} 
+                      width={38} 
+                      height={38} 
+                      alt="avatar" 
+                      class="border border-terminal-green" 
+                    />
+                  )}
+                  <dl class="font-mono">
+                    <dt class="sr-only">Name</dt>
+                    <dd class="text-terminal-bright">> {name}</dd>
+                    <dt class="sr-only">Twitter</dt>
+                    <dd>
+                      {twitter && (
+                        <Link href={twitter} class="retro-link">
+                          {twitter.replace("https://twitter.com/", "@")}
+                        </Link>
+                      )}
+                    </dd>
+                  </dl>
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </dl>
+
+        <div class="xl:col-span-3">
+          <div class="prose prose-invert font-mono text-terminal-green max-w-none pb-8">
+            <p set:html={marked.parse(content)} />
+          </div>
+        </div>
+
+        <footer class="xl:col-span-4 border-t border-terminal-green">
+          <div class="grid gap-4 p-4">
+            {tags.length > 0 && (
+              <div>
+                <h2 class="text-terminal-bright font-mono mb-2">> TAGS:</h2>
+                <div class="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <Tag tag={tag} slug={tag.id} key={tag.id} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(next || prev) && (
+              <div class="flex justify-between gap-4">
+                {prev && (
+                  <div>
+                    <h2 class="text-terminal-dim font-mono">> PREV_FILE:</h2>
+                    <Link href={`/blog/${prev.id}`} class="retro-link">
+                      {prev.title}
+                    </Link>
                   </div>
-                </div>
-              )}
-              {(next || prev) && (
-                <div class="flex justify-between py-4 xl:block xl:space-y-8 xl:py-8">
-                  {prev && (
-                    <div>
-                      <h2 class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Previous Article</h2>
-                      <div class="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-                        <Link href={`/blog/${prev.id}`}>{prev.title}</Link>
-                      </div>
-                    </div>
-                  )}
-                  {next && (
-                    <div>
-                      <h2 class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Next Article</h2>
-                      <div class="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-                        <Link href={`/blog/${next.id}`}>{next.title}</Link>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            <div class="pt-4 xl:pt-8">
-              <Link href="/blog" class="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400" aria-label="Back to the blog">
-                &larr; Back to the blog
+                )}
+                {next && (
+                  <div class="text-right">
+                    <h2 class="text-terminal-dim font-mono">> NEXT_FILE:</h2>
+                    <Link href={`/blog/${next.id}`} class="retro-link">
+                      {next.title}
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div class="text-center">
+              <Link href="/blog" class="retro-button" aria-label="Back to the blog">
+                [RETURN_TO_ARCHIVE]
               </Link>
             </div>
-          </footer>
-        </div>
+          </div>
+        </footer>
       </div>
     </article>
   </SectionContainer>

@@ -5,34 +5,34 @@ import {SITE_METADATA} from '@/consts';
 
 const projectsData = [
     {
-        title: 'Clinked.ai',
-        description: `Create meaningful speeches with the help of AI`,
-        github_link: 'https://github.com/hummusonrails',
-        blog_link: 'https://www.clinked.ai',
+        title: 'Bruriah',
+        description: `Teaching Assistant Chatbot for kids`,
+        github_link: 'https://github.com/hummusonrails/bruriah',
+        blog_link: 'https://www.linkedin.com/posts/hummusonrails_chatgpt-ai-opensource-activity-7287733487904686080-XTVl?utm_source=social_share_sheet&utm_medium=member_desktop_web',
     },
     {
-        title: 'hirethePIVOT',
-        description: `Reverse job board for second career developers`,
-        github_link: 'https://github.com/hummusonrails/hirethepivot.com',
-        blog_link: 'https://www.hirethepivot.com',
+        title: 'Vector Search Workshop with Node.js',
+        description: `Workshop on building a vector search engine with Node.js`,
+        github_link: 'https://github.com/hummusonrails/vector-search-nodejs-workshop',
+        blog_link: 'https://github.com/hummusonrails/vector-search-nodejs-workshop',
     },
     {
-        title: 'School Form Automation',
-        description: `Automate filling out of school health forms`,
-        github_link: 'https://github.com/hummusonrails/school-health-declaration-automation',
-        blog_link: 'https://dev.to/hummusonrails/automate-school-forms-with-web-scraping-in-ruby-2c3j',
+        title: 'Chrome extension to rate comments on blog posts',
+        description: `Using vector search in browser to rate comments`,
+        github_link: 'https://github.com/hummusonrails/comments-spam-analyzer',
+        blog_link: 'https://dev.to/couchbase/detecting-and-analyzing-comment-quality-using-vector-search-45c4',
     },
     {
-        title: 'dev_orbit',
-        description: `Integrate DEV Interactions into your Orbit workspace`,
-        github_link: 'https://github.com/hummusonrails/dev_orbit',
-        blog_link: 'https://dev.to/hummusonrails',
+        title: 'WhatsApp Customer Agent Platform',
+        description: `Automate agent searches on user inquiries from WhatsApp with vector search`,
+        github_link: 'https://github.com/hummusonrails/whatsapp_support_app',
+        blog_link: 'https://dev.to/couchbase/ai-in-action-enhancing-and-not-replacing-jobs-31i2',
     },
     {
-        title: 'Monday.com Ruby GraphQL API Explorer',
-        description: `Monday.com GraphQL API Client`,
-        github_link: 'https://github.com/hummusonrails/monday_ruby_api_explorer',
-        blog_link: 'https://dev.to/hummusonrails',
+        title: 'Data Anonymization Workflow with AWS',
+        description: `Sanitize user data with AWS Lambda and Couchbase`,
+        github_link: 'https://github.com/hummusonrails/anonymize-data-aws-couchbase-example',
+        blog_link: 'https://dev.to/bengreenberg/solve-user-data-issues-in-your-app-in-about-5-minutes-19d5',
     },
     {
         title: 'Vonage Ruby SDK',
@@ -50,52 +50,46 @@ const projectsData = [
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
-    <div class="bg-white">
-        <div class="text-center">
-            <h2 class="text-3xl tracking-tight font-extrabold text-gray-900 sm:text-4xl">
-            Projects
-            </h2>
-            <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
-            Sample of projects that I have built or contributed towards
-            </p>
-        </div>
-        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-2 gap-8 md:grid-cols-6 lg:grid-cols-6">
-            <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
-              <img class="h-12" src="static/images/languages/ruby.png" alt="Ruby">
-            </div>
-            <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
-              <img class="h-12" src="static/images/languages/js.png" alt="JS">
-            </div>
-            <div class="col-span-1 flex justify-center md:col-span-2 lg:col-span-1">
-              <img class="h-12" src="static/images/languages/elixir.png" alt="Elixir">
-            </div>
-            <div class="col-span-1 flex justify-center md:col-span-3 lg:col-span-1">
-              <img class="h-12" src="static/images/languages/python.png" alt="Python">
-            </div>
-            <div class="col-span-2 flex justify-center md:col-span-3 lg:col-span-1">
-              <img class="h-12" src="static/images/languages/ts.png" alt="TypeScript">
-            </div>
-            <div class="col-span-2 flex justify-center md:col-span-3 lg:col-span-1">
-                <img class="h-12" src="static/images/languages/rust.png" alt="Rust">
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="retro-container">
+      <pre class="ascii-divider">
+/================================\
+|      PROJECT DATABASE v1.0     |
+\================================/
+      </pre>
       
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
-        <div class="max-w-5xl mx-auto">
-          <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {projectsData.map((d) => (
-                <ProjectCard
-                    title={d.title},
-                    description={d.description},
-                    github_link={d.github_link},
-                    blog_link={d.blog_link}
-                />
-            ))}
-          </ul>
-        </div>
+      <div class="text-center mb-8">
+          <h2 class="text-3xl">EXECUTING: list_projects()</h2>
+          <p class="text-terminal-dim">
+              >> Accessing project database...
+              <br/>> Loading entries...
+          </p>
       </div>
+
+      <div class="grid grid-cols-6 gap-4 mb-8 text-center">
+          {['Ruby', 'JavaScript', 'Elixir', 'Python', 'TypeScript', 'Rust'].map(lang => (
+              <div class="border border-terminal-green p-2">
+                  <span class="text-terminal-bright">{lang}</span>
+              </div>
+          ))}
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projectsData.map((project) => (
+              <div class="border border-terminal-green p-4">
+                  <h3 class="text-terminal-bright text-xl mb-2">> {project.title}</h3>
+                  <p class="text-terminal-dim mb-4">{project.description}</p>
+                  <div class="flex gap-4">
+                      <a href={project.github_link} class="retro-link">SOURCE</a>
+                      <a href={project.blog_link} class="retro-link">DOCS</a>
+                  </div>
+              </div>
+          ))}
+      </div>
+
+      <pre class="ascii-divider mt-8">
+=====================================
+| END OF PROJECT LIST | STATUS: OK |
+=====================================
+      </pre>
+  </div>
 </RootLayout>
