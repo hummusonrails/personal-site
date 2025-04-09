@@ -7,8 +7,7 @@ import RootLayout from "./RootLayout.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Tag from "../components/Tag.astro";
 import ScrollTopAndComments from "../components/ScrollTopAndComments.astro";
-import { getAuthor, getTags } from "../db/couchbase";
-import { marked } from 'marked';
+import { getAuthor, getTags } from "../lib/local-data";
 
 interface Props {
   post: any;
@@ -18,7 +17,7 @@ interface Props {
 
 const { post, next, prev } = Astro.props as Props;
 const authors = [await getAuthor()];
-const tags = await Promise.all(post.tags.map((tag) => getTags(tag)));
+const tags = await getTags(post.tags || []);
 const content = post.content ? post.content : "";
 
 export const prerender = true;
@@ -84,7 +83,7 @@ export const prerender = true;
 
         <div class="xl:col-span-3">
           <div class="prose prose-invert font-mono text-terminal-green max-w-none pb-8">
-            <p set:html={marked.parse(content)} />
+            {post.Component && <post.Component />}
           </div>
         </div>
 

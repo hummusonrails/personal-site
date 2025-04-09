@@ -1,27 +1,31 @@
 ---
 import Link from "./Link.astro";
-import { getTagBySlug } from "../db/couchbase";
+import tagsData from "../data/tags.json";
 
 interface Props {
-    tag?: any;
-    slug?: string;
+  tag?: any;
+  slug?: string;
 }
 
 let Tag = Astro.props.tag;
 
 if (!Tag && Astro.props.slug) {
-    Tag = await getTagBySlug(`tag_${Astro.props.slug}`);
+  const slug = Astro.props.slug.toLowerCase();
+  Tag = tagsData[slug];
 }
 
 if (!Tag) {
-    throw new Error(`Tag with slug "${Astro.props.slug}" not found`);
+  throw new Error(`Tag with slug "${Astro.props.slug}" not found in local tags.json`);
 }
 
-const { slug, name } = Tag;
+const { id: slug, name } = Tag;
 
 export const prerender = true;
 ---
-<Link href={`/tags/${slug}`}
-      class="mr-3 text-sm font-medium uppercase text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-    {name}
+
+<Link
+  href={`/tags/${slug}`}
+  class="mr-3 text-sm font-medium uppercase text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+>
+  {name}
 </Link>
