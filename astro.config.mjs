@@ -1,6 +1,6 @@
 import {defineConfig} from 'astro/config';
 import mdx from '@astrojs/mdx';
-import vercel from '@astrojs/vercel/serverless';
+import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
 
 import tailwind from "@astrojs/tailwind";

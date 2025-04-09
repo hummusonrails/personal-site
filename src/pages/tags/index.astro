@@ -1,17 +1,26 @@
 ---
-import { getTags } from '../../db/couchbase';
 import RootLayout from "@/layouts/RootLayout.astro";
 import Link from "@/components/Link.astro";
+import tagsData from '../../data/tags.json';
+import { fetchAndSortBlogPosts, excludeDrafts } from '../../functions';
 
-const tags = await getTags();
-const formatSlug = (slug) => {
-  const specialCases = {
-    'AI': 'ai',
-    'GitHub': 'github',
-    'DevRel': 'devrel'
-  };
-  return specialCases[slug];
-};
+const posts = await fetchAndSortBlogPosts();
+const filteredPosts = posts.filter(excludeDrafts);
+
+const tagCounts = {};
+for (const post of filteredPosts) {
+  const tagList = Array.isArray(post.tags) ? post.tags : [post.tags];
+  for (const tag of tagList) {
+    const key = tag.toLowerCase();
+    tagCounts[key] = (tagCounts[key] || 0) + 1;
+  }
+}
+
+const tags = Object.entries(tagsData).map(([slug, tag]) => ({
+  slug,
+  name: tag.name,
+  count: tagCounts[slug.toLowerCase()] || 0
+})).filter(tag => tag.count > 0);
 
 export const prerender = true;
 ---
@@ -27,7 +36,10 @@ export const prerender = true;
       {!tags.length && 'No tags found.'}
       {tags.map((tag) => (
         <div class="mb-2 mr-5 mt-2" key={tag.slug}>
-          <Link href={`/tags/${formatSlug(tag.slug)}`} class="mr-3 text-sm font-medium uppercase text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
+          <Link
+            href={`/tags/${tag.slug}/1`}
+            class="mr-3 text-sm font-medium uppercase text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+          >
             {tag.name}
           </Link>
           <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">

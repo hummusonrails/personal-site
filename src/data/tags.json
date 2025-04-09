@@ -1,0 +1,20 @@
+{
+    "ai": { "id": "ai", "name": "AI" },
+    "couchbase": { "id": "couchbase", "name": "Couchbase" },
+    "devrel": { "id": "devrel", "name": "DevRel" },
+    "elixir": { "id": "elixir", "name": "Elixir" },
+    "expressjs": { "id": "expressjs", "name": "ExpressJS" },
+    "nodejs": { "id": "nodejs", "name": "NodeJS" },
+    "openai": { "id": "openai", "name": "OpenAI" },
+    "rust": { "id": "rust", "name": "Rust" },
+    "twilio": { "id": "twilio", "name": "Twilio" },
+    "career": { "id": "career", "name": "Career" },
+    "productivity": { "id": "productivity", "name": "Productivity" },
+    "monitoring": { "id": "monitoring", "name": "Monitoring" },
+    "github": { "id": "github", "name": "GitHub" },
+    "ruby": { "id": "ruby", "name": "Ruby" },
+    "blockchain": { "id": "blockchain", "name": "Blockchain" },
+    "showcase": { "id": "showcase", "name": "Showcase" },
+    "tutorial": { "id": "tutorial", "name": "Tutorial" }
+}
+  

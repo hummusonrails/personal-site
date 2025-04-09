@@ -1,147 +1,155 @@
 ---
-import { fetchAndSortBlogPosts, excludeDrafts } from '../functions';
-import { getTags } from '../db/couchbase';
+import tagsData from '../data/tags.json';
 import Link from "../components/Link.astro";
 import Pagination from "../components/Pagination.astro";
 import RootLayout from "./RootLayout.astro";
 import Tag from "../components/Tag.astro";
 import FormattedDate from "../components/FormattedDate.astro";
+import { fetchAndSortBlogPosts, excludeDrafts } from '../functions';
 
 interface PageData {
-    data: {
-        id: string;
-        date: string;
-        title: string;
-        summary: string;
-        tags: string[];
-    }[];
-    url: {
-        next: string | null;
-        prev: string | null;
-    };
+  data: {
+    id: string;
+    date: string;
+    title: string;
+    summary: string;
+    tags: string[];
+  }[];
+  url: {
+    next: string | null;
+    prev: string | null;
+  };
 }
 
 interface Props {
-    title: string;
-    description: string;
-    page: PageData;
+  title: string;
+  description: string;
+  page: PageData;
 }
-
-const tags = (await getTags()) || [];
-const posts = await fetchAndSortBlogPosts();
-const filteredPosts = posts.filter(excludeDrafts);
-
-function tagCount(slug) {
-    return filteredPosts.filter((post) => post.tags.includes(slug)).length;
-}
-
-function isSamePath(path) {
-    return Astro.url.pathname === path;
-}
-
-export const prerender = true;
 
 const { title, description, page } = Astro.props;
 const hasDefaultSlot = Astro.slots.has('default');
 const isBlogPage = Astro.url.pathname.startsWith('/blog');
 
+const posts = await fetchAndSortBlogPosts();
+const filteredPosts = posts.filter(excludeDrafts);
+
+// 🧠 Count how many times each tag appears in the blog posts
+const tagCounts: Record<string, number> = {};
+for (const post of filteredPosts) {
+  const postTags = Array.isArray(post.tags) ? post.tags : [post.tags];
+  for (const tag of postTags) {
+    const normalized = tag.toLowerCase();
+    tagCounts[normalized] = (tagCounts[normalized] || 0) + 1;
+  }
+}
+
+function isSamePath(path: string) {
+  return Astro.url.pathname === path;
+}
+
+export const prerender = true;
+
+const tags = Object.values(tagsData);
 ---
 
 <RootLayout {title} {description}>
-    <div class="retro-container">
-        <pre class="ascii-divider">
+  <div class="retro-container">
+    <pre class="ascii-divider">
  /========================\
  |     SYSTEM ARCHIVE     |
  \========================/
-        </pre>
+    </pre>
 
-        <div class="pb-6 pt-6 border-b border-terminal-green">
-            <h1 class="text-3xl font-mono text-terminal-bright">
-                > {title}
-            </h1>
-            {hasDefaultSlot && (
-                <div class="prose font-mono text-terminal-green py-4">
-                    <slot/>
-                </div>
-            )}
+    <div class="pb-6 pt-6 border-b border-terminal-green">
+      <h1 class="text-3xl font-mono text-terminal-bright">
+        > {title}
+      </h1>
+      {hasDefaultSlot && (
+        <div class="prose font-mono text-terminal-green py-4">
+          <slot/>
         </div>
-
-        <div class="flex gap-6">
-            <div class="hidden sm:block min-w-[280px] border-r border-terminal-green p-4">
-                <div class="sticky top-4">
-                    {isBlogPage ? (
-                        <h3 class="text-terminal-bright font-mono">> ALL_POSTS</h3>
-                    ) : (
-                        <Link href="/blog" class="retro-link">
-                            ALL_POSTS
-                        </Link>
-                    )}
-                    <ul class="mt-4 space-y-2">
-                        {tags.map(({ id, name }) => (
-                            id = id.toLowerCase(),
-                            <li key={id}>
-                                {isSamePath(`/tag/${id}`) ? (
-                                    <h3 class="text-terminal-bright font-mono">
-                                        > {name} [{tagCount(id)}]
-                                    </h3>
-                                ) : (
-                                    <Link 
-                                        href={`/tags/${id}/1`}
-                                        class="retro-link"
-                                        aria-label={`View posts tagged ${name}`}
-                                    >
-                                        {name} [{tagCount(id)}]
-                                    </Link>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-
-            <div class="flex-1">
-                <ul class="divide-y divide-terminal-dim">
-                    {page && page.data ? page.data.map(({ id, date, title, summary, tags }) => {
-                        if (!id || !date || !title || !summary || !tags) {
-                            return null;
-                        }
-                        return (
-                            <li class="py-5" key={id}>
-                                <article class="space-y-4">
-                                    <dl>
-                                        <dt class="sr-only">Published on</dt>
-                                        <dd class="font-mono text-terminal-dim">
-                                            > DATE: <FormattedDate date={date} />
-                                        </dd>
-                                    </dl>
-                                    <div class="space-y-3">
-                                        <div>
-                                            <h3 class="text-2xl font-mono">
-                                                <Link href={`/blog/${id}`} class="retro-link">
-                                                    {title}
-                                                </Link>
-                                            </h3>
-                                            <div class="flex flex-wrap gap-2 mt-2">
-                                                {tags.map(tag => (
-                                                    <Tag slug={tag} key={tag} />
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div class="font-mono text-terminal-green">
-                                            {summary}
-                                        </div>
-                                    </div>
-                                </article>
-                            </li>
-                        );
-                    }) : <p class="text-terminal-dim font-mono">ERROR: Invalid page data.</p>}
-                </ul>
-                {(page && (page.url.next || page.url.prev)) && (
-                    <div class="border-t border-terminal-green p-4">
-                        <Pagination page={page} />
-                    </div>
-                )}
-            </div>
-        </div>
+      )}
     </div>
+
+    <div class="flex gap-6">
+      <div class="hidden sm:block min-w-[280px] border-r border-terminal-green p-4">
+        <div class="sticky top-4">
+          {isBlogPage ? (
+            <h3 class="text-terminal-bright font-mono">> ALL_POSTS</h3>
+          ) : (
+            <Link href="/blog" class="retro-link">ALL_POSTS</Link>
+          )}
+
+          <ul class="mt-4 space-y-2">
+            {tags.map(({ id, name }) => {
+              const normalized = id.toLowerCase();
+              const count = tagCounts[normalized] || 0;
+              return (
+                <li key={id}>
+                  {isSamePath(`/tags/${id}`) ? (
+                    <h3 class="text-terminal-bright font-mono">
+                      > {name} [{count}]
+                    </h3>
+                  ) : (
+                    <Link
+                      href={`/tags/${id}`}
+                      class="retro-link"
+                      aria-label={`View posts tagged ${name}`}
+                    >
+                      {name} [{count}]
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex-1">
+        <ul class="divide-y divide-terminal-dim">
+          {page?.data?.map(({ id, date, title, summary, tags }) => (
+            <li class="py-5" key={id}>
+              <article class="space-y-4">
+                <dl>
+                  <dt class="sr-only">Published on</dt>
+                  <dd class="font-mono text-terminal-dim">
+                    > DATE: <FormattedDate date={date} />
+                  </dd>
+                </dl>
+                <div class="space-y-3">
+                  <div>
+                    <h3 class="text-2xl font-mono">
+                      <Link href={`/blog/${id}`} class="retro-link">
+                        {title}
+                      </Link>
+                    </h3>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      {tags.map(tag => (
+                        <Tag slug={tag} key={tag} />
+                      ))}
+                    </div>
+                  </div>
+                  <div class="font-mono text-terminal-green">
+                    {summary}
+                  </div>
+                </div>
+              </article>
+            </li>
+          )) || (
+            <p class="text-terminal-dim font-mono">
+              ERROR: Invalid page data.
+            </p>
+          )}
+        </ul>
+
+        {(page?.url?.next || page?.url?.prev) && (
+          <div class="border-t border-terminal-green p-4">
+            <Pagination page={page} />
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
 </RootLayout>
