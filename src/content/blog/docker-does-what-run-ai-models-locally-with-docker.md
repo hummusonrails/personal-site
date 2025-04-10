@@ -7,6 +7,8 @@ image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,grav
 authors: ["default"]
 ---
 
+![header image](https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fbj1ve2hwdxafvxfwugqp.png)
+
 Docker has always been about simplifying developers' lives, making it effortless to build, ship, and run applications anywhere. But now Docker has decided to take things one big step further.
 
 Introducing Docker Model Runner, a feature that allows you to run, manage, and interact with AI models directly on your local machine. Forget about cloud setup hassles, expensive infrastructure, and latency. Now you can incorporate generative AI capabilities into your development workflow right from your machine. This new capability opens doors to easier experimentation, quicker prototyping, and smarter automation tasks.
