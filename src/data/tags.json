@@ -15,6 +15,7 @@
     "ruby": { "id": "ruby", "name": "Ruby" },
     "blockchain": { "id": "blockchain", "name": "Blockchain" },
     "showcase": { "id": "showcase", "name": "Showcase" },
-    "tutorial": { "id": "tutorial", "name": "Tutorial" }
+    "tutorial": { "id": "tutorial", "name": "Tutorial" },
+    "docker": { "id": "docker", "name": "Docker" }
 }
   
