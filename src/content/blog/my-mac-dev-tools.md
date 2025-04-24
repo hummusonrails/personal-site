@@ -1,10 +1,17 @@
 ---
-title: "My Mac Dev Tools"
-date: "2022-02-22"
-summary: "You have a new Mac and you are so excited to get going on creating awesome applications on it. First, though, you need to install some dev tools. What do you put on your brand new machine?"
-tags: ["productivity"]
-image: "https://res.cloudinary.com/practicaldev/image/fetch/s--DMiM_dIC--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kkb2pld463z5rxa1uvhj.png"
-authors: ["default"]
+title: My Mac Dev Tools
+date: '2022-02-22'
+summary: >-
+  You have a new Mac and you are so excited to get going on creating awesome
+  applications on it. First, though, you need to install some dev tools. What do
+  you put on your brand new machine?
+tags:
+  - slug: productivity
+    collection: tags
+image: >-
+  https://res.cloudinary.com/practicaldev/image/fetch/s--DMiM_dIC--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kkb2pld463z5rxa1uvhj.png
+authors:
+  - default
 ---
   
   ![header](https://res.cloudinary.com/practicaldev/image/fetch/s--DMiM_dIC--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kkb2pld463z5rxa1uvhj.png)

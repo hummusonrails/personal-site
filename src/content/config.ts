@@ -46,4 +46,16 @@ const tags = defineCollection({
     }),
 });
 
-export const collections = {blog, authors, tags};
+const talks = defineCollection({
+  type: 'content',
+  schema: z.object({
+    presentation: z.string(),
+    conference: z.string(),
+    region: z.string(),
+    date: z.coerce.date(),
+    link: z.string().url(),
+    image: z.string().optional(),
+  }),
+});
+
+export const collections = {blog, authors, tags, talks};

@@ -1,10 +1,17 @@
 ---
-title: "From High-Level to Systems Programming: A Practical Guide to Rust, Part 1"
-date: "2022-12-30"
-summary: "In this series, we will be looking at Rust, a language that has been ranked as the most loved language seven years in a row by the Stack Overflow annual survey."
-tags: ["rust"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/1sz90e9gxnd3wdgsgi1n.png"
-authors: ["default"]
+title: 'From High-Level to Systems Programming: A Practical Guide to Rust, Part 1'
+date: '2022-12-30'
+summary: >-
+  In this series, we will be looking at Rust, a language that has been ranked as
+  the most loved language seven years in a row by the Stack Overflow annual
+  survey.
+tags:
+  - slug: rust
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/1sz90e9gxnd3wdgsgi1n.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/1sz90e9gxnd3wdgsgi1n.png)

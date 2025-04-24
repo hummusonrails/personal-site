@@ -1,10 +1,19 @@
 ---
-title: "Measuring DevRel Success - Thinking Outside the Funnel"
-date: "2022-08-11"
-summary: "Companies whose primary audience is developers will usually seek to build a developer relations team early on because they have heard they need one to be successful. Yet, they often go into the endeavor without a clear understanding of what that team is meant to do besides \"going to events\" and \"speaking to developers\"."
-tags: ["devrel"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yorcl0fsntpzsknjjtc3.png"
-authors: ["default"]
+title: Measuring DevRel Success - Thinking Outside the Funnel
+date: '2022-08-11'
+summary: >-
+  Companies whose primary audience is developers will usually seek to build a
+  developer relations team early on because they have heard they need one to be
+  successful. Yet, they often go into the endeavor without a clear understanding
+  of what that team is meant to do besides "going to events" and "speaking to
+  developers".
+tags:
+  - slug: devrel
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yorcl0fsntpzsknjjtc3.png
+authors:
+  - default
 ---
   
   ![header image](/static/images/posts/devrel_metrics/measuring_devrel_success.png)

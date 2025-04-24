@@ -1,10 +1,20 @@
 ---
-title: "Monitor Rails 7 applications with New Relic One"
-date: "2022-01-21"
-summary: "As you build increasingly complex applications with the latest release of Rails, it’s important to monitor your application stack for performance and quickly troubleshoot any issues before they're on fire. You can use New Relic One to monitor your application’s performance and diagnose issues."
-tags: ["ruby","monitoring"]
-image: "https://res.cloudinary.com/practicaldev/image/fetch/s--MIeEuUP3--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/1200w/public/2022-01/image5.png"
-authors: ["default"]
+title: Monitor Rails 7 applications with New Relic One
+date: '2022-01-21'
+summary: >-
+  As you build increasingly complex applications with the latest release of
+  Rails, it’s important to monitor your application stack for performance and
+  quickly troubleshoot any issues before they're on fire. You can use New Relic
+  One to monitor your application’s performance and diagnose issues.
+tags:
+  - slug: ruby
+    collection: tags
+  - slug: monitoring
+    collection: tags
+image: >-
+  https://res.cloudinary.com/practicaldev/image/fetch/s--MIeEuUP3--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/1200w/public/2022-01/image5.png
+authors:
+  - default
 ---
   
   ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--MIeEuUP3--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/1200w/public/2022-01/image5.png)

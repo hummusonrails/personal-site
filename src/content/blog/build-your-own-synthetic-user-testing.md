@@ -1,10 +1,20 @@
 ---
-title: "Build your own synthetic user testing"
-date: "2022-07-05"
-summary: "A resilient testing suite for your application includes unit tests, integration tests, acceptance tests, and more. All those tests go a long way in ensuring the reliability of your application and providing confidence when you deploy code changes. But there’s another kind of testing that’s important to add to your suite if you haven’t already - simulating the behavior of your users."
-tags: ["monitoring"]
-image: "https://newrelic.com/sites/default/files/styles/16x9_600w/public/2022-05/Brand-blog_1440x736.jpg"
-authors: ["default"]
+title: Build your own synthetic user testing
+date: '2022-07-05'
+summary: >-
+  A resilient testing suite for your application includes unit tests,
+  integration tests, acceptance tests, and more. All those tests go a long way
+  in ensuring the reliability of your application and providing confidence when
+  you deploy code changes. But there’s another kind of testing that’s important
+  to add to your suite if you haven’t already - simulating the behavior of your
+  users.
+tags:
+  - slug: monitoring
+    collection: tags
+image: >-
+  https://newrelic.com/sites/default/files/styles/16x9_600w/public/2022-05/Brand-blog_1440x736.jpg
+authors:
+  - default
 ---
   
   ![header image](https://newrelic.com/sites/default/files/styles/16x9_600w/public/2022-05/Brand-blog_1440x736.jpg)

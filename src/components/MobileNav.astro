@@ -60,22 +60,24 @@ import {NAVIGATION} from '@/consts';
     });
 
     function onToggleNav() {
-        const isNavHidden = document.body.style.overflow === '';
-        mobileMenuContainer.classList.toggle('translate-x-full', !isNavHidden);
-        mobileMenuContainer.classList.toggle('translate-x-0', isNavHidden);
-        document.body.style.overflow = isNavHidden ? 'hidden' : '';
-        
-        // Add terminal boot-up animation when opening
-        if (isNavHidden) {
-            const links = mobileMenuContainer.querySelectorAll('a');
-            links.forEach((link, index) => {
-                setTimeout(() => {
-                    link.style.opacity = '1';
-                    link.textContent = `> ${link.textContent}`;
-                }, index * 100);
-            });
-        }
+    const isNavHidden = !mobileMenuContainer.classList.contains('translate-x-0');
+    mobileMenuContainer.classList.toggle('translate-x-full', !isNavHidden);
+    mobileMenuContainer.classList.toggle('translate-x-0', isNavHidden);
+    document.body.style.overflow = isNavHidden ? 'hidden' : '';
+    
+    // Improved terminal boot-up animation
+    if (isNavHidden) {
+        const links = mobileMenuContainer.querySelectorAll('a');
+        links.forEach((link, index) => {
+            link.style.opacity = '0';
+            link.textContent = link.textContent.replace('> ', '');
+            setTimeout(() => {
+                link.style.opacity = '1';
+                link.textContent = `> ${link.textContent}`;
+            }, index * 100);
+        });
     }
+}
 </script>
 
 <style>

@@ -1,10 +1,16 @@
 ---
-title: "The Importance of Blockchain Knowledge for Devs"
-date: "2023-05-16"
-summary: "Unlocking the Power of Blockchain: A Look into Polkadot's Potential for Developers"
-tags: ["blockchain"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zpvy5mue44mdffgvuyjm.png"
-authors: ["default"]
+title: The Importance of Blockchain Knowledge for Devs
+date: '2023-05-16'
+summary: >-
+  Unlocking the Power of Blockchain: A Look into Polkadot's Potential for
+  Developers
+tags:
+  - slug: blockchain
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zpvy5mue44mdffgvuyjm.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zpvy5mue44mdffgvuyjm.png)

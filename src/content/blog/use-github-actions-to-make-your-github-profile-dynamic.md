@@ -1,10 +1,18 @@
 ---
-title: "Use GitHub Actions to Make Your GitHub Profile Dynamic"
-date: "2023-04-09"
-summary: "Automatically Update Your Profile with Fresh Content and Showcase Your Latest Work"
-tags: ["github","career"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/t3ggg3o8so8btyijcxg3.png"
-authors: ["default"]
+title: Use GitHub Actions to Make Your GitHub Profile Dynamic
+date: '2023-04-09'
+summary: >-
+  Automatically Update Your Profile with Fresh Content and Showcase Your Latest
+  Work
+tags:
+  - slug: github
+    collection: tags
+  - slug: career
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/t3ggg3o8so8btyijcxg3.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/t3ggg3o8so8btyijcxg3.png)

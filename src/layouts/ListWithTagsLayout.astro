@@ -1,19 +1,20 @@
 ---
-import tagsData from '../data/tags.json';
+import { getCollection } from "astro:content";
 import Link from "../components/Link.astro";
 import Pagination from "../components/Pagination.astro";
 import RootLayout from "./RootLayout.astro";
 import Tag from "../components/Tag.astro";
 import FormattedDate from "../components/FormattedDate.astro";
-import { fetchAndSortBlogPosts, excludeDrafts } from '../functions';
 
 interface PageData {
   data: {
-    id: string;
-    date: string;
-    title: string;
-    summary: string;
-    tags: string[];
+    slug: string;
+    data?: {
+      date: Date;
+      title: string;
+      summary: string;
+      tags: ({ collection: "tags"; slug: string } | string | undefined)[];
+    };
   }[];
   url: {
     next: string | null;
@@ -28,19 +29,31 @@ interface Props {
 }
 
 const { title, description, page } = Astro.props;
-const hasDefaultSlot = Astro.slots.has('default');
-const isBlogPage = Astro.url.pathname.startsWith('/blog');
+const hasDefaultSlot = Astro.slots.has("default");
+const isBlogPage = Astro.url.pathname.startsWith("/blog");
 
-const posts = await fetchAndSortBlogPosts();
-const filteredPosts = posts.filter(excludeDrafts);
+// Fetch all blog posts and exclude drafts
+const allPosts = await getCollection("blog");
+const filteredPosts = allPosts.filter((post) => !post.data.draft);
 
-// 🧠 Count how many times each tag appears in the blog posts
+// Count tag occurrences
 const tagCounts: Record<string, number> = {};
 for (const post of filteredPosts) {
-  const postTags = Array.isArray(post.tags) ? post.tags : [post.tags];
+  const postTags = post.data.tags || [];
   for (const tag of postTags) {
-    const normalized = tag.toLowerCase();
-    tagCounts[normalized] = (tagCounts[normalized] || 0) + 1;
+    const tagSlug =
+      typeof tag === "string"
+        ? tag.toLowerCase()
+        : tag && typeof tag === "object" && "slug" in tag
+        ? tag.slug.toLowerCase()
+        : null;
+
+    if (!tagSlug) {
+      console.warn("⚠️ Invalid tag in post:", post.slug, "→", tag);
+      continue;
+    }
+
+    tagCounts[tagSlug] = (tagCounts[tagSlug] || 0) + 1;
   }
 }
 
@@ -50,7 +63,8 @@ function isSamePath(path: string) {
 
 export const prerender = true;
 
-const tags = Object.values(tagsData);
+// Load all tags
+const tagsCollection = await getCollection("tags");
 ---
 
 <RootLayout {title} {description}>
@@ -67,7 +81,7 @@ const tags = Object.values(tagsData);
       </h1>
       {hasDefaultSlot && (
         <div class="prose font-mono text-terminal-green py-4">
-          <slot/>
+          <slot />
         </div>
       )}
     </div>
@@ -82,22 +96,21 @@ const tags = Object.values(tagsData);
           )}
 
           <ul class="mt-4 space-y-2">
-            {tags.map(({ id, name }) => {
-              const normalized = id.toLowerCase();
-              const count = tagCounts[normalized] || 0;
+            {tagsCollection.map(({ slug, data }) => {
+              const count = tagCounts[slug.toLowerCase()] || 0;
               return (
-                <li key={id}>
-                  {isSamePath(`/tags/${id}`) ? (
+                <li key={slug}>
+                  {isSamePath(`/tags/${slug}`) ? (
                     <h3 class="text-terminal-bright font-mono">
-                      > {name} [{count}]
+                      > {data.name} [{count}]
                     </h3>
                   ) : (
                     <Link
-                      href={`/tags/${id}`}
+                      href={`/tags/${slug}`}
                       class="retro-link"
-                      aria-label={`View posts tagged ${name}`}
+                      aria-label={`View posts tagged ${data.name}`}
                     >
-                      {name} [{count}]
+                      {data.name} [{count}]
                     </Link>
                   )}
                 </li>
@@ -109,35 +122,48 @@ const tags = Object.values(tagsData);
 
       <div class="flex-1">
         <ul class="divide-y divide-terminal-dim">
-          {page?.data?.map(({ id, date, title, summary, tags }) => (
-            <li class="py-5" key={id}>
-              <article class="space-y-4">
-                <dl>
-                  <dt class="sr-only">Published on</dt>
-                  <dd class="font-mono text-terminal-dim">
-                    > DATE: <FormattedDate date={date} />
-                  </dd>
-                </dl>
-                <div class="space-y-3">
-                  <div>
-                    <h3 class="text-2xl font-mono">
-                      <Link href={`/blog/${id}`} class="retro-link">
-                        {title}
-                      </Link>
-                    </h3>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                      {tags.map(tag => (
-                        <Tag slug={tag} key={tag} />
-                      ))}
+          {page?.data?.map((entry) => {
+            const post = entry.data;
+            if (!post) return null;
+
+            return (
+              <li class="py-5" key={entry.slug}>
+                <article class="space-y-4">
+                  <dl>
+                    <dt class="sr-only">Published on</dt>
+                    <dd class="font-mono text-terminal-dim">
+                      > DATE: <FormattedDate date={post.date} />
+                    </dd>
+                  </dl>
+                  <div class="space-y-3">
+                    <div>
+                      <h3 class="text-2xl font-mono">
+                        <Link href={`/blog/${entry.slug}`} class="retro-link">
+                          {post.title}
+                        </Link>
+                      </h3>
+                      <div class="flex flex-wrap gap-2 mt-2">
+                        {post.tags
+                          .map((tag) => {
+                            if (typeof tag === "string") return tag;
+                            if (tag && typeof tag === "object" && "slug" in tag) return tag.slug;
+                            console.warn("⚠️ Tag not found or slug missing:", tag);
+                            return null;
+                          })
+                          .filter(Boolean)
+                          .map((slug) => (
+                            <Tag slug={slug} key={slug} />
+                          ))}
+                      </div>
+                    </div>
+                    <div class="font-mono text-terminal-green">
+                      {post.summary}
                     </div>
                   </div>
-                  <div class="font-mono text-terminal-green">
-                    {summary}
-                  </div>
-                </div>
-              </article>
-            </li>
-          )) || (
+                </article>
+              </li>
+            );
+          }) || (
             <p class="text-terminal-dim font-mono">
               ERROR: Invalid page data.
             </p>

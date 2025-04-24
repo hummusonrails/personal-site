@@ -1,10 +1,16 @@
 ---
-title: "ChatGPT for Gmail: The Chrome Extension to Fine-Tune Your Emails"
-date: "2023-04-13"
-summary: "Transform Your Gmail Drafts with Style: An Open Source Chrome Extension Powered by ChatGPT"
-tags: ["ai"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/shdqscanh9wyou3mfy0h.png"
-authors: ["default"]
+title: 'ChatGPT for Gmail: The Chrome Extension to Fine-Tune Your Emails'
+date: '2023-04-13'
+summary: >-
+  Transform Your Gmail Drafts with Style: An Open Source Chrome Extension
+  Powered by ChatGPT
+tags:
+  - slug: ai
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/shdqscanh9wyou3mfy0h.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/shdqscanh9wyou3mfy0h.png)

@@ -1,10 +1,14 @@
 ---
-title: "Get Verified on Bluesky Social With Your GoDaddy Domain"
-date: "2023-04-26"
-summary: "A step-by-step guide to verifying your GoDaddy domain with Bluesky Social"
-tags: ["tutorial"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dyuyidoqpgk23bb3zomx.png"
-authors: ["default"]
+title: Get Verified on Bluesky Social With Your GoDaddy Domain
+date: '2023-04-26'
+summary: A step-by-step guide to verifying your GoDaddy domain with Bluesky Social
+tags:
+  - slug: tutorial
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dyuyidoqpgk23bb3zomx.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dyuyidoqpgk23bb3zomx.png)

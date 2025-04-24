@@ -1,10 +1,14 @@
 ---
-title: "Decoding Polkadot"
-date: "2023-05-30"
-summary: "Breaking down the core concepts of Polkadot for developers"
-tags: ["blockchain"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kcn4uyjw5utqa87wp1di.png"
-authors: ["default"]
+title: Decoding Polkadot
+date: '2023-05-30'
+summary: Breaking down the core concepts of Polkadot for developers
+tags:
+  - slug: blockchain
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kcn4uyjw5utqa87wp1di.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kcn4uyjw5utqa87wp1di.png)

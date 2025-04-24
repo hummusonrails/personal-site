@@ -1,19 +1,35 @@
 ---
-import { fetchAndSortBlogPosts, excludeDrafts } from '../../functions';
+import { getCollection, getEntry } from "astro:content";
 import PostLayout from "@/layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
-  const posts = await fetchAndSortBlogPosts();
-  const filteredPosts = posts.filter(excludeDrafts);
-  
+  const posts = await getCollection("blog");
+  const filteredPosts = posts.filter((post) => !post.data.draft);
+
   return filteredPosts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
+    params: { slug: post.slug },
   }));
 }
 
-const { post } = Astro.props;
+const { slug } = Astro.params;
+const entry = await getEntry("blog", slug);
 
-export const prerender = true
+if (!entry) {
+  throw new Error(`Post not found for slug: ${slug}`);
+}
+
+// Extract frontmatter and render content
+const { Content } = await entry.render();
+
+const post = {
+  title: entry.data.title,
+  date: entry.data.date,
+  summary: entry.data.summary,
+  tags: entry.data.tags,
+  authors: entry.data.authors,
+  Component: Content,
+};
+
+export const prerender = true;
 ---
-<PostLayout {...Astro.props} />
+<PostLayout post={post} />

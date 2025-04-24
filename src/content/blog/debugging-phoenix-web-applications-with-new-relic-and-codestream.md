@@ -1,10 +1,19 @@
 ---
-title: "Debugging Phoenix web applications with New Relic and CodeStream"
-date: "2022-02-23"
-summary: "While Elixir and Phoenix are blazing fast, you still have to watch out for performance issues in your production applications. You can use New Relic One to identify issues in your Phoenix application’s performance."
-tags: ["elixir","monitoring"]
-image: "https://res.cloudinary.com/practicaldev/image/fetch/s--wyk6-g8d--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/16x9_600w/public/2021-07/photo-1564865878688-9a244444042a.jpeg"
-authors: ["default"]
+title: Debugging Phoenix web applications with New Relic and CodeStream
+date: '2022-02-23'
+summary: >-
+  While Elixir and Phoenix are blazing fast, you still have to watch out for
+  performance issues in your production applications. You can use New Relic One
+  to identify issues in your Phoenix application’s performance.
+tags:
+  - slug: elixir
+    collection: tags
+  - slug: monitoring
+    collection: tags
+image: >-
+  https://res.cloudinary.com/practicaldev/image/fetch/s--wyk6-g8d--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/16x9_600w/public/2021-07/photo-1564865878688-9a244444042a.jpeg
+authors:
+  - default
 ---
   
   ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--wyk6-g8d--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/16x9_600w/public/2021-07/photo-1564865878688-9a244444042a.jpeg)

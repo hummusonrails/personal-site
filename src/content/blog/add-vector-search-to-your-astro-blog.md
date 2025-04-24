@@ -1,10 +1,17 @@
 ---
-title: "Add Vector Search to Your Astro Blog"
-date: "2024-05-24"
-summary: "Learn how to transform user queries into vectors and search for similar content in your Astro blog. Turn user uncertainty into certainty with vector search."
-tags: ["tutorial"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pm8hf3a2n2swc171v3kp.png"
-authors: ["default"]
+title: Add Vector Search to Your Astro Blog
+date: '2024-05-24'
+summary: >-
+  Learn how to transform user queries into vectors and search for similar
+  content in your Astro blog. Turn user uncertainty into certainty with vector
+  search.
+tags:
+  - slug: tutorial
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pm8hf3a2n2swc171v3kp.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pm8hf3a2n2swc171v3kp.png)

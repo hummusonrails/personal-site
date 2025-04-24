@@ -121,8 +121,6 @@ img::after {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   background: repeating-linear-gradient(
     0deg,
     rgba(0, 255, 0, 0.1),
@@ -131,6 +129,13 @@ img::after {
     transparent 2px
   );
   pointer-events: none;
+}
+
+img {
+    max-width: 100%; /* Ensures image doesn't exceed container width */
+    height: auto; /* Maintains aspect ratio */
+    object-fit: contain; /* Ensures entire image is visible */
+    margin: 0 auto; /* Centers the image */
 }
 
 @keyframes flicker {
@@ -228,3 +233,11 @@ img::after {
   color: var(--terminal-dim);
 }
 
+#mobileMenuContainer {
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.95) 0%,
+        rgba(0, 20, 0, 0.95) 100%
+    );
+    backdrop-filter: blur(5px); /* Optional: adds a slight blur effect */
+}

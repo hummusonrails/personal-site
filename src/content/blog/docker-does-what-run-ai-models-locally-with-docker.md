@@ -1,10 +1,23 @@
 ---
-title: "Docker Does What?!? Run AI Models Locally with Docker"
-date: "2025-03-30"
-summary: "Docker Model Runner is a new feature that allows you to run, manage, and interact with AI models directly on your local machine. Forget about cloud setup hassles, expensive infrastructure, and latency. Now you can incorporate generative AI capabilities into your development workflow right from your machine."
-tags: ["ai","docker","productivity"]
-image: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fbj1ve2hwdxafvxfwugqp.png"
-authors: ["default"]
+title: Docker Does What?!? Run AI Models Locally with Docker
+date: '2025-03-30'
+summary: >-
+  Docker Model Runner is a new feature that allows you to run, manage, and
+  interact with AI models directly on your local machine. Forget about cloud
+  setup hassles, expensive infrastructure, and latency. Now you can incorporate
+  generative AI capabilities into your development workflow right from your
+  machine.
+tags:
+  - slug: ai
+    collection: tags
+  - slug: docker
+    collection: tags
+  - slug: productivity
+    collection: tags
+image: >-
+  https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fbj1ve2hwdxafvxfwugqp.png
+authors:
+  - default
 ---
 
 ![header image](https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fbj1ve2hwdxafvxfwugqp.png)

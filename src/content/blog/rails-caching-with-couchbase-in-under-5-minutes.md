@@ -1,10 +1,16 @@
 ---
-title: "Rails Caching With Couchbase in Under 5 Minutes"
-date: "2024-06-24"
-summary: "Reduce your data sprawl and learn how to implement caching in a Rails application using Couchbase in under 5 minutes."
-tags: ["tutorial"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dsljn7699sl2xypflfmn.png"
-authors: ["default"]
+title: Rails Caching With Couchbase in Under 5 Minutes
+date: '2024-06-24'
+summary: >-
+  Reduce your data sprawl and learn how to implement caching in a Rails
+  application using Couchbase in under 5 minutes.
+tags:
+  - slug: tutorial
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dsljn7699sl2xypflfmn.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dsljn7699sl2xypflfmn.png)

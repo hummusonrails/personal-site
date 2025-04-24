@@ -1,10 +1,21 @@
 ---
-title: "Navigating NerdGraph with the New Relic Postman API collection"
-date: "2022-06-22"
-summary: "Today we’re going to explore how to use Postman to navigate the New Relic GraphQL API, NerdGraph, and use it to explore your telemetry data, update your account, and a lot more. Postman provides a lot of support for building with APIs and with the recently released New Relic public API collection, you can leverage that support to supercharge your usage of our GraphQL API."
-tags: ["tutorial","monitoring"]
-image: "https://newrelic.com/sites/default/files/styles/16x9_1200w/public/2022-06/blue-graph-credit-conny-schneider.webp"
-authors: ["default"]
+title: Navigating NerdGraph with the New Relic Postman API collection
+date: '2022-06-22'
+summary: >-
+  Today we’re going to explore how to use Postman to navigate the New Relic
+  GraphQL API, NerdGraph, and use it to explore your telemetry data, update your
+  account, and a lot more. Postman provides a lot of support for building with
+  APIs and with the recently released New Relic public API collection, you can
+  leverage that support to supercharge your usage of our GraphQL API.
+tags:
+  - slug: tutorial
+    collection: tags
+  - slug: monitoring
+    collection: tags
+image: >-
+  https://newrelic.com/sites/default/files/styles/16x9_1200w/public/2022-06/blue-graph-credit-conny-schneider.webp
+authors:
+  - default
 ---
   
   ![header image](https://newrelic.com/sites/default/files/styles/16x9_1200w/public/2022-06/blue-graph-credit-conny-schneider.webp)

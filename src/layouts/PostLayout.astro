@@ -16,7 +16,21 @@ interface Props {
 }
 
 const { post, next, prev } = Astro.props as Props;
-const authors = [await getAuthor()];
+
+const authorRefs = Array.isArray(post.authors) ? post.authors : [post.authors];
+
+const authors = await Promise.all(
+  authorRefs.map((ref) => {
+    const slug = typeof ref === "string" ? ref : ref?.slug || ref?.id;
+    if (!slug) {
+      console.warn("⚠️ Invalid author ref:", ref);
+      return null;
+    }
+    return getAuthor(slug);
+  })
+);
+
+const filteredAuthors = authors.filter(Boolean);
 const tags = await getTags(post.tags || []);
 const content = post.content ? post.content : "";
 
@@ -52,8 +66,8 @@ export const prerender = true;
           <dt class="sr-only">Authors</dt>
           <dd>
             <ul class="flex flex-wrap justify-center items-center gap-4 xl:flex-col">
-              {authors.map(({ id, name, avatar, twitter }) => (
-                <li class="flex items-center gap-4" key={id}>
+              {filteredAuthors.map(({ slug, name, avatar, twitter }) => (
+                <li class="flex items-center gap-4" key={slug}>
                   {avatar && (
                     <Image 
                       src={avatar || "/placeholder.svg"} 
@@ -94,7 +108,7 @@ export const prerender = true;
                 <h2 class="text-terminal-bright font-mono mb-2">> TAGS:</h2>
                 <div class="flex flex-wrap gap-2">
                   {tags.map((tag) => (
-                    <Tag tag={tag} slug={tag.id} key={tag.id} />
+                    <Tag tag={tag} slug={tag.slug} key={tag.slug} />
                   ))}
                 </div>
               </div>
