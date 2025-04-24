@@ -1,63 +1,73 @@
 ---
-import { type Page, type CollectionEntry } from 'astro:content';
+import { getCollection, getEntry } from "astro:content";
 import ListWithTagsLayout from "../../../layouts/ListWithTagsLayout.astro";
 import { ITEMS_PER_PAGE } from "@/consts";
-import tags from '../../../data/tags.json';
-import { fetchAndSortBlogPosts, excludeDrafts } from '../../../functions';
 
 interface Props {
-    page: Page<CollectionEntry<'blog'>>;
-    tag: string;
-    slug: string;
+  page: {
+    data: {
+      slug: string;
+      data: {
+        title: string;
+        summary: string;
+        date: Date;
+        tags: ({ collection: "tags"; slug: string } | string)[];
+      };
+    }[];
+    url: {
+      next: string | null;
+      prev: string | null;
+    };
+  };
+  slug: string;
 }
 
+const { slug, page } = Astro.props;
+
+// Look up tag data from content collection
+const tagEntry = await getEntry("tags", slug);
+const tagData = tagEntry?.data;
+
 export async function getStaticPaths({ paginate }) {
-  const posts = await fetchAndSortBlogPosts();
-  const filteredPosts = posts.filter(excludeDrafts);
+  const posts = await getCollection("blog");
+  const filteredPosts = posts.filter((post) => !post.data.draft);
 
-  const allTags = [...new Set(filteredPosts.flatMap((post) =>
-    Array.isArray(post.tags) ? post.tags : [post.tags]
-  ))];
+  // Flatten and collect all tag slugs used
+  const tagSet = new Set<string>();
+  for (const post of filteredPosts) {
+    for (const tag of post.data.tags || []) {
+      const slug = typeof tag === "string" ? tag : tag.slug;
+      tagSet.add(slug);
+    }
+  }
 
-  const paths = allTags.flatMap((tag) => {
-    const tagPosts = filteredPosts.filter((post) =>
-      (Array.isArray(post.tags) ? post.tags : [post.tags]).includes(tag)
-    );
+  const paths = Array.from(tagSet).flatMap((tagSlug) => {
+    const tagPosts = filteredPosts
+      .filter((post) =>
+        (post.data.tags || []).some((tag) =>
+          typeof tag === "string" ? tag === tagSlug : tag.slug === tagSlug
+        )
+      )
+      .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()) // ✅ newest first
+      .map((post) => ({
+        slug: post.slug,
+        data: post.data,
+      }));
 
-    const paginated = paginate(tagPosts, {
+    return paginate(tagPosts, {
       pageSize: ITEMS_PER_PAGE,
-      params: { slug: tag }
-    });
-
-    return paginated.map((p, index) => {
-      const pageNum = index + 1;
-      return {
-        params: {
-          slug: tag,
-          ...(pageNum === 1 ? {} : { page: String(pageNum) })
-        },
-        props: {
-          page: p.props.page,
-          tag
-        }
-      };
+      params: { slug: tagSlug },
+      props: { slug: tagSlug },
     });
   });
 
   return paths;
 }
 
-const { page, tag } = Astro.props;
-const tagData = tags[tag.toLowerCase()];
-
-if (!tagData) {
-  console.error(`Tag data not found for: ${formattedTagId}`);
-} else {
-  console.log(`Tag data: ${JSON.stringify(tagData, null, 2)}`);
-}
-
 export const prerender = true;
-
 ---
-<ListWithTagsLayout title={`Posts tagged with "${tagData?.name || 'Unknown'}"`} page={page} description={tagData?.description || ''}>
-</ListWithTagsLayout>
+<ListWithTagsLayout
+  title={`Posts tagged with "${tagData?.name || slug}"`}
+  description={tagData?.description || ''}
+  page={page}
+/>

@@ -1,10 +1,19 @@
 ---
-title: "Accelerating Substrate Blockchain Testing with GitHub Codespaces"
-date: "2023-03-15"
-summary: "Accelerate your Substrate blockchain development with GitHub Codespaces, a cloud-based development environment that lets you create and test your code in the cloud"
-tags: ["blockchain","rust"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zlfdb0dpk1lni6s4erwz.png"
-authors: ["default"]
+title: Accelerating Substrate Blockchain Testing with GitHub Codespaces
+date: '2023-03-15'
+summary: >-
+  Accelerate your Substrate blockchain development with GitHub Codespaces, a
+  cloud-based development environment that lets you create and test your code in
+  the cloud
+tags:
+  - slug: blockchain
+    collection: tags
+  - slug: rust
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zlfdb0dpk1lni6s4erwz.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zlfdb0dpk1lni6s4erwz.png)

@@ -1,10 +1,18 @@
 ---
-title: "StackExchange Tutorial Themes: Using ChatGPT to Discover Relevant Topics"
-date: "2023-03-31"
-summary: "A personal exploration into using AI to analyze community questions and generate valuable learning resources for developer relations"
-tags: ["tutorial","ai"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m72rh6rjtl7vj02xbjsp.png"
-authors: ["default"]
+title: 'StackExchange Tutorial Themes: Using ChatGPT to Discover Relevant Topics'
+date: '2023-03-31'
+summary: >-
+  A personal exploration into using AI to analyze community questions and
+  generate valuable learning resources for developer relations
+tags:
+  - slug: tutorial
+    collection: tags
+  - slug: ai
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m72rh6rjtl7vj02xbjsp.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m72rh6rjtl7vj02xbjsp.png)

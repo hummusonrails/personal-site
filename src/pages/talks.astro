@@ -1,297 +1,74 @@
 ---
+import { getCollection } from "astro:content";
 import PresentationCard from "@/components/PresentationCard.astro";
-import {getEntry} from "astro:content"
 import RootLayout from "@/layouts/RootLayout.astro";
-import {SITE_METADATA} from '@/consts';
+import { SITE_METADATA } from '@/consts';
+
+const talks = await getCollection("talks");
+const sortedTalks = talks.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 ---
 
 <RootLayout title={SITE_METADATA.title}>
-    <div class="retro-container relative pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
-        <div class="absolute inset-0">
-        <div class="h-1/3 sm:h-2/3"></div>
-        </div>
-        <div class="relative max-w-7xl mx-auto">
-        <div class="text-center">
-            <h2 class="text-3xl tracking-tight font-extrabold sm:text-4xl">
-            Presentations
-            </h2>
-            <p class="mt-3 max-w-2xl mx-auto text-xl sm:mt-4">
-            Recent and upcoming talks and workshops given around the world
-            </p>
-        </div>
-    
-        <div class="retro-container flex flex-col">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Presentation
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Conference / Meetup
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Region
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Date
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Watch
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <PresentationCard
-                                    image={"static/images/presentations/hayadata.png"},
-                                    presentation={"How to Decipher User Uncertainty with GenAI and Vector Search"},
-                                    conference={"hayaData"},
-                                    region={"EMEA"},
-                                    date={"September 24, 2024"},
-                                    link={"https://youtu.be/MK1MymRdrvQ?si=-H0t69jl4so9tn4n"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/genaisummit.jpg"},
-                                    presentation={"Users Deserve Better How AI Can Deliver Better Search"},
-                                    conference={"GenAI Summit"},
-                                    region={"EMEA"},
-                                    date={"September 19, 2024"},
-                                    link={"https://youtu.be/wioS3dBvvF8?si=WnSut8emp913bCeE"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/tikal.png"},
-                                    presentation={"Decoding Search: Keyword, Semantic and Vector"},
-                                    conference={"Israel Tech Radar"},
-                                    region={"EMEA"},
-                                    date={"July 22, 2024"},
-                                    link={"https://youtu.be/hS0wdmBn1UI?si=JBwBvqItgMNPQDUC"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/that.png"},
-                                    presentation={"Rust for High-Level Developers"},
-                                    conference={"THAT Conference Wisconsin"},
-                                    region={"NA"},
-                                    date={"July 25, 2023"},
-                                    link={"https://that.us/events/wi/2023/"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/kcdc.png"},
-                                    presentation={"Rust for High-Level Developers"},
-                                    conference={"KCDC"},
-                                    region={"NA"},
-                                    date={"June 22, 2023"},
-                                    link={"https://www.kcdc.info/"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/polkadot_prague.png"},
-                                    presentation={"From dApp to Parachain"},
-                                    conference={"Polkadot Prague"},
-                                    region={"EMEA"},
-                                    date={"June 5, 2023"},
-                                    link={"https://youtu.be/NvBNFCTtYRw?si=fBPpSeud5MzyN_Vu"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/devoxx_greece.jpeg"},
-                                    presentation={"Rust for High-Level Developers"},
-                                    conference={"Devoxx Greece"},
-                                    region={"EMEA"},
-                                    date={"May 4, 2023"},
-                                    link={"https://youtu.be/avz_SQZMxCU"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/codementor.png"},
-                                    presentation={"Becoming and Hiring Second Career Developers"},
-                                    conference={"CodeMentor"},
-                                    region={"NA"},
-                                    date={"July 28, 2022"},
-                                    link={"https://www.codementor.io/events/second-career-developers-eqx6yh2c5s"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/toorcamp.png"},
-                                    presentation={"Build Your Own Synthetics Monitoring Workshop"},
-                                    conference={"ToorCamp"},
-                                    region={"NA"},
-                                    date={"July 14, 2022"},
-                                    link={"https://talks.toorcon.net/toorcamp-2020-2019/talk/7RCSTX/"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/statscraft.png"},
-                                    presentation={"Monitoring Like a Human with Synthetics"},
-                                    conference={"StatsCraft"},
-                                    region={"EMEA"},
-                                    date={"July 7, 2022"},
-                                    link={"https://youtu.be/AKCJ--EDWYo"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/wad_2022.png"},
-                                    presentation={"Telemetry without the Tool Tax"},
-                                    conference={"WeAreDevelopers"},
-                                    region={"EMEA"},
-                                    date={"June 14, 2022"},
-                                    link={"https://www.wearedevelopers.com/world-congress"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/jsconf_budapest_2022.jpeg"},
-                                    presentation={ "Build Your Own Synthetics Monitoring Workshop"},
-                                    conference={"JSConf Budapest"},
-                                    region={"EMEA"},
-                                    date={"June 1, 2022"},
-                                    link={"https://jsconfbp.com/workshops/newrelic-monitoring/"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/pycon_kenya_2022.png"},
-                                    presentation={"Applying Observability Practices to Software Development"},
-                                    conference={"PyCon Kenya"},
-                                    region={"EMEA"},
-                                    date={"May 6, 2022"},
-                                    link={"https://www.pyconke.org/"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/pycon_kenya_2022.png"},
-                                    presentation={"Best Practices for Building with External APIs"},
-                                    conference={"PyCon Kenya"},
-                                    region={"EMEA"},
-                                    date={"May 6, 2022"},
-                                    link={"https://www.pyconke.org/"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/rubyconf_2021.jpeg"},
-                                    presentation={"On Being An Early Career Dev In Your 30s"},
-                                    conference={"RubyConf"},
-                                    region={"NA"},
-                                    date={"November 10, 2021"},
-                                    link={"https://youtu.be/_YhBMu43Lm4?si=G1V5blEIXcJByC359"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/momentum_2021.png"},
-                                    presentation={"Best Practices for Building With External APIs"},
-                                    conference={"Momentum Dev Con"},
-                                    region={"NA"},
-                                    date={"October 15, 2021"},
-                                    link={"https://momentumdevcon.com/session/262839"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/dod_buffalo_2021.jpeg"},
-                                    presentation={"Creating Accessible Tooling with GitHub Actions"},
-                                    conference={"DevOpsDays Buffalo"},
-                                    region={"NA"},
-                                    date={"October 14, 2021"},
-                                    link={"https://devopsdays.org/events/2021-buffalo/welcome/"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/yougotthis_2021.jpeg"},
-                                    presentation={"On Being An Early Career Dev In Your 30s"},
-                                    conference={"You Got This"},
-                                    region={"EMEA"},
-                                    date={"October 14, 2021"},
-                                    link={"https://yougotthis.io/talks/being-a-second-career-dev"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/railsconf_2021.jpeg"},
-                                    presentation={"Self-Care on Rails"},
-                                    conference={"RailsConf"},
-                                    region={"NA"},
-                                    date={"April 12, 2021"},
-                                    link={"https://www.youtube.com/watch?v=svkvjzyXJkU"}
-                                />
-                                <PresentationCard
-                                    image={"static/images/presentations/nus_hackers.jpeg"},
-                                    presentation={"Ruby and Sentiment Analysis"}, 
-                                    conference={"NUS Hackers"}, 
-                                    region={"APAC"}, 
-                                    date={"March 20, 2021"}, 
-                                    link={"https://www.youtube.com/watch?v=lwp2A54e3fs"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/ruby_malaysia.jpeg"},
-                                    presentation={"Ruby and Sentiment Analysis"}, 
-                                    conference={"Ruby Malaysia"}, 
-                                    region={"APAC"}, 
-                                    date={"March 2, 2021"}, 
-                                    link={"https://www.meetup.com/ruby-malaysia/events/276226450/"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/fosdem.png"},
-                                    presentation={"Docs Portal Into A Docs Platform"}, 
-                                    conference={"FOSDEM"}, 
-                                    region={"EMEA"}, 
-                                    date={"February 20, 2021"}, 
-                                    link={"https://mirror.as35701.net/video.fosdem.org/2021/D.docs/ttdstation.mp4"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/api_the_docs.png"},
-                                    presentation={"Docs Portal Into A Platform Tool"}, 
-                                    conference={"API The Docs"}, 
-                                    region={"NA"}, 
-                                    date={"November 18, 2020"}, 
-                                    link={"https://www.youtube.com/watch?v=fk_UJ0DLQqg&feature=emb_title"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/devrelcon_earth.png"},
-                                    presentation={"Roots for Advocates"}, 
-                                    conference={"DevRelCon Earth"}, 
-                                    region={"Global"}, 
-                                    date={"July 2, 2020"}, 
-                                    link={"https://www.youtube.com/watch?v=o07iRbFaAy0&feature=emb_title"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/birmingham_rails.svg"},
-                                    presentation={"What's Love Got To Do With It?"}, 
-                                    conference={"Birmingham on Rails"}, 
-                                    region={"NA"}, 
-                                    date={"January 31, 2020"}, 
-                                    link={"https://birminghamonrails.com/"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/git_cat.png"},
-                                    presentation={"Open Source Communities of Starfish"}, 
-                                    conference={"GitHub Universe"}, 
-                                    region={"NA"}, 
-                                    date={"November 13, 2019"}, 
-                                    link={"https://githubuniverse.com/"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/rubyconf_2019.jpeg"},
-                                    presentation={"What's Love Got To Do With It?"}, 
-                                    conference={"RubyConf"}, 
-                                    region={"NA"}, 
-                                    date={"November 18, 2019"}, 
-                                    link={"https://www.youtube.com/watch?v=VREjv9ZTxPg"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/devrelcon_sf.png"},
-                                    presentation={"From the Pulpit to DevRel"}, 
-                                    conference={"DevRelCon San Francisco"}, 
-                                    region={"NA"}, 
-                                    date={"June 6, 2019"}, 
-                                    link={"https://devrel.net/dev-rel/how-being-a-rabbi-prepared-me-for-dev-rel"}
-                                />
-    
-                                <PresentationCard
-                                    image={"static/images/presentations/git_merge.png"},
-                                    presentation={"Git-Based Education for Developers"}, 
-                                    conference={"Git Merge"}, 
-                                    region={"EMEA"}, 
-                                    date={"Feburary 1, 2019"}, 
-                                    link={"https://www.youtube.com/watch?list=PL0lo9MOBetEFqBue4vNcTEnkBjgIQU1Q3&v=NPE7rA5887c"}
-                                />
-    
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="retro-container relative pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
+    <div class="absolute inset-0">
+      <div class="h-1/3 sm:h-2/3"></div>
     </div>
+    <div class="relative max-w-7xl mx-auto">
+      <div class="text-center">
+        <h2 class="text-3xl tracking-tight font-extrabold sm:text-4xl">
+          Presentations
+        </h2>
+        <p class="mt-3 max-w-2xl mx-auto text-xl sm:mt-4">
+          Recent and upcoming talks and workshops given around the world
+        </p>
+      </div>
+
+      <div class="retro-container flex flex-col">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Presentation
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Conference / Meetup
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Region
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Watch
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  {sortedTalks.map(({ id, data }) => (
+                    <PresentationCard
+                      key={id}
+                      image={data.image}
+                      presentation={data.presentation}
+                      conference={data.conference}
+                      region={data.region}
+                      date={new Date(data.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                      link={data.link}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </RootLayout>

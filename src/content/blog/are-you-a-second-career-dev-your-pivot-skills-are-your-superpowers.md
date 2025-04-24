@@ -1,10 +1,17 @@
 ---
-title: "Are You a Second Career Dev? Your Pivot Skills Are Your Superpowers"
-date: "2022-01-05"
-summary: "I am here to tell you that as a second career developer you have something that can be an incredible boost to your work. Counter-intuitively, this boost is often seen as a detraction."
-tags: ["career"]
-image: "https://res.cloudinary.com/practicaldev/image/fetch/s--71z0bodu--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dg7cvizczuobas8r7i31.png"
-authors: ["default"]
+title: Are You a Second Career Dev? Your Pivot Skills Are Your Superpowers
+date: '2022-01-05'
+summary: >-
+  I am here to tell you that as a second career developer you have something
+  that can be an incredible boost to your work. Counter-intuitively, this boost
+  is often seen as a detraction.
+tags:
+  - slug: career
+    collection: tags
+image: >-
+  https://res.cloudinary.com/practicaldev/image/fetch/s--71z0bodu--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dg7cvizczuobas8r7i31.png
+authors:
+  - default
 ---
   
   ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--71z0bodu--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dg7cvizczuobas8r7i31.png)

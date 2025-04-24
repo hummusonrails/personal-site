@@ -1,10 +1,16 @@
 ---
-title: "What's New in Developer Trends in 2024"
-date: "2024-07-26"
-summary: "Discover top developer trends from the 2024 Stack Overflow survey, including insights on Ruby, databases and web development"
-tags: ["career"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/lg84ypuyae67v11gwqrw.png"
-authors: ["default"]
+title: What's New in Developer Trends in 2024
+date: '2024-07-26'
+summary: >-
+  Discover top developer trends from the 2024 Stack Overflow survey, including
+  insights on Ruby, databases and web development
+tags:
+  - slug: career
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/lg84ypuyae67v11gwqrw.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/lg84ypuyae67v11gwqrw.png)

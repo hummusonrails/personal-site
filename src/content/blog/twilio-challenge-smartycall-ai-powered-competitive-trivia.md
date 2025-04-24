@@ -1,10 +1,26 @@
 ---
-title: "Twilio Challenge: SmartyCall - AI Powered Competitive Trivia"
-date: "2024-06-18"
-summary: "Play competitive trivia with friends using Twilio's Voice and SMS APIs, OpenAI's language model, and Couchbase for data storage."
-tags: ["showcase","openai","twilio","couchbase","nodejs","expressjs"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pj2wbro9ulfbbc775obs.png"
-authors: ["default"]
+title: 'Twilio Challenge: SmartyCall - AI Powered Competitive Trivia'
+date: '2024-06-18'
+summary: >-
+  Play competitive trivia with friends using Twilio's Voice and SMS APIs,
+  OpenAI's language model, and Couchbase for data storage.
+tags:
+  - slug: showcase
+    collection: tags
+  - slug: openai
+    collection: tags
+  - slug: twilio
+    collection: tags
+  - slug: couchbase
+    collection: tags
+  - slug: nodejs
+    collection: tags
+  - slug: expressjs
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pj2wbro9ulfbbc775obs.png
+authors:
+  - default
 ---
   
 ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pj2wbro9ulfbbc775obs.png)

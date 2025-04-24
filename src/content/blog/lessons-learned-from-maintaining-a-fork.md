@@ -1,10 +1,16 @@
 ---
-title: "Lessons learned from maintaining a fork"
-date: "2022-02-14"
-summary: "Committing to maintain a fork of an active project has distinct challenges I have learned. In brief, they center on two themes..."
-tags: ["github"]
-image: "https://res.cloudinary.com/practicaldev/image/fetch/s--uQPm8vCF--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/aguuykcq634wqlhvmr6i.png"
-authors: ["default"]
+title: Lessons learned from maintaining a fork
+date: '2022-02-14'
+summary: >-
+  Committing to maintain a fork of an active project has distinct challenges I
+  have learned. In brief, they center on two themes...
+tags:
+  - slug: github
+    collection: tags
+image: >-
+  https://res.cloudinary.com/practicaldev/image/fetch/s--uQPm8vCF--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/aguuykcq634wqlhvmr6i.png
+authors:
+  - default
 ---
   
   ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--uQPm8vCF--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/aguuykcq634wqlhvmr6i.png)

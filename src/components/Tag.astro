@@ -1,31 +1,31 @@
 ---
 import Link from "./Link.astro";
-import tagsData from "../data/tags.json";
+import { getEntry } from "astro:content";
 
 interface Props {
-  tag?: any;
-  slug?: string;
+  slug: string;
 }
 
-let Tag = Astro.props.tag;
+const rawSlug = Astro.props.slug;
+const slug = typeof rawSlug === "string" ? rawSlug.toLowerCase() : null;
 
-if (!Tag && Astro.props.slug) {
-  const slug = Astro.props.slug.toLowerCase();
-  Tag = tagsData[slug];
+let tagEntry = null;
+if (slug) {
+  tagEntry = await getEntry("tags", slug);
 }
 
-if (!Tag) {
-  throw new Error(`Tag with slug "${Astro.props.slug}" not found in local tags.json`);
+if (!slug || !tagEntry) {
+  console.warn(`⚠️ Tag not found or slug missing:`, rawSlug);
+  // Optionally: return nothing
+  return null;
 }
 
-const { id: slug, name } = Tag;
-
-export const prerender = true;
+const { data } = tagEntry;
 ---
 
 <Link
   href={`/tags/${slug}`}
   class="mr-3 text-sm font-medium uppercase text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
 >
-  {name}
+  {data.name}
 </Link>

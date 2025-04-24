@@ -1,26 +1,37 @@
 ---
 import RootLayout from "@/layouts/RootLayout.astro";
 import Link from "@/components/Link.astro";
-import tagsData from '../../data/tags.json';
-import { fetchAndSortBlogPosts, excludeDrafts } from '../../functions';
+import { getCollection, getEntry } from "astro:content";
+import { fetchAndSortBlogPosts, excludeDrafts } from "../../functions";
 
 const posts = await fetchAndSortBlogPosts();
 const filteredPosts = posts.filter(excludeDrafts);
 
+// Count tag occurrences
 const tagCounts = {};
 for (const post of filteredPosts) {
-  const tagList = Array.isArray(post.tags) ? post.tags : [post.tags];
-  for (const tag of tagList) {
-    const key = tag.toLowerCase();
-    tagCounts[key] = (tagCounts[key] || 0) + 1;
+  const tags = Array.isArray(post.tags) ? post.tags : [post.tags];
+  for (const tag of tags) {
+    const slug = typeof tag === "string" ? tag : tag?.slug || tag?.id;
+    if (!slug) {
+      console.warn("⚠️ Tag not found or slug missing:", tag);
+      continue;
+    }
+    tagCounts[slug.toLowerCase()] = (tagCounts[slug.toLowerCase()] || 0) + 1;
   }
 }
 
-const tags = Object.entries(tagsData).map(([slug, tag]) => ({
-  slug,
-  name: tag.name,
-  count: tagCounts[slug.toLowerCase()] || 0
-})).filter(tag => tag.count > 0);
+// Get full tag metadata
+const tagEntries = await getCollection("tags");
+
+const tags = tagEntries
+  .map(({ slug, data }) => ({
+    slug,
+    name: data.name,
+    count: tagCounts[slug.toLowerCase()] || 0
+  }))
+  .filter((tag) => tag.count > 0)
+  .sort((a, b) => b.count - a.count);
 
 export const prerender = true;
 ---

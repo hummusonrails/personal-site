@@ -1,10 +1,17 @@
 ---
-title: "Launching Your Astro Powered Blog on a Journey to Couchbase"
-date: "2024-05-19"
-summary: "Learn how to transform your Astro site by integrating Couchbase for a more dynamic and high-performing blog. Discover the step-by-step process and the benefits of leveraging a NoSQL database for your content."
-tags: ["tutorial"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xaa988pg5o5idrmxiqmx.png"
-authors: ["default"]
+title: Launching Your Astro Powered Blog on a Journey to Couchbase
+date: '2024-05-19'
+summary: >-
+  Learn how to transform your Astro site by integrating Couchbase for a more
+  dynamic and high-performing blog. Discover the step-by-step process and the
+  benefits of leveraging a NoSQL database for your content.
+tags:
+  - slug: tutorial
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xaa988pg5o5idrmxiqmx.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xaa988pg5o5idrmxiqmx.png)

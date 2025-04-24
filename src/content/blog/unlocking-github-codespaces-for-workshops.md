@@ -1,10 +1,18 @@
 ---
-title: "Unlocking GitHub Codespaces for Workshops"
-date: "2023-05-22"
-summary: "Teaching code to people of all skill levels has never been easier thanks to Codespaces"
-tags: ["github","blockchain"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/h8fo7aokdcnsrwh6wu6j.png"
-authors: ["default"]
+title: Unlocking GitHub Codespaces for Workshops
+date: '2023-05-22'
+summary: >-
+  Teaching code to people of all skill levels has never been easier thanks to
+  Codespaces
+tags:
+  - slug: github
+    collection: tags
+  - slug: blockchain
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/h8fo7aokdcnsrwh6wu6j.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/h8fo7aokdcnsrwh6wu6j.png)

@@ -1,10 +1,21 @@
 ---
-title: "A ChatGPT GitHub Action for Reviewing Text for Potentially Discriminatory Language"
-date: "2023-04-04"
-summary: "Discover the ChatGPT GitHub Action Language Check, an AI-powered tool that helps you eliminate discriminatory language in your writing and foster a more inclusive world."
-tags: ["github","ai"]
-image: "https://dev-to-uploads.s3.amazonaws.com/uploads/articles/fanioqnqfago5k9stj78.png"
-authors: ["default"]
+title: >-
+  A ChatGPT GitHub Action for Reviewing Text for Potentially Discriminatory
+  Language
+date: '2023-04-04'
+summary: >-
+  Discover the ChatGPT GitHub Action Language Check, an AI-powered tool that
+  helps you eliminate discriminatory language in your writing and foster a more
+  inclusive world.
+tags:
+  - slug: github
+    collection: tags
+  - slug: ai
+    collection: tags
+image: >-
+  https://dev-to-uploads.s3.amazonaws.com/uploads/articles/fanioqnqfago5k9stj78.png
+authors:
+  - default
 ---
   
   ![header image](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/fanioqnqfago5k9stj78.png)
