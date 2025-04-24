@@ -7,7 +7,7 @@ export async function GET() {
     .filter((t) => !t.data.draft)
     .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
     .map((talk) => ({
-      title: talk.data.title,
+      presentation: talk.data.presentation,
       conference: talk.data.conference,
       date: talk.data.date,
       region: talk.data.region,
