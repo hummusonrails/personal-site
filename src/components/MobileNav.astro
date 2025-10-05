@@ -2,25 +2,41 @@
 import {NAVIGATION} from '@/consts';
 ---
 
-<button aria-label="Toggle Menu" class="md:hidden toggle-menu p-2 hover:text-primary-500 transition-colors">
+<button 
+    id="mobileMenuToggle"
+    aria-label="Open Menu" 
+    aria-expanded="false"
+    aria-controls="mobileMenuContainer"
+    class="md:hidden toggle-menu p-2 hover:text-primary-500 transition-colors"
+>
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
     </svg>
 </button>
 
-<div id="mobileMenuContainer"
-     class="translate-x-full fixed left-0 top-0 z-50 h-full w-full transform bg-dark-bg backdrop-blur-lg bg-opacity-95 duration-300 ease-in-out">
+<div 
+    id="mobileMenuContainer"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="mobileMenuLabel"
+    class="translate-x-full fixed left-0 top-0 z-50 h-full w-full transform bg-dark-bg backdrop-blur-lg bg-opacity-95 duration-300 ease-in-out"
+>
     <div class="flex justify-end p-6">
-        <button class="toggle-menu p-2 hover:text-primary-500 transition-colors" aria-label="Close Menu">
+        <button 
+            id="mobileMenuClose"
+            class="toggle-menu p-2 hover:text-primary-500 transition-colors" 
+            aria-label="Close Menu"
+        >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
     </div>
     
-    <nav class="px-8 pt-8">
+    <nav class="px-8 pt-8" aria-label="Mobile navigation">
         <div class="mb-8">
-            <h2 class="text-sm font-semibold text-dark-text-muted mb-4 uppercase tracking-wider">Menu</h2>
+            <h2 id="mobileMenuLabel" class="text-sm font-semibold text-dark-text-muted mb-4 uppercase tracking-wider">Menu</h2>
         </div>
         
         {NAVIGATION.map(({href, title}) => (
@@ -36,47 +52,148 @@ import {NAVIGATION} from '@/consts';
 
 <script is:inline>
     function initMobileNav() {
-        const mobileToggleButton = document.querySelectorAll('.toggle-menu');
+        const mobileToggleButton = document.getElementById('mobileMenuToggle');
+        const mobileCloseButton = document.getElementById('mobileMenuClose');
         const mobileMenuContainer = document.getElementById('mobileMenuContainer');
         const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        
+        let lastFocusedElement = null;
+        let focusableElements = [];
+        let firstFocusableElement = null;
+        let lastFocusableElement = null;
 
-        // Ensure menu is closed on init
+        // Always reset state on every call
         if (mobileMenuContainer) {
             mobileMenuContainer.classList.add('translate-x-full');
             mobileMenuContainer.classList.remove('translate-x-0');
+            mobileMenuContainer.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
         }
+        
+        if (mobileToggleButton) {
+            mobileToggleButton.setAttribute('aria-expanded', 'false');
+        }
 
-        mobileToggleButton.forEach((button) => {
-            button.addEventListener('click', function() {
-                if (!mobileMenuContainer) return;
+        // Early exit if already initialized (prevent duplicate listeners)
+        if (mobileMenuContainer && mobileMenuContainer.hasAttribute('data-initialized')) {
+            return;
+        }
+
+        // Mark as initialized
+        if (mobileMenuContainer) {
+            mobileMenuContainer.setAttribute('data-initialized', 'true');
+        }
+
+        function openMenu() {
+            if (!mobileMenuContainer) return;
+            
+            // Store the element that had focus before opening
+            lastFocusedElement = document.activeElement;
+            
+            // Open menu
+            mobileMenuContainer.classList.remove('translate-x-full');
+            mobileMenuContainer.classList.add('translate-x-0');
+            mobileMenuContainer.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            
+            if (mobileToggleButton) {
+                mobileToggleButton.setAttribute('aria-expanded', 'true');
+            }
+            
+            // Get all focusable elements in the menu
+            focusableElements = mobileMenuContainer.querySelectorAll(
+                'button, a, [tabindex]:not([tabindex="-1"])'
+            );
+            firstFocusableElement = focusableElements[0];
+            lastFocusableElement = focusableElements[focusableElements.length - 1];
+            
+            // Focus the close button when menu opens
+            setTimeout(() => {
+                if (mobileCloseButton) {
+                    mobileCloseButton.focus();
+                }
+            }, 100);
+        }
+
+        function closeMenu() {
+            if (!mobileMenuContainer) return;
+            
+            // Close menu
+            mobileMenuContainer.classList.add('translate-x-full');
+            mobileMenuContainer.classList.remove('translate-x-0');
+            mobileMenuContainer.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            
+            if (mobileToggleButton) {
+                mobileToggleButton.setAttribute('aria-expanded', 'false');
+            }
+            
+            // Return focus to the toggle button
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+            } else if (mobileToggleButton) {
+                mobileToggleButton.focus();
+            }
+        }
+
+        function handleKeyDown(e) {
+            // Close menu on Escape key
+            if (e.key === 'Escape') {
+                const isMenuOpen = mobileMenuContainer && 
+                    mobileMenuContainer.classList.contains('translate-x-0');
+                if (isMenuOpen) {
+                    closeMenu();
+                }
+                return;
+            }
+            
+            // Trap focus within the menu when it's open
+            if (e.key === 'Tab') {
+                const isMenuOpen = mobileMenuContainer && 
+                    mobileMenuContainer.classList.contains('translate-x-0');
                 
+                if (!isMenuOpen) return;
+                
+                if (e.shiftKey) {
+                    // Shift + Tab
+                    if (document.activeElement === firstFocusableElement) {
+                        e.preventDefault();
+                        lastFocusableElement.focus();
+                    }
+                } else {
+                    // Tab
+                    if (document.activeElement === lastFocusableElement) {
+                        e.preventDefault();
+                        firstFocusableElement.focus();
+                    }
+                }
+            }
+        }
+
+        // Attach event listeners only once
+        if (mobileToggleButton) {
+            mobileToggleButton.addEventListener('click', function() {
                 const isNavHidden = !mobileMenuContainer.classList.contains('translate-x-0');
                 
                 if (isNavHidden) {
-                    // Open menu
-                    mobileMenuContainer.classList.remove('translate-x-full');
-                    mobileMenuContainer.classList.add('translate-x-0');
-                    document.body.style.overflow = 'hidden';
+                    openMenu();
                 } else {
-                    // Close menu
-                    mobileMenuContainer.classList.add('translate-x-full');
-                    mobileMenuContainer.classList.remove('translate-x-0');
-                    document.body.style.overflow = '';
+                    closeMenu();
                 }
             });
-        });
+        }
+
+        if (mobileCloseButton) {
+            mobileCloseButton.addEventListener('click', closeMenu);
+        }
 
         // Close menu when a link is clicked (for navigation)
         mobileNavLinks.forEach((link) => {
-            link.addEventListener('click', function() {
-                if (mobileMenuContainer) {
-                    mobileMenuContainer.classList.add('translate-x-full');
-                    mobileMenuContainer.classList.remove('translate-x-0');
-                    document.body.style.overflow = '';
-                }
-            });
+            link.addEventListener('click', closeMenu);
         });
+
+        // Add keyboard event listeners
+        document.addEventListener('keydown', handleKeyDown);
     }
 
     // Run on initial load
@@ -102,27 +219,27 @@ import {NAVIGATION} from '@/consts';
         transform: translateX(0);
     }
     
-    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-child(1) {
+    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-of-type(1) {
         transition-delay: 0ms;
     }
     
-    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-child(2) {
+    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-of-type(2) {
         transition-delay: 50ms;
     }
     
-    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-child(3) {
+    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-of-type(3) {
         transition-delay: 100ms;
     }
     
-    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-child(4) {
+    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-of-type(4) {
         transition-delay: 150ms;
     }
     
-    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-child(5) {
+    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-of-type(5) {
         transition-delay: 200ms;
     }
     
-    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-child(6) {
+    #mobileMenuContainer.translate-x-0 .mobile-nav-link:nth-of-type(6) {
         transition-delay: 250ms;
     }
 </style>
