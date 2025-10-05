@@ -6,57 +6,34 @@ import MobileNav from "./MobileNav.astro";
 import ThemeSwitcher from "./ThemeSwitcher.astro";
 ---
 
-<header class="retro-container mb-8">
-    <pre class="ascii-divider">
- ___________________
-|    SYSTEM MENU    |
-|___________________|
-    </pre>
-    
-    <div class="flex items-center justify-between py-4">
-        <a href="/" aria-label={SITE_METADATA.headerTitle} class="retro-link no-underline">
-            <div class="flex items-center">
-                <div class="mr-3">
-                    <Logo/>
-                </div>
+<header class="border-b border-dark-border mb-8">
+    <div class="section-container">
+        <div class="flex items-center justify-between py-6">
+            <a href="/" aria-label={SITE_METADATA.headerTitle} class="flex items-center gap-3 no-underline hover:opacity-80 transition-opacity">
+                <Logo/>
                 {typeof SITE_METADATA.headerTitle === 'string' ? (
-                    <div class="hidden h-6 text-2xl font-mono sm:block">
-                        > {SITE_METADATA.headerTitle}
-                    </div>
+                    <span class="hidden text-xl font-semibold sm:block">
+                        {SITE_METADATA.headerTitle}
+                    </span>
                 ) : (
                     SITE_METADATA.headerTitle
                 )}
+            </a>
+            
+            <div class="flex items-center gap-6">
+                <nav class="hidden md:flex gap-6 items-center">
+                    {NAVIGATION
+                        .filter((link) => link.href !== '/')
+                        .map((link) => (
+                            <a href={link.href} class="modern-link text-sm">
+                                {link.title}
+                            </a>
+                        ))}
+                </nav>
+
+                <ThemeSwitcher />
+                <MobileNav/>
             </div>
-        </a>
-        
-        <div class="flex items-center gap-4">
-            <nav class="hidden sm:flex gap-4">
-                {NAVIGATION
-                    .filter((link) => link.href !== '/')
-                    .map((link) => (
-                        <a href={link.href} class="retro-link">
-                            [{link.title}]
-                        </a>
-                    ))}
-            </nav>
-
-            <form action="/search" method="GET" class="flex">
-                <input 
-                    type="text" 
-                    name="q" 
-                    placeholder="SEARCH://"
-                    class="px-4 py-2 bg-terminal-black border border-terminal-green text-terminal-green font-mono focus:border-terminal-bright focus:outline-none"
-                />
-                <button 
-                    type="submit" 
-                    class="retro-button"
-                >
-                    [EXECUTE]
-                </button>
-            </form>
-
-            <ThemeSwitcher />
-            <MobileNav/>
         </div>
     </div>
 </header>

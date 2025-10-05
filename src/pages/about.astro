@@ -8,39 +8,78 @@ import { ViewTransitions } from "astro:transitions";
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
-    <div class="retro-container">
-        <pre class="ascii-divider">
- /===============================\
- |         PROFILE DATA         |
- \===============================/
-        </pre>
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="prose">
-                    <h2 class="text-terminal-bright">> INIT_INTRODUCTION</h2>
-                    <div class="mt-4 text-white">
-                        <p>LOCATION: Tel_Aviv < California</p>
-                        <p>STATUS: Seasoned_Developer_Educator && Community_Builder</p>
-                        <p>EXPERIENCE: Community_Building && Global_Operations</p>
-                    </div>
-                    
-                    <h3 class="text-terminal-bright mt-8">> CURRENT_OPERATION</h3>
-                    <p class="text-white">
-                        ROLE: Principal_Consultant && Founder
-                        <br/>ORGANIZATION: Yalla_DevRel_LLC
-                        <br/>MISSION: Scale_DevRel_Programs()
-                    </p>
-                    
-                    <h3 class="text-terminal-bright mt-8"> CONTACT_PROTOCOLS</h3>
-                    <ul class="list-none p-0">
-                        <li><a href="https://twitter.com/hummusonrails" class="retro-link">TWITTER::@hummusonrails</a></li>
-                        <li><a href="https://linkedin.com/in/hummusonrails" class="retro-link">LINKEDIN::hummusonrails</a></li>
-                        <li><a href="mailto:ben@yalladevrel.com" class="retro-link">EMAIL::ben@yalladevrel.com</a></li>
-                    </ul>
+    <div class="section-container animate-fade-in">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-12">
+                <p class="section-title">About Me</p>
+                <h1 class="text-4xl md:text-5xl font-bold">
+                    Building Communities, <span class="text-primary-500">Enabling Developers</span>
+                </h1>
+            </div>
+
+            <!-- Image Section -->
+            <div class="space-y-4 mb-12">
+                <div class="card overflow-hidden">
+                    <img 
+                        class="w-full h-auto object-cover" 
+                        src="static/images/with_group.jpeg" 
+                        alt="Ben with a developer community group"
+                    />
                 </div>
+                <p class="text-sm text-dark-text-muted text-center font-mono">
+                    Mentoring developers around the world
+                </p>
+            </div>
+
+            <!-- Content Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div>
-                    <img class="border border-terminal-green" src="static/images/about_image.png" alt="Ben Greenberg">
-                    <p class="text-terminal-dim mt-2 text-center">[SYSTEM_LOG: Ben presenting at Pluralsight]</p>
+                    <h2 class="text-2xl font-semibold mb-4">Introduction</h2>
+                    <div class="space-y-4 text-dark-text-secondary">
+                        <p>
+                            Based between Tel Aviv and Miami, I'm the Developer Relations Lead at Arbitrum and have been recognized by Docker as a Docker Captain. I serve on the board of Ruby Central and am deeply involved in the open-source community.
+                        </p>
+                        <p>
+                            Before moving into software development, I spent a decade in adult education, community organizing, and non-profit management. I write regularly about the intersection of technology, ethics, and community, and am the author of numerous technical articles and publications, including my latest book, <em>Vector Search with JavaScript</em>.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="text-xl font-semibold mb-3">Current Roles</h3>
+                    <div class="space-y-4 text-dark-text-secondary">
+                        <div>
+                            <p><strong class="text-white">Developer Relations Lead</strong></p>
+                            <p class="text-sm">Arbitrum</p>
+                        </div>
+                        <div>
+                            <p><strong class="text-white">Principal Consultant & Founder</strong></p>
+                            <p class="text-sm">Yalla DevRel LLC - Scaling developer relations programs</p>
+                        </div>
+                        <div class="pt-2 border-t border-dark-border">
+                            <p class="text-sm"><strong class="text-white">Recognition:</strong> Docker Captain & Ruby Central Board Member</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Connect</h3>
+                    <div class="flex flex-col gap-3">
+                        <a href="https://twitter.com/hummusonrails" 
+                           target="_blank"
+                           class="modern-link inline-block">
+                            Twitter
+                        </a>
+                        <a href="https://linkedin.com/in/hummusonrails" 
+                           target="_blank"
+                           class="modern-link inline-block">
+                            LinkedIn
+                        </a>
+                        <a href="mailto:ben@yalladevrel.com" 
+                           class="modern-link inline-block">
+                            Email
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -4,33 +4,57 @@ import {SITE_METADATA} from '@/consts'
 
 import Link from "./Link.astro";
 ---
-<footer class="retro-container mt-16">
-    <pre class="ascii-divider">
- ____________________
-|   SYSTEM FOOTER    |
-|____________________|
-    </pre>
-    
-    <div class="flex flex-col items-center gap-4">
-        <div class="flex gap-4">
-            <a href={`mailto:${SITE_METADATA.email}`} class="retro-link">[MAIL]</a>
-            <a href={SITE_METADATA.github} class="retro-link">[GITHUB]</a>
-            <a href={SITE_METADATA.linkedin} class="retro-link">[LINKEDIN]</a>
-            <a href={SITE_METADATA.twitter} class="retro-link">[TWITTER]</a>
-            <a href={SITE_METADATA.youtube} class="retro-link">[YOUTUBE]</a>
-            <a href={SITE_METADATA.substack} class="retro-link">[SUBSTACK]</a>
-        </div>
-        
-        <pre class="text-terminal-dim">
-==================================
-| {SITE_METADATA.author} © {new Date().getFullYear()} |
-==================================
-        </pre>
-        
-        <div class="flex gap-2 text-sm font-mono">
-            <a href="/about" class="retro-link">ABOUT</a>
-            <span class="text-terminal-dim">|</span>
-            <a href="/" class="retro-link">HOME</a>
+<footer class="border-t border-dark-border mt-16">
+    <div class="section-container">
+        <div class="py-8">
+            <div class="flex flex-col items-center gap-6">
+                <!-- Navigation & Social Links Combined -->
+                <div class="flex flex-wrap justify-center gap-4 md:gap-6 text-sm">
+                    <a href="/" class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        Home
+                    </a>
+                    <a href="/about" class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        About
+                    </a>
+                    <a href="/blog" class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        Blog
+                    </a>
+                    <a href="/book" class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        Book
+                    </a>
+                    <a href="/talks" class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        Talks
+                    </a>
+                    <a href="/projects" class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        Workshops
+                    </a>
+                    <span class="text-dark-text-muted">•</span>
+                    <a href={`mailto:${SITE_METADATA.email}`} 
+                       class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        Email
+                    </a>
+                    <a href={SITE_METADATA.github} 
+                       target="_blank"
+                       class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        GitHub
+                    </a>
+                    <a href={SITE_METADATA.linkedin} 
+                       target="_blank"
+                       class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        LinkedIn
+                    </a>
+                    <a href={SITE_METADATA.twitter} 
+                       target="_blank"
+                       class="text-dark-text-secondary hover:text-primary-500 transition-colors">
+                        Twitter
+                    </a>
+                </div>
+                
+                <!-- Copyright -->
+                <div class="text-sm text-dark-text-muted">
+                    © {new Date().getFullYear()} {SITE_METADATA.author}
+                </div>
+            </div>
         </div>
     </div>
 </footer>

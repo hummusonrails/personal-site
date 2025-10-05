@@ -17,9 +17,7 @@ const {title, description} = Astro.props;
 <html lang={SITE_METADATA.language} class="scroll-smooth">
     <ViewTransitions />
     <BaseHead title={title} description='Actualizing Developer Happiness' />
-    <body class="bg-terminal-black text-terminal-green antialiased min-h-screen font-mono">
-        <div class="fixed inset-0 bg-scan-lines pointer-events-none"></div>
-        
+    <body class="bg-dark-bg text-white antialiased min-h-screen">
         <SectionContainer>
             <div class="flex h-screen flex-col justify-between">
                 <Header/>
@@ -29,23 +27,5 @@ const {title, description} = Astro.props;
                 <Footer/>
             </div>
         </SectionContainer>
-        
-        <style is:global>
-            .bg-scan-lines {
-                background: repeating-linear-gradient(
-                    0deg,
-                    rgba(0, 255, 0, 0.03),
-                    rgba(0, 255, 0, 0.03) 1px,
-                    transparent 1px,
-                    transparent 2px
-                );
-                animation: scan 0.5s linear infinite;
-            }
-            
-            @keyframes scan {
-                from { transform: translateY(0); }
-                to { transform: translateY(2px); }
-            }
-        </style>
     </body>
 </html>

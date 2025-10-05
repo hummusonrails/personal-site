@@ -1,0 +1,161 @@
+---
+import RootLayout from "@/layouts/RootLayout.astro";
+import {SITE_METADATA} from '@/consts';
+---
+
+<RootLayout title="Vector Search with JavaScript - Book by Ben Greenberg" description="Learn to build AI-powered vector search applications with JavaScript. Published by The Pragmatic Bookshelf.">
+    <div class="section-container animate-fade-in">
+        <div class="max-w-6xl mx-auto">
+            <!-- Hero Section -->
+            <div class="mb-16">
+                <p class="section-title">New Book</p>
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                    Vector Search with <span class="text-primary-500">JavaScript</span>
+                </h1>
+                <p class="text-xl text-dark-text-secondary max-w-3xl">
+                    Build intelligent search systems with AI. Published by The Pragmatic Bookshelf.
+                </p>
+            </div>
+
+            <!-- Book Overview -->
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <div>
+                    <div class="card overflow-hidden bg-dark-surface">
+                        <img 
+                            class="w-full h-auto object-contain" 
+                            src="static/images/book_cover.png" 
+                            alt="Vector Search with JavaScript book cover"
+                        />
+                    </div>
+                    <div class="mt-6 space-y-4">
+                        <a href="https://pragprog.com/titles/bgvector/vector-search-with-javascript/" 
+                           target="_blank"
+                           class="modern-button-primary modern-button w-full text-center block">
+                            Get Your Copy
+                        </a>
+                        <div class="grid grid-cols-2 gap-4 text-sm text-dark-text-secondary">
+                            <div class="card">
+                                <p class="font-semibold text-white mb-1">Pages</p>
+                                <p>128</p>
+                            </div>
+                            <div class="card">
+                                <p class="font-semibold text-white mb-1">Published</p>
+                                <p>September 2025</p>
+                            </div>
+                            <div class="card">
+                                <p class="font-semibold text-white mb-1">ISBN</p>
+                                <p>9798888651735</p>
+                            </div>
+                            <div class="card">
+                                <p class="font-semibold text-white mb-1">Publisher</p>
+                                <p>Pragmatic Bookshelf</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4">About the Book</h2>
+                        <div class="space-y-4 text-dark-text-secondary">
+                            <p>
+                                Stop relying on outdated search methods. Deploy vector search and deliver smarter, more intuitive search experiences that keep users engaged.
+                            </p>
+                            <p>
+                                This comprehensive guide takes a deep dive into the world of vector search, offering a hands-on approach for developers looking to bring AI-powered utility and precision into their projects. This book demystifies the core concepts of vector search, making them accessible and practical—and you don't need a background in math to learn vector search techniques!
+                            </p>
+                            <p>
+                                Revolutionize search with AI-powered techniques that go beyond simple keyword matching. Implement vector search to build applications that understand intent, meaning, and similarity.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">What You'll Learn</h3>
+                        <ul class="space-y-3 text-dark-text-secondary">
+                            <li class="flex gap-3">
+                                <span class="text-primary-500 flex-shrink-0">✓</span>
+                                <span>Generate embeddings and construct efficient vector indexes</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary-500 flex-shrink-0">✓</span>
+                                <span>Build recommendation systems and personalized search</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary-500 flex-shrink-0">✓</span>
+                                <span>Power content discovery tools with semantic search</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary-500 flex-shrink-0">✓</span>
+                                <span>Integrate vector search into JavaScript applications</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary-500 flex-shrink-0">✓</span>
+                                <span>Build scalable, high-performance search systems</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Available Formats</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tag">PDF</span>
+                            <span class="tag">EPUB</span>
+                            <span class="tag">MOBI</span>
+                            <span class="tag">Paperback</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table of Contents -->
+            <div class="mb-16">
+                <h2 class="text-3xl font-bold mb-8">Table of Contents</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card">
+                        <h3 class="text-lg font-semibold mb-4 text-primary-500">Part I: Foundations of Vector Search</h3>
+                        <ul class="space-y-2 text-dark-text-secondary">
+                            <li>• Getting Started with Vector Search</li>
+                            <li>• Understanding Vector Search</li>
+                            <li>• Generating Vector Embeddings</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="text-lg font-semibold mb-4 text-primary-500">Part II: Building a Vector Search Service</h3>
+                        <ul class="space-y-2 text-dark-text-secondary">
+                            <li>• Building the Foundation for Vector Search</li>
+                            <li>• Structuring the Back End for Vector Search</li>
+                            <li>• Building the Vector Embedding Generation Service</li>
+                            <li>• Creating a Vector Search Service</li>
+                            <li>• Creating a Vector Search Index</li>
+                            <li>• Incorporating Vector Search Functionality</li>
+                            <li>• Optimizing Search Results</li>
+                        </ul>
+                    </div>
+
+                    <div class="card md:col-span-2">
+                        <h3 class="text-lg font-semibold mb-4 text-primary-500">Part III: Practical Applications and Next Steps</h3>
+                        <ul class="space-y-2 text-dark-text-secondary">
+                            <li>• Exploring Upcoming New Developments</li>
+                            <li>• Taking a Look at Real-World Use Cases</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="text-center card bg-gradient-to-r from-primary-500/10 to-primary-500/5 border-primary-500/50">
+                <h2 class="text-3xl font-bold mb-4">Ready to Master Vector Search?</h2>
+                <p class="text-dark-text-secondary mb-8 max-w-2xl mx-auto">
+                    Cut through the complexity and apply AI-driven search strategies to create better user experiences.
+                </p>
+                <a href="https://pragprog.com/titles/bgvector/vector-search-with-javascript/" 
+                   target="_blank"
+                   class="modern-button-primary modern-button">
+                    Get the Book Now
+                </a>
+            </div>
+        </div>
+    </div>
+</RootLayout>

@@ -106,5 +106,6 @@ export const NAVIGATION = [
     {href: '/about', title: 'About'},
     {href: '/blog', title: 'Blog'},
     {href: '/talks', title: 'Talks'},
-    {href: '/projects', title: 'Projects'},
+    {href: '/projects', title: 'Workshops'},
+    {href: '/book', title: 'Book'},
 ]
