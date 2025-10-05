@@ -1,11 +1,40 @@
 ---
 import { getCollection } from "astro:content";
-import PresentationCard from "@/components/PresentationCard.astro";
 import RootLayout from "@/layouts/RootLayout.astro";
 import { SITE_METADATA } from '@/consts';
 
 const talks = await getCollection("talks");
 const sortedTalks = talks.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+// Extract YouTube video IDs from links
+function getYouTubeId(url: string) {
+    if (!url) return null;
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+        /youtube\.com\/live\/([^&\?\/]+)/
+    ];
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
+    }
+    return null;
+}
+
+// Separate recent talks (2022+) from older talks
+const currentYear = new Date().getFullYear();
+const cutoffYear = 2022;
+
+const recentTalks = sortedTalks
+    .filter(talk => new Date(talk.data.date).getFullYear() >= cutoffYear)
+    .map(talk => ({
+        ...talk,
+        youtubeId: getYouTubeId(talk.data.link)
+    }));
+
+const olderTalks = sortedTalks
+    .filter(talk => new Date(talk.data.date).getFullYear() < cutoffYear);
+
+const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
 ---
 
 <RootLayout title={SITE_METADATA.title}>
@@ -17,52 +46,311 @@ const sortedTalks = talks.sort((a, b) => new Date(b.data.date).getTime() - new D
                     Conference <span class="text-primary-500">Talks</span>
                 </h1>
                 <p class="text-xl text-dark-text-secondary max-w-2xl">
-                    Recent and upcoming talks and workshops given around the world
+                    Click any talk to watch it on the big screen
                 </p>
             </div>
 
-            <div class="overflow-x-auto">
-                <div class="card overflow-hidden">
-                    <table class="min-w-full divide-y divide-dark-border">
-                        <thead class="bg-dark-surface">
-                            <tr>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
-                                    Presentation
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
-                                    Conference / Meetup
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
-                                    Region
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
-                                    Date
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-dark-text-secondary uppercase tracking-wider">
-                                    Watch
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-dark-border">
-                            {sortedTalks.map(({ id, data }) => (
-                                <PresentationCard
-                                    key={id}
-                                    image={data.image}
-                                    presentation={data.presentation}
-                                    conference={data.conference}
-                                    region={data.region}
-                                    date={new Date(data.date).toLocaleDateString("en-US", {
-                                        year: "numeric",
-                                        month: "long",
-                                        day: "numeric",
-                                    })}
-                                    link={data.link}
-                                />
-                            ))}
-                        </tbody>
-                    </table>
+            <!-- Theater Container -->
+            <div class="theater-container relative mb-16">
+                <!-- Movie Screen -->
+                <div class="screen-wrapper relative bg-gradient-to-b from-dark-bg to-dark-surface p-8 rounded-lg shadow-2xl">
+                    <!-- Red Theater Curtains -->
+                    <div class="curtains absolute inset-0 z-10 pointer-events-none">
+                        <svg viewBox="0 0 1000 600" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="curtainRed" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#5a0000;stop-opacity:1" />
+                                    <stop offset="30%" style="stop-color:#8B0000;stop-opacity:1" />
+                                    <stop offset="50%" style="stop-color:#a01515;stop-opacity:1" />
+                                    <stop offset="70%" style="stop-color:#8B0000;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#5a0000;stop-opacity:1" />
+                                </linearGradient>
+                                <linearGradient id="curtainFold" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#3a0000;stop-opacity:1" />
+                                    <stop offset="50%" style="stop-color:#6a0000;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#3a0000;stop-opacity:1" />
+                                </linearGradient>
+                                <radialGradient id="swagGradient">
+                                    <stop offset="0%" style="stop-color:#a01515;stop-opacity:1" />
+                                    <stop offset="70%" style="stop-color:#7a0000;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#4a0000;stop-opacity:1" />
+                                </radialGradient>
+                            </defs>
+                            
+                            <!-- Left Curtain Panel -->
+                            <path d="M 0,0 L 0,600 L 120,600 L 120,0 Z" fill="url(#curtainRed)"/>
+                            <!-- Left curtain folds -->
+                            <path d="M 20,0 Q 25,300 20,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 40,0 Q 45,300 40,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 60,0 Q 65,300 60,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 80,0 Q 85,300 80,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 100,0 Q 105,300 100,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            
+                            <!-- Right Curtain Panel -->
+                            <path d="M 1000,0 L 1000,600 L 880,600 L 880,0 Z" fill="url(#curtainRed)"/>
+                            <!-- Right curtain folds -->
+                            <path d="M 980,0 Q 975,300 980,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 960,0 Q 955,300 960,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 940,0 Q 935,300 940,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 920,0 Q 915,300 920,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M 900,0 Q 895,300 900,600" stroke="#2a0000" stroke-width="2" fill="none" opacity="0.6"/>
+                            
+                            <!-- Draped Swag Top - Left Side -->
+                            <path d="M 120,0 Q 200,80 280,60 Q 360,40 440,80 L 440,0 Z" fill="url(#swagGradient)"/>
+                            <path d="M 120,0 Q 200,85 280,65" stroke="#2a0000" stroke-width="1.5" fill="none" opacity="0.5"/>
+                            <path d="M 280,60 Q 360,45 440,85" stroke="#2a0000" stroke-width="1.5" fill="none" opacity="0.5"/>
+                            
+                            <!-- Draped Swag Top - Center -->
+                            <path d="M 440,80 Q 470,100 500,105 Q 530,100 560,80 L 560,0 L 440,0 Z" fill="url(#swagGradient)"/>
+                            <path d="M 440,80 Q 470,100 500,105" stroke="#2a0000" stroke-width="1.5" fill="none" opacity="0.5"/>
+                            <path d="M 500,105 Q 530,100 560,80" stroke="#2a0000" stroke-width="1.5" fill="none" opacity="0.5"/>
+                            
+                            <!-- Draped Swag Top - Right Side -->
+                            <path d="M 560,80 Q 640,40 720,60 Q 800,80 880,0 L 560,0 Z" fill="url(#swagGradient)"/>
+                            <path d="M 560,80 Q 640,45 720,65" stroke="#2a0000" stroke-width="1.5" fill="none" opacity="0.5"/>
+                            <path d="M 720,60 Q 800,85 880,0" stroke="#2a0000" stroke-width="1.5" fill="none" opacity="0.5"/>
+                            
+                            <!-- Gold Tassels/Tie-backs -->
+                            <circle cx="120" cy="200" r="8" fill="#D4AF37" opacity="0.9"/>
+                            <circle cx="880" cy="200" r="8" fill="#D4AF37" opacity="0.9"/>
+                            <path d="M 120,200 L 120,220" stroke="#D4AF37" stroke-width="3" opacity="0.8"/>
+                            <path d="M 880,200 L 880,220" stroke="#D4AF37" stroke-width="3" opacity="0.8"/>
+                            
+                            <!-- Curtain Rod -->
+                            <rect x="0" y="0" width="1000" height="4" fill="#2c2c2c"/>
+                            <rect x="0" y="4" width="1000" height="2" fill="#1a1a1a"/>
+                        </svg>
+                    </div>
+
+                    <div class="screen relative bg-black rounded-lg overflow-hidden shadow-inner" style="aspect-ratio: 16/9; margin-top: 100px;">
+                        <div id="theater-screen" class="w-full h-full">
+                            {firstVideoWithYouTube ? (
+                                <iframe
+                                    id="video-player"
+                                    class="w-full h-full"
+                                    src={`https://www.youtube.com/embed/${firstVideoWithYouTube.youtubeId}`}
+                                    title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen
+                                ></iframe>
+                            ) : (
+                                <div class="w-full h-full flex flex-col items-center justify-center text-dark-text-muted p-8 text-center">
+                                    <svg class="w-24 h-24 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    <p class="text-lg">Select a talk to begin</p>
+                                </div>
+                            )}
+                        </div>
+                        <div id="no-video-placeholder" class="w-full h-full hidden flex-col items-center justify-center text-dark-text-muted p-8 text-center">
+                            <svg class="w-24 h-24 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                            <p class="text-lg font-semibold mb-2">Video Not Available Yet</p>
+                            <p class="text-sm">This talk recording is coming soon</p>
+                        </div>
+                    
+                        <!-- Theater Audience Silhouettes at Bottom -->
+                        <div class="theater-audience absolute bottom-0 left-0 right-0 pointer-events-none z-20" style="padding: 0 12%;">
+                            <svg viewBox="0 0 760 150" class="w-full" style="height: 150px;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+                                <!-- Person 1 - Left side -->
+                                <path d="M 0,150 L 0,115 C 0,105 12,98 25,98 C 38,98 50,105 50,115 L 50,150 Z" fill="#000000"/>
+                                <ellipse cx="25" cy="85" rx="15" ry="18" fill="#000000"/>
+                                
+                                <!-- Person 2 - Child -->
+                                <path d="M 55,150 L 55,125 C 55,118 63,115 72,115 C 81,115 89,118 89,125 L 89,150 Z" fill="#000000"/>
+                                <circle cx="72" cy="108" r="10" fill="#000000"/>
+                                
+                                <!-- Person 3 -->
+                                <path d="M 95,150 L 95,105 C 95,93 110,85 127,85 C 144,85 159,93 159,105 L 159,150 Z" fill="#000000"/>
+                                <ellipse cx="127" cy="72" rx="18" ry="20" fill="#000000"/>
+                                
+                                <!-- Person 4 -->
+                                <path d="M 165,150 L 165,112 C 165,102 177,95 190,95 C 203,95 215,102 215,112 L 215,150 Z" fill="#000000"/>
+                                <ellipse cx="190" cy="82" rx="16" ry="18" fill="#000000"/>
+                                
+                                <!-- Person 5 -->
+                                <path d="M 220,150 L 220,100 C 220,88 238,78 255,78 C 272,78 290,88 290,100 L 290,150 Z" fill="#000000"/>
+                                <ellipse cx="255" cy="65" rx="19" ry="21" fill="#000000"/>
+                                <ellipse cx="273" cy="68" rx="8" ry="12" fill="#000000"/>
+                                
+                                <!-- Person 6 -->
+                                <path d="M 295,150 L 295,92 C 295,78 313,68 330,68 C 347,68 365,78 365,92 L 365,150 Z" fill="#000000"/>
+                                <ellipse cx="330" cy="55" rx="20" ry="23" fill="#000000"/>
+                                
+                                <!-- Person 7 -->
+                                <path d="M 370,150 L 370,120 C 370,112 380,108 390,108 C 400,108 410,112 410,120 L 410,150 Z" fill="#000000"/>
+                                <circle cx="390" cy="100" r="12" fill="#000000"/>
+                                
+                                <!-- Person 8 -->
+                                <path d="M 415,150 L 415,95 C 415,81 433,70 450,70 C 467,70 485,81 485,95 L 485,150 Z" fill="#000000"/>
+                                <path d="M 435,58 Q 442,50 450,48 Q 458,50 465,58 L 468,63 Q 463,70 450,73 Q 437,70 432,63 Z" fill="#000000"/>
+                                
+                                <!-- Person 9 -->
+                                <path d="M 490,150 L 490,102 C 490,90 505,82 520,82 C 535,82 550,90 550,102 L 550,150 Z" fill="#000000"/>
+                                <ellipse cx="520" cy="70" rx="17" ry="19" fill="#000000"/>
+                                
+                                <!-- Person 10 -->
+                                <path d="M 555,150 L 555,118 C 555,110 567,105 580,105 C 593,105 605,110 605,118 L 605,150 Z" fill="#000000"/>
+                                <ellipse cx="580" cy="95" rx="14" ry="16" fill="#000000"/>
+                                
+                                <!-- Person 11 -->
+                                <path d="M 610,150 L 610,108 C 610,98 622,90 635,90 C 648,90 660,98 660,108 L 660,150 Z" fill="#000000"/>
+                                <ellipse cx="635" cy="77" rx="15" ry="17" fill="#000000"/>
+                                
+                                <!-- Person 12 -->
+                                <path d="M 665,150 L 665,100 C 665,88 680,80 695,80 C 710,80 725,88 725,100 L 725,150 Z" fill="#000000"/>
+                                <ellipse cx="695" cy="68" rx="17" ry="19" fill="#000000"/>
+                                
+                                <!-- Person 13 -->
+                                <path d="M 730,150 L 730,122 C 730,115 738,112 747,112 C 756,112 764,115 764,122 L 764,150 Z" fill="#000000"/>
+                                <circle cx="747" cy="105" r="11" fill="#000000"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Talk Info -->
+                <div id="current-talk-info" class="mt-4 text-center opacity-0 transition-opacity duration-300">
+                    <h3 id="current-talk-title" class="text-xl font-semibold mb-1"></h3>
+                    <p id="current-talk-details" class="text-dark-text-secondary text-sm"></p>
                 </div>
             </div>
+
+            <!-- Talk Selection Grid -->
+            <div>
+                <h2 class="text-2xl font-bold mb-6">Recent Talks</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {recentTalks.map((talk) => (
+                        <button
+                            class="talk-card card text-left hover:border-primary-500 transition-all cursor-pointer group"
+                            data-youtube-id={talk.youtubeId || ''}
+                            data-has-video={talk.youtubeId ? 'true' : 'false'}
+                            data-title={talk.data.presentation}
+                            data-conference={talk.data.conference}
+                            data-date={new Date(talk.data.date).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long"
+                            })}
+                        >
+                            <div class="aspect-video bg-dark-surface rounded overflow-hidden mb-4 relative">
+                                {talk.youtubeId ? (
+                                    <>
+                                        <img 
+                                            src={`https://img.youtube.com/vi/${talk.youtubeId}/maxresdefault.jpg`}
+                                            alt={talk.data.presentation}
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            onerror="this.src='https://img.youtube.com/vi/${talk.youtubeId}/hqdefault.jpg'"
+                                        />
+                                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                            <svg class="w-16 h-16 text-white opacity-80 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z"/>
+                                            </svg>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div class="w-full h-full flex flex-col items-center justify-center text-dark-text-muted">
+                                        <svg class="w-12 h-12 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-xs">Video Not Available</p>
+                                    </div>
+                                )}
+                            </div>
+                            <h3 class="font-semibold mb-2 group-hover:text-primary-500 transition-colors">
+                                {talk.data.presentation}
+                            </h3>
+                            <p class="text-sm text-dark-text-secondary">
+                                {talk.data.conference} • {talk.data.region}
+                            </p>
+                            <p class="text-xs text-dark-text-muted mt-1">
+                                {new Date(talk.data.date).toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "long"
+                                })}
+                            </p>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <!-- Older Talks -->
+            {olderTalks.length > 0 && (
+                <div class="mt-16">
+                    <h2 class="text-2xl font-bold mb-6">Earlier Talks & Events</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        {olderTalks.map((talk) => (
+                            <a 
+                                href={talk.data.link}
+                                target="_blank"
+                                class="card hover:border-primary-500 transition-all group"
+                            >
+                                <h3 class="font-semibold mb-2 group-hover:text-primary-500 transition-colors">
+                                    {talk.data.presentation}
+                                </h3>
+                                <p class="text-sm text-dark-text-secondary">
+                                    {talk.data.conference} • {talk.data.region}
+                                </p>
+                                <p class="text-xs text-dark-text-muted mt-1">
+                                    {new Date(talk.data.date).toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                    })}
+                                </p>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const talkCards = document.querySelectorAll('.talk-card');
+            const theaterScreen = document.getElementById('theater-screen');
+            const videoPlayer = document.getElementById('video-player') as HTMLIFrameElement;
+            const noVideoPlaceholder = document.getElementById('no-video-placeholder');
+            const currentTalkInfo = document.getElementById('current-talk-info');
+            const currentTalkTitle = document.getElementById('current-talk-title');
+            const currentTalkDetails = document.getElementById('current-talk-details');
+
+            talkCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const youtubeId = card.getAttribute('data-youtube-id');
+                    const hasVideo = card.getAttribute('data-has-video') === 'true';
+                    const title = card.getAttribute('data-title');
+                    const conference = card.getAttribute('data-conference');
+                    const date = card.getAttribute('data-date');
+
+                    if (hasVideo && youtubeId && videoPlayer && theaterScreen && noVideoPlaceholder) {
+                        // Show video player, hide placeholder
+                        theaterScreen.style.display = 'block';
+                        noVideoPlaceholder.style.display = 'none';
+                        videoPlayer.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1`;
+                    } else if (!hasVideo && theaterScreen && noVideoPlaceholder && videoPlayer) {
+                        // Show placeholder, hide video player
+                        theaterScreen.style.display = 'none';
+                        noVideoPlaceholder.style.display = 'flex';
+                        videoPlayer.src = '';
+                    }
+                    
+                    // Update current talk info
+                    if (currentTalkTitle && currentTalkDetails && currentTalkInfo) {
+                        currentTalkTitle.textContent = title || '';
+                        currentTalkDetails.textContent = `${conference} • ${date}`;
+                        currentTalkInfo.style.opacity = '1';
+                    }
+
+                    // Scroll to theater
+                    document.querySelector('.theater-container')?.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                });
+            });
+        });
+    </script>
 </RootLayout>
