@@ -68,113 +68,113 @@ const tagsCollection = await getCollection("tags");
 ---
 
 <RootLayout {title} {description}>
-  <div class="retro-container">
-    <pre class="ascii-divider">
- /========================\
- |     SYSTEM ARCHIVE     |
- \========================/
-    </pre>
-
-    <div class="pb-6 pt-6 border-b border-terminal-green">
-      <h1 class="text-3xl font-mono text-terminal-bright">
-        > {title}
-      </h1>
-      {hasDefaultSlot && (
-        <div class="prose font-mono text-terminal-green py-4">
-          <slot />
-        </div>
-      )}
-    </div>
-
-    <div class="flex gap-6">
-      <div class="hidden sm:block min-w-[280px] border-r border-terminal-green p-4">
-        <div class="sticky top-4">
-          {isBlogPage ? (
-            <h3 class="text-terminal-bright font-mono">> ALL_POSTS</h3>
-          ) : (
-            <Link href="/blog" class="retro-link">ALL_POSTS</Link>
-          )}
-
-          <ul class="mt-4 space-y-2">
-            {tagsCollection.map(({ slug, data }) => {
-              const count = tagCounts[slug.toLowerCase()] || 0;
-              return (
-                <li key={slug}>
-                  {isSamePath(`/tags/${slug}`) ? (
-                    <h3 class="text-terminal-bright font-mono">
-                      > {data.name} [{count}]
-                    </h3>
-                  ) : (
-                    <Link
-                      href={`/tags/${slug}`}
-                      class="retro-link"
-                      aria-label={`View posts tagged ${data.name}`}
-                    >
-                      {data.name} [{count}]
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+  <div class="section-container animate-fade-in">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-12">
+        <p class="section-title">Blog</p>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          {title}
+        </h1>
+        {hasDefaultSlot && (
+          <div class="prose text-dark-text-secondary py-4">
+            <slot />
+          </div>
+        )}
       </div>
 
-      <div class="flex-1">
-        <ul class="divide-y divide-terminal-dim">
-          {page?.data?.map((entry) => {
-            const post = entry.data;
-            if (!post) return null;
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Sidebar -->
+        <aside class="lg:w-64 flex-shrink-0">
+          <div class="card sticky top-4">
+            <h3 class="font-semibold mb-4 text-lg">
+              {isBlogPage ? (
+                <span>All Posts</span>
+              ) : (
+                <Link href="/blog" class="modern-link">All Posts</Link>
+              )}
+            </h3>
 
-            return (
-              <li class="py-5" key={entry.slug}>
-                <article class="space-y-4">
-                  <dl>
-                    <dt class="sr-only">Published on</dt>
-                    <dd class="font-mono text-terminal-dim">
-                      > DATE: <FormattedDate date={post.date} />
-                    </dd>
-                  </dl>
-                  <div class="space-y-3">
-                    <div>
-                      <h3 class="text-2xl font-mono">
-                        <Link href={`/blog/${entry.slug}`} class="retro-link">
-                          {post.title}
-                        </Link>
-                      </h3>
-                      <div class="flex flex-wrap gap-2 mt-2">
-                        {post.tags
-                          .map((tag) => {
-                            if (typeof tag === "string") return tag;
-                            if (tag && typeof tag === "object" && "slug" in tag) return tag.slug;
-                            console.warn("⚠️ Tag not found or slug missing:", tag);
-                            return null;
-                          })
-                          .filter(Boolean)
-                          .map((slug) => (
-                            <Tag slug={slug} key={slug} />
-                          ))}
+            <div class="space-y-1">
+              {tagsCollection.map(({ slug, data }) => {
+                const count = tagCounts[slug.toLowerCase()] || 0;
+                return (
+                  <div key={slug}>
+                    {isSamePath(`/tags/${slug}`) ? (
+                      <div class="text-primary-500 font-medium py-2 px-3 bg-dark-surface rounded">
+                        {data.name} ({count})
                       </div>
+                    ) : (
+                      <Link
+                        href={`/tags/${slug}`}
+                        class="block py-2 px-3 text-dark-text-secondary hover:text-white hover:bg-dark-surface rounded transition-colors no-underline"
+                        aria-label={`View posts tagged ${data.name}`}
+                      >
+                        {data.name} ({count})
+                      </Link>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 min-w-0">
+          <div class="space-y-8">
+            {page?.data?.map((entry) => {
+              const post = entry.data;
+              if (!post) return null;
+
+              return (
+                <article class="card hover:border-primary-500 transition-all group" key={entry.slug}>
+                  <div class="space-y-4 md:grid md:grid-cols-4 md:gap-6 md:space-y-0">
+                    <div class="md:col-span-1">
+                      <time class="text-sm text-dark-text-muted font-mono">
+                        <FormattedDate date={post.date} />
+                      </time>
                     </div>
-                    <div class="font-mono text-terminal-green">
-                      {post.summary}
+                    <div class="md:col-span-3 space-y-3">
+                      <div>
+                        <h2 class="text-2xl font-bold mb-3 group-hover:text-primary-500 transition-colors">
+                          <Link href={`/blog/${entry.slug}`} class="no-underline">
+                            {post.title}
+                          </Link>
+                        </h2>
+                        <div class="flex flex-wrap gap-2">
+                          {post.tags
+                            .map((tag) => {
+                              if (typeof tag === "string") return tag;
+                              if (tag && typeof tag === "object" && "slug" in tag) return tag.slug;
+                              console.warn("⚠️ Tag not found or slug missing:", tag);
+                              return null;
+                            })
+                            .filter(Boolean)
+                            .map((slug) => (
+                              <Tag slug={slug} key={slug} />
+                            ))}
+                        </div>
+                      </div>
+                      <p class="text-dark-text-secondary leading-relaxed">
+                        {post.summary}
+                      </p>
                     </div>
                   </div>
                 </article>
-              </li>
-            );
-          }) || (
-            <p class="text-terminal-dim font-mono">
-              ERROR: Invalid page data.
-            </p>
-          )}
-        </ul>
-
-        {(page?.url?.next || page?.url?.prev) && (
-          <div class="border-t border-terminal-green p-4">
-            <Pagination page={page} />
+              );
+            }) || (
+              <div class="card text-center py-12">
+                <p class="text-dark-text-secondary">No posts found</p>
+              </div>
+            )}
           </div>
-        )}
+
+          {(page?.url?.next || page?.url?.prev) && (
+            <div class="mt-12">
+              <Pagination page={page} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   </div>

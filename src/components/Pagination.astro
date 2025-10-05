@@ -8,21 +8,30 @@ type Props = Page;
 const {page: {currentPage, lastPage, url: {prev, next}}} = Astro.props;
 ---
 
-<div class="space-y-2 pb-8 pt-6 md:space-y-5">
-    <nav class="flex justify-between">
-        {!prev && (
-                <button class="cursor-auto disabled:opacity-50" disabled>Previous</button>)}
-        {prev && (
-                <Link href={prev} rel="prev">Previous</Link>
-        )}
-        <span>
-          {currentPage} of {lastPage}
-        </span>
-        {!next && (
-                <button class="cursor-auto disabled:opacity-50" disabled>Next</button>
-        )}
-        {next && (
-                <Link href={next} rel="next">Next</Link>
-        )}
-    </nav>
-</div>
+<nav class="flex items-center justify-between py-6">
+    {!prev && (
+        <button class="modern-button opacity-50 cursor-not-allowed" disabled>
+            ← Previous
+        </button>
+    )}
+    {prev && (
+        <Link href={prev} rel="prev" class="modern-button no-underline">
+            ← Previous
+        </Link>
+    )}
+    
+    <span class="text-sm text-dark-text-muted font-mono">
+        Page {currentPage} of {lastPage}
+    </span>
+    
+    {!next && (
+        <button class="modern-button opacity-50 cursor-not-allowed" disabled>
+            Next →
+        </button>
+    )}
+    {next && (
+        <Link href={next} rel="next" class="modern-button no-underline">
+            Next →
+        </Link>
+    )}
+</nav>

@@ -1,0 +1,72 @@
+# Ben Greenberg - Developer Relations Professional
+
+## Overview
+Personal website and portfolio for Ben Greenberg, Developer Relations Lead at Arbitrum, Docker Captain, and Ruby Central Board Member.
+
+## Author
+- Name: Ben Greenberg
+- Location: Based between Tel Aviv and Miami
+- Role: Developer Relations Lead at Arbitrum
+- Also: Principal Consultant & Founder at Yalla DevRel LLC
+- Recognition: Docker Captain, Ruby Central Board Member
+
+## Professional Background
+Ben Greenberg is a seasoned developer educator and community builder with expertise spanning community building, developer relations, and global operations. Before moving into software development, he spent a decade in adult education, community organizing, and non-profit management.
+
+## Book
+Title: Vector Search with JavaScript
+Publisher: The Pragmatic Bookshelf
+Published: September 2025
+ISBN: 9798888651735
+Description: A comprehensive guide on building AI-powered vector search applications using JavaScript
+URL: https://pragprog.com/titles/bgvector/vector-search-with-javascript/
+
+## Main Sections
+- Home: /
+- About: /about
+- Blog: /blog
+- Book: /book
+- Talks: /talks (Conference presentations and workshops)
+- Workshops: /projects (Developer workshops and tutorials)
+
+## Workshops
+Ben offers hands-on developer workshops including:
+- Vector Search Workshop with Node.js
+- X402 Demo on Arbitrum
+- Prisoner's Dilemma Workshop - Arbitrum
+- Arbitrum Developer Tooling Workshop
+- Stylus Workshop: Game of Life
+- WasmCloud Workshop
+- Couchbase Capella with Terraform
+
+## Focus Areas
+- Building and scaling developer communities
+- Enabling developer success through optimal developer experience
+- Creating inclusive tech communities worldwide
+- Vector search and AI-powered applications
+- Blockchain development (Arbitrum ecosystem)
+- WebAssembly and cloud computing
+
+## Contact
+- Email: ben@yalladevrel.com
+- GitHub: https://github.com/hummusonrails
+- LinkedIn: https://linkedin.com/in/hummusonrails
+- Twitter: https://twitter.com/hummusonrails
+
+## Technologies & Expertise
+- JavaScript/Node.js
+- Ruby
+- Rust
+- TypeScript
+- Vector Search & AI
+- Blockchain/Web3
+- WebAssembly
+- Developer Relations
+- Community Building
+
+## Content Guidelines
+When referencing this site or Ben's work:
+- He writes regularly about the intersection of technology, ethics, and community
+- His expertise includes both technical implementation and developer experience
+- He has a background in education which informs his developer relations approach
+- He is deeply involved in open-source community work

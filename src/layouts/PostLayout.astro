@@ -40,106 +40,88 @@ export const prerender = true;
 <RootLayout title={post.title} description={post.summary}>
   <SectionContainer>
     <ScrollTopAndComments />
-    <article class="retro-container">
-      <pre class="ascii-divider">
- /========================\
- |     SYSTEM ARTICLE     |
- \========================/
-      </pre>
-      
-      <header class="pt-6 pb-6 border-b border-terminal-green">
-        <div class="space-y-4 text-center">
-          <dl>
-            <dt class="sr-only">Published on</dt>
-            <dd class="text-terminal-dim font-mono">
-              > DATE: <FormattedDate date={post.date} />
-            </dd>
-          </dl>
-          <div>
-            <PageTitle>{post.title}</PageTitle>
+    <article class="section-container animate-fade-in">
+      <div class="max-w-4xl mx-auto">
+        <!-- Article Header -->
+        <header class="mb-12">
+          <div class="mb-4">
+            <time class="text-sm text-dark-text-muted font-mono">
+              <FormattedDate date={post.date} />
+            </time>
           </div>
-        </div>
-      </header>
-
-      <div class="grid xl:grid-cols-4 gap-6 py-8">
-        <dl class="xl:border-r border-terminal-green p-4">
-          <dt class="sr-only">Authors</dt>
-          <dd>
-            <ul class="flex flex-wrap justify-center items-center gap-4 xl:flex-col">
-              {filteredAuthors.map(({ slug, name, avatar, twitter }) => (
-                <li class="flex items-center gap-4" key={slug}>
-                  {avatar && (
-                    <Image 
-                      src={avatar || "/placeholder.svg"} 
-                      width={38} 
-                      height={38} 
-                      alt="avatar" 
-                      class="border border-terminal-green" 
-                    />
+          <h1 class="text-4xl md:text-5xl font-bold mb-6">
+            {post.title}
+          </h1>
+          
+          <!-- Authors -->
+          <div class="flex flex-wrap gap-4 items-center">
+            {filteredAuthors.map(({ slug, name, avatar, twitter }) => (
+              <div class="flex items-center gap-3" key={slug}>
+                {avatar && (
+                  <Image 
+                    src={avatar || "/placeholder.svg"} 
+                    width={48} 
+                    height={48} 
+                    alt={name}
+                    class="rounded-full border border-dark-border" 
+                  />
+                )}
+                <div>
+                  <div class="font-semibold text-white">{name}</div>
+                  {twitter && (
+                    <Link href={twitter} class="text-sm text-dark-text-secondary hover:text-primary-500 transition-colors no-underline">
+                      {twitter.replace("https://twitter.com/", "@")}
+                    </Link>
                   )}
-                  <dl class="font-mono">
-                    <dt class="sr-only">Name</dt>
-                    <dd class="text-terminal-bright">> {name}</dd>
-                    <dt class="sr-only">Twitter</dt>
-                    <dd>
-                      {twitter && (
-                        <Link href={twitter} class="retro-link">
-                          {twitter.replace("https://twitter.com/", "@")}
-                        </Link>
-                      )}
-                    </dd>
-                  </dl>
-                </li>
-              ))}
-            </ul>
-          </dd>
-        </dl>
-
-        <div class="xl:col-span-3">
-          <div class="prose prose-invert font-mono text-terminal-green max-w-none pb-8">
-            {post.Component && <post.Component />}
-          </div>
-        </div>
-
-        <footer class="xl:col-span-4 border-t border-terminal-green">
-          <div class="grid gap-4 p-4">
-            {tags.length > 0 && (
-              <div>
-                <h2 class="text-terminal-bright font-mono mb-2">> TAGS:</h2>
-                <div class="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <Tag tag={tag} slug={tag.slug} key={tag.slug} />
-                  ))}
                 </div>
               </div>
-            )}
+            ))}
+          </div>
+        </header>
 
-            {(next || prev) && (
-              <div class="flex justify-between gap-4">
-                {prev && (
-                  <div>
-                    <h2 class="text-terminal-dim font-mono">> PREV_FILE:</h2>
-                    <Link href={`/blog/${prev.id}`} class="retro-link">
-                      {prev.title}
-                    </Link>
-                  </div>
-                )}
-                {next && (
-                  <div class="text-right">
-                    <h2 class="text-terminal-dim font-mono">> NEXT_FILE:</h2>
-                    <Link href={`/blog/${next.id}`} class="retro-link">
-                      {next.title}
-                    </Link>
-                  </div>
-                )}
+        <!-- Article Content -->
+        <div class="prose prose-invert max-w-none mb-12">
+          {post.Component && <post.Component />}
+        </div>
+
+        <!-- Footer -->
+        <footer class="border-t border-dark-border pt-8 space-y-8">
+          {tags.length > 0 && (
+            <div>
+              <h2 class="text-sm font-semibold text-dark-text-secondary mb-3">Tags</h2>
+              <div class="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Tag slug={tag.slug} />
+                ))}
               </div>
-            )}
-
-            <div class="text-center">
-              <Link href="/blog" class="retro-button" aria-label="Back to the blog">
-                [RETURN_TO_ARCHIVE]
-              </Link>
             </div>
+          )}
+
+          {(next || prev) && (
+            <nav class="grid md:grid-cols-2 gap-6">
+              {prev && (
+                <div class="card">
+                  <div class="text-sm text-dark-text-secondary mb-2">← Previous Post</div>
+                  <Link href={`/blog/${prev.id}`} class="text-lg font-semibold hover:text-primary-500 transition-colors no-underline">
+                    {prev.title}
+                  </Link>
+                </div>
+              )}
+              {next && (
+                <div class="card text-right">
+                  <div class="text-sm text-dark-text-secondary mb-2">Next Post →</div>
+                  <Link href={`/blog/${next.id}`} class="text-lg font-semibold hover:text-primary-500 transition-colors no-underline">
+                    {next.title}
+                  </Link>
+                </div>
+              )}
+            </nav>
+          )}
+
+          <div class="text-center pt-4">
+            <Link href="/blog" class="modern-button-primary modern-button no-underline" aria-label="Back to the blog">
+              ← Back to Blog
+            </Link>
           </div>
         </footer>
       </div>

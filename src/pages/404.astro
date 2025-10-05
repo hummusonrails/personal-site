@@ -4,41 +4,43 @@ import RootLayout from "@/layouts/RootLayout.astro";
 ---
 
 <RootLayout title="404 - Not Found">
-    <div class="retro-container">
-        <pre class="ascii-divider">
- /=======================\
- |    SYSTEM ERROR 404   |
- \=======================/
-        </pre>
-        
-        <div class="flex flex-col md:flex-row items-center justify-center gap-8 p-8">
-            <pre class="text-terminal-bright text-6xl md:text-8xl font-mono">
-  _____   _____   _____  
- |     | |     | |     | 
- |  ___| |  _  | |  _  | 
- | |     | | | | | | | | 
- | |     | |_| | | |_| | 
- |_|     |_____| |_____| 
-            </pre>
+    <div class="section-container animate-fade-in">
+        <div class="max-w-3xl mx-auto text-center py-24">
+            <!-- 404 Number -->
+            <h1 class="text-9xl md:text-[12rem] font-bold text-primary-500 mb-8">
+                404
+            </h1>
             
-            <div class="space-y-4 text-center md:text-left">
-                <p class="text-xl font-mono text-terminal-bright">
-                    > ERROR: Page not found in database
+            <!-- Message -->
+            <div class="space-y-6 mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">
+                    Page Not Found
+                </h2>
+                <p class="text-xl text-dark-text-secondary max-w-xl mx-auto">
+                    The page you're looking for doesn't exist or has been moved.
                 </p>
-                <p class="font-mono text-terminal-dim">
-                    > SUGGESTION: Check out the <Link href="/blog" class="retro-link">BLOG</Link>
-                </p>
-                <Link href="/" class="retro-button inline-block mt-4">
-                    [RETURN_TO_HOME]
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/" class="modern-button-primary modern-button no-underline">
+                    Go Home
+                </Link>
+                <Link href="/blog" class="modern-button no-underline">
+                    Visit Blog
                 </Link>
             </div>
+            
+            <!-- Helpful Links -->
+            <div class="mt-16 pt-8 border-t border-dark-border">
+                <p class="text-sm text-dark-text-muted mb-4">Looking for something specific?</p>
+                <div class="flex flex-wrap justify-center gap-4 text-sm">
+                    <Link href="/about" class="modern-link">About</Link>
+                    <Link href="/book" class="modern-link">Book</Link>
+                    <Link href="/talks" class="modern-link">Talks</Link>
+                </div>
+            </div>
         </div>
-        
-        <pre class="ascii-divider">
- =======================
- | SYSTEM MALFUNCTION  |
- =======================
-        </pre>
     </div>
 </RootLayout>
 
