@@ -51,7 +51,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
             </div>
 
             <!-- Theater Container -->
-            <div class="theater-container relative mb-16">
+            <div class="theater-container relative mb-16" role="region" aria-label="Video theater">
                 <!-- Movie Screen -->
                 <div class="screen-wrapper relative bg-gradient-to-b from-dark-bg to-dark-surface p-8 rounded-lg shadow-2xl">
                     <!-- Red Theater Curtains -->
@@ -124,15 +124,15 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
 
                     <div class="screen relative bg-black rounded-lg overflow-hidden shadow-inner" style="aspect-ratio: 16/9; margin-top: 100px;">
                         <div id="theater-screen" class="w-full h-full">
-                            {firstVideoWithYouTube ? (
+                            {firstVideoWithYouTube && firstVideoWithYouTube.youtubeId ? (
                                 <iframe
                                     id="video-player"
                                     class="w-full h-full"
+                                    style="border: 0;"
                                     src={`https://www.youtube.com/embed/${firstVideoWithYouTube.youtubeId}`}
-                                    title="YouTube video player"
-                                    frameborder="0"
+                                    title={`${firstVideoWithYouTube.data.presentation} - ${firstVideoWithYouTube.data.conference}`}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen
+                                    allowFullScreen
                                 ></iframe>
                             ) : (
                                 <div class="w-full h-full flex flex-col items-center justify-center text-dark-text-muted p-8 text-center">
@@ -212,19 +212,19 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                 </div>
 
                 <!-- Current Talk Info -->
-                <div id="current-talk-info" class="mt-4 text-center opacity-0 transition-opacity duration-300">
+                <div id="current-talk-info" class="mt-4 text-center opacity-0 transition-opacity duration-300" role="status" aria-live="polite">
                     <h3 id="current-talk-title" class="text-xl font-semibold mb-1"></h3>
                     <p id="current-talk-details" class="text-dark-text-secondary text-sm"></p>
                 </div>
             </div>
 
             <!-- Talk Selection Grid -->
-            <div>
-                <h2 class="text-2xl font-bold mb-6">Recent Talks</h2>
+            <div role="region" aria-labelledby="recent-talks-heading">
+                <h2 id="recent-talks-heading" class="text-2xl font-bold mb-6">Recent Talks</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {recentTalks.map((talk) => (
                         <button
-                            class="talk-card card text-left hover:border-primary-500 transition-all cursor-pointer group"
+                            class="talk-card card text-left hover:border-primary-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all cursor-pointer group"
                             data-youtube-id={talk.youtubeId || ''}
                             data-has-video={talk.youtubeId ? 'true' : 'false'}
                             data-title={talk.data.presentation}
@@ -233,17 +233,18 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                                 year: "numeric",
                                 month: "long"
                             })}
+                            aria-label={`Play ${talk.data.presentation} from ${talk.data.conference}${talk.youtubeId ? '' : ' (video not yet available)'}`}
                         >
                             <div class="aspect-video bg-dark-surface rounded overflow-hidden mb-4 relative">
                                 {talk.youtubeId ? (
                                     <>
                                         <img 
                                             src={`https://img.youtube.com/vi/${talk.youtubeId}/maxresdefault.jpg`}
-                                            alt={talk.data.presentation}
+                                            alt={`Video thumbnail for ${talk.data.presentation} presented at ${talk.data.conference}`}
                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             onerror="this.src='https://img.youtube.com/vi/${talk.youtubeId}/hqdefault.jpg'"
                                         />
-                                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center" aria-hidden="true">
                                             <svg class="w-16 h-16 text-white opacity-80 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z"/>
                                             </svg>
@@ -277,14 +278,16 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
 
             <!-- Older Talks -->
             {olderTalks.length > 0 && (
-                <div class="mt-16">
-                    <h2 class="text-2xl font-bold mb-6">Earlier Talks & Events</h2>
+                <div class="mt-16" role="region" aria-labelledby="earlier-talks-heading">
+                    <h2 id="earlier-talks-heading" class="text-2xl font-bold mb-6">Earlier Talks & Events</h2>
                     <div class="grid md:grid-cols-2 gap-6">
                         {olderTalks.map((talk) => (
                             <a 
                                 href={talk.data.link}
                                 target="_blank"
-                                class="card hover:border-primary-500 transition-all group"
+                                rel="noopener noreferrer"
+                                class="card hover:border-primary-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all group"
+                                aria-label={`View ${talk.data.presentation} from ${talk.data.conference} (opens in new tab)`}
                             >
                                 <h3 class="font-semibold mb-2 group-hover:text-primary-500 transition-colors">
                                     {talk.data.presentation}
@@ -330,6 +333,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                         theaterScreen.style.display = 'block';
                         noVideoPlaceholder.style.display = 'none';
                         videoPlayer.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1`;
+                        videoPlayer.title = `${title} - ${conference}`;
                     } else if (!hasVideo && theaterScreen && noVideoPlaceholder && videoPlayer) {
                         // Show placeholder, hide video player
                         theaterScreen.style.display = 'none';
@@ -345,10 +349,18 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                     }
 
                     // Scroll to theater
-                    document.querySelector('.theater-container')?.scrollIntoView({ 
+                    const theaterContainer = document.querySelector('.theater-container');
+                    theaterContainer?.scrollIntoView({ 
                         behavior: 'smooth', 
                         block: 'center' 
                     });
+                    
+                    // Set focus to video player for keyboard users
+                    setTimeout(() => {
+                        if (hasVideo && videoPlayer) {
+                            videoPlayer.focus();
+                        }
+                    }, 500);
                 });
             });
         });
