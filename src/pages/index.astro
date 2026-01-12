@@ -222,20 +222,6 @@ const suggestedPrompts = [
         };
       }
 
-      if (includesAny(normalized, ['about', 'bio', 'background', 'who are you', 'who is'])) {
-        return {
-          paragraphs: [
-            `${knowledge.name} is a ${knowledge.role}.`,
-            knowledge.focus,
-          ],
-          items: [
-            { label: 'Read the full bio', url: knowledge.pages.about, description: 'Long-form background and story.' },
-          ],
-          footer: 'Want highlights from recent talks or writing?',
-          suggestions: ['Share recent talks', 'Show recent blog posts'],
-        };
-      }
-
       if (includesAny(normalized, ['book', 'vector', 'pragmatic'])) {
         return {
           paragraphs: [
@@ -248,6 +234,20 @@ const suggestedPrompts = [
           ],
           footer: 'Want a sample chapter or topic breakdown?',
           suggestions: ['Show the table of contents', 'What does the book cover?'],
+        };
+      }
+
+      if (includesAny(normalized, ['about', 'bio', 'background', 'who are you', 'who is'])) {
+        return {
+          paragraphs: [
+            `${knowledge.name} is a ${knowledge.role}.`,
+            knowledge.focus,
+          ],
+          items: [
+            { label: 'Read the full bio', url: knowledge.pages.about, description: 'Long-form background and story.' },
+          ],
+          footer: 'Want highlights from recent talks or writing?',
+          suggestions: ['Share recent talks', 'Show recent blog posts'],
         };
       }
 
