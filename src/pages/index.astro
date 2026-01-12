@@ -208,7 +208,7 @@ const suggestedPrompts = [
       };
 
       const buildResponse = (inputText) => {
-      const normalized = inputText.toLowerCase();
+        const normalized = inputText.toLowerCase();
 
       if (includesAny(normalized, ['hello', 'hi', 'hey'])) {
         return {
@@ -307,7 +307,7 @@ const suggestedPrompts = [
         };
       }
 
-      if (includesAny(normalized, ['talk', 'talks', 'speaking', 'speaker', 'conference'])) {
+      if (includesAny(normalized, ['talk', 'talks', 'speaking', 'speaker', 'conference', 'recent talks'])) {
         if (!state.talks.length) {
           return {
             paragraphs: [
@@ -333,7 +333,18 @@ const suggestedPrompts = [
         };
       }
 
-      if (includesAny(normalized, ['blog', 'post', 'posts', 'writing', 'article', 'articles'])) {
+      if (includesAny(normalized, [
+        'blog',
+        'post',
+        'posts',
+        'writing',
+        'article',
+        'articles',
+        'read next',
+        'what should i read',
+        'what should i read next',
+        'recommend',
+      ])) {
         if (!state.posts.length) {
           return {
             paragraphs: [
@@ -450,19 +461,72 @@ const suggestedPrompts = [
       }
       };
 
-      const handleSubmit = (prompt) => {
-      if (!prompt) return;
-      const userNode = document.createElement('div');
-      userNode.appendChild(createParagraph(prompt));
-      addMessage('user', userNode);
-      input.value = '';
+      const ensurePosts = async () => {
+        if (state.posts.length) return;
+        try {
+          const postsResponse = await fetch('/api/posts.json');
+          if (postsResponse.ok) {
+            state.posts = await postsResponse.json();
+          }
+        } catch (error) {
+          console.warn('Failed to load posts.', error);
+        }
+      };
 
-      const typingIndicator = showTypingIndicator();
-      window.setTimeout(() => {
-        removeTypingIndicator(typingIndicator);
-        const response = buildResponse(prompt);
-        renderAssistantResponse(response);
-      }, 400);
+      const ensureTalks = async () => {
+        if (state.talks.length) return;
+        try {
+          const talksResponse = await fetch('/api/talks.json');
+          if (talksResponse.ok) {
+            state.talks = await talksResponse.json();
+          }
+        } catch (error) {
+          console.warn('Failed to load talks.', error);
+        }
+      };
+
+      const detectIntent = (normalized) => {
+        if (includesAny(normalized, ['talk', 'talks', 'speaking', 'speaker', 'conference', 'recent talks'])) {
+          return 'talks';
+        }
+        if (includesAny(normalized, [
+          'blog',
+          'post',
+          'posts',
+          'writing',
+          'article',
+          'articles',
+          'read next',
+          'what should i read',
+          'what should i read next',
+          'recommend',
+        ])) {
+          return 'posts';
+        }
+        return null;
+      };
+
+      const handleSubmit = (prompt) => {
+        if (!prompt) return;
+        const userNode = document.createElement('div');
+        userNode.appendChild(createParagraph(prompt));
+        addMessage('user', userNode);
+        input.value = '';
+
+        const typingIndicator = showTypingIndicator();
+        window.setTimeout(async () => {
+          const normalized = prompt.toLowerCase();
+          const intent = detectIntent(normalized);
+          if (intent === 'talks') {
+            await ensureTalks();
+          }
+          if (intent === 'posts') {
+            await ensurePosts();
+          }
+          removeTypingIndicator(typingIndicator);
+          const response = buildResponse(prompt);
+          renderAssistantResponse(response);
+        }, 200);
       };
 
       form.addEventListener('submit', (event) => {
@@ -584,33 +648,12 @@ const suggestedPrompts = [
         }
       }
 
-      const hydrateData = async () => {
-        try {
-          const postsResponse = await fetch('/api/posts.json');
-        if (postsResponse.ok) {
-          state.posts = await postsResponse.json();
-        }
-      } catch (error) {
-        console.warn('Failed to load posts.', error);
-      }
-
-      try {
-        const talksResponse = await fetch('/api/talks.json');
-        if (talksResponse.ok) {
-          state.talks = await talksResponse.json();
-        }
-      } catch (error) {
-        console.warn('Failed to load talks.', error);
-      }
-      };
-
       const boot = () => {
         const params = new URLSearchParams(window.location.search);
         const prompt = params.get('prompt');
         if (prompt) {
           handleSubmit(prompt);
         }
-        hydrateData();
         input.focus();
       };
 
