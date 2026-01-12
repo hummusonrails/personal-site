@@ -1,11 +1,7 @@
 ---
 import type {CollectionEntry} from 'astro:content';
-import {ViewTransitions} from 'astro:transitions';
-
 import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import SectionContainer from "../components/SectionContainer.astro";
+import ChatSidebar from '../components/ChatSidebar.astro';
 
 import {SITE_METADATA} from "../consts";
 
@@ -15,17 +11,87 @@ const {title, description} = Astro.props;
 ---
 
 <html lang={SITE_METADATA.language} class="scroll-smooth">
-    <ViewTransitions />
     <BaseHead title={title} description='Actualizing Developer Happiness' />
-    <body class="bg-dark-bg text-white antialiased min-h-screen">
-        <SectionContainer>
-            <div class="flex h-screen flex-col justify-between">
-                <Header/>
-                <main class="mb-auto">
+    <body class="chat-body">
+        <div class="chat-shell">
+            <input id="chat-sidebar-toggle" class="chat-sidebar-toggle" type="checkbox" aria-label="Toggle sidebar" />
+            <ChatSidebar />
+            <label class="chat-sidebar-overlay" for="chat-sidebar-toggle" aria-hidden="true"></label>
+            <div class="chat-main">
+                <div class="chat-mobile-bar">
+                    <label class="chat-menu-button" for="chat-sidebar-toggle" aria-label="Open menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </label>
+                    <a class="chat-mobile-title" href="/">{SITE_METADATA.headerTitle}</a>
+                </div>
+                <div class="chat-topbar">
+                    <div class="chat-topbar-right">
+                        <button id="theme-toggle" class="chat-theme-toggle" type="button" aria-label="Toggle light and dark mode">
+                            <span class="chat-theme-icon chat-theme-sun">Light</span>
+                            <span class="chat-theme-icon chat-theme-moon">Dark</span>
+                        </button>
+                    </div>
+                </div>
+                <main class="chat-main-slot">
                     <slot/>
                 </main>
-                <Footer/>
             </div>
-        </SectionContainer>
+        </div>
+        <script is:inline>
+            const setupThemeToggle = () => {
+                const root = document.documentElement;
+                const storageKey = 'portfolio-theme';
+                const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+                const stored = localStorage.getItem(storageKey);
+                const current = root.dataset.theme;
+                const initialTheme = stored || current || (prefersLight ? 'light' : 'dark');
+                root.dataset.theme = initialTheme;
+
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle || toggle.dataset.bound === 'true') {
+                    return;
+                }
+                toggle.dataset.bound = 'true';
+
+                const updateToggle = (theme) => {
+                    toggle.setAttribute('data-theme', theme);
+                };
+
+                updateToggle(initialTheme);
+
+                toggle.addEventListener('click', () => {
+                    const nextTheme = root.dataset.theme === 'light' ? 'dark' : 'light';
+                    root.dataset.theme = nextTheme;
+                    localStorage.setItem(storageKey, nextTheme);
+                    updateToggle(nextTheme);
+                });
+            };
+
+            window.addEventListener('DOMContentLoaded', setupThemeToggle);
+            document.addEventListener('astro:page-load', setupThemeToggle);
+        </script>
+        <script is:inline>
+            (() => {
+                if (window.__portfolioPinnedBound) return;
+                window.__portfolioPinnedBound = true;
+                document.addEventListener('click', (event) => {
+                    const target = event.target;
+                    if (!(target instanceof HTMLElement)) return;
+                    const link = target.closest('a[href*="?prompt="]');
+                    if (!(link instanceof HTMLAnchorElement)) return;
+                    try {
+                        const params = new URLSearchParams(link.search);
+                        const prompt = params.get('prompt');
+                        if (prompt) {
+                            sessionStorage.setItem('pendingPrompt', prompt);
+                        }
+                    } catch (error) {
+                        // Ignore storage errors and let navigation continue.
+                    }
+                });
+            })();
+        </script>
     </body>
 </html>

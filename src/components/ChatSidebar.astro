@@ -1,0 +1,71 @@
+---
+import { SITE_METADATA } from '@/consts';
+---
+
+<aside class="chat-sidebar">
+  <div class="chat-sidebar-inner">
+    <a class="chat-brand" href="/" aria-label={`${SITE_METADATA.author} home`}>
+      <span class="chat-brand-icon">BG</span>
+    </a>
+
+    <a class="chat-new-chat" href="/">
+      <span class="chat-icon">+</span>
+      New chat
+    </a>
+
+
+    <div class="chat-sidebar-section">
+      <p class="chat-sidebar-label">Pinned chats</p>
+      <a class="chat-sidebar-item" href="/?prompt=Tell%20me%20about%20Ben%27s%20background">
+        <span class="chat-icon">*</span>
+        About Ben
+      </a>
+      <a class="chat-sidebar-item" href="/?prompt=What%20is%20the%20book%20about%3F">
+        <span class="chat-icon">*</span>
+        Book: Vector Search
+      </a>
+      <a class="chat-sidebar-item" href="/?prompt=Show%20me%20the%20workshops">
+        <span class="chat-icon">*</span>
+        Workshops
+      </a>
+      <a class="chat-sidebar-item" href="/?prompt=List%20recent%20talks">
+        <span class="chat-icon">*</span>
+        Speaking
+      </a>
+      <a class="chat-sidebar-item" href="/?prompt=What%20should%20I%20read%20next%3F">
+        <span class="chat-icon">*</span>
+        Blog highlights
+      </a>
+    </div>
+
+    <div class="chat-sidebar-section">
+      <p class="chat-sidebar-label">Browse pages</p>
+      <a class="chat-sidebar-item" href="/about">
+        <span class="chat-icon">-</span>
+        About
+      </a>
+      <a class="chat-sidebar-item" href="/blog">
+        <span class="chat-icon">-</span>
+        Blog
+      </a>
+      <a class="chat-sidebar-item" href="/talks">
+        <span class="chat-icon">-</span>
+        Talks
+      </a>
+      <a class="chat-sidebar-item" href="/projects">
+        <span class="chat-icon">-</span>
+        Workshops
+      </a>
+      <a class="chat-sidebar-item" href="/book">
+        <span class="chat-icon">-</span>
+        Book
+      </a>
+    </div>
+
+    <div class="chat-sidebar-footer">
+      <a class="chat-sidebar-link" href={`mailto:${SITE_METADATA.email}`}>Email</a>
+      <a class="chat-sidebar-link" href={SITE_METADATA.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a class="chat-sidebar-link" href={SITE_METADATA.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </div>
+</aside>
