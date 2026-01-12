@@ -72,5 +72,26 @@ const {title, description} = Astro.props;
             window.addEventListener('DOMContentLoaded', setupThemeToggle);
             document.addEventListener('astro:page-load', setupThemeToggle);
         </script>
+        <script is:inline>
+            (() => {
+                if (window.__portfolioPinnedBound) return;
+                window.__portfolioPinnedBound = true;
+                document.addEventListener('click', (event) => {
+                    const target = event.target;
+                    if (!(target instanceof HTMLElement)) return;
+                    const link = target.closest('a[href*="?prompt="]');
+                    if (!(link instanceof HTMLAnchorElement)) return;
+                    try {
+                        const params = new URLSearchParams(link.search);
+                        const prompt = params.get('prompt');
+                        if (prompt) {
+                            sessionStorage.setItem('pendingPrompt', prompt);
+                        }
+                    } catch (error) {
+                        // Ignore storage errors and let navigation continue.
+                    }
+                });
+            })();
+        </script>
     </body>
 </html>

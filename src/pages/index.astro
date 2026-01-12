@@ -680,9 +680,10 @@ const suggestedPrompts = [
 
       const boot = () => {
         const params = new URLSearchParams(window.location.search);
-        const prompt = params.get('prompt');
+        const prompt = params.get('prompt') || sessionStorage.getItem('pendingPrompt');
         if (prompt) {
           handleSubmit(prompt);
+          sessionStorage.removeItem('pendingPrompt');
         }
         input.focus();
       };
