@@ -1,7 +1,5 @@
 ---
 import type {CollectionEntry} from 'astro:content';
-import {ViewTransitions} from 'astro:transitions';
-
 import BaseHead from '../components/BaseHead.astro';
 import ChatSidebar from '../components/ChatSidebar.astro';
 
@@ -13,7 +11,6 @@ const {title, description} = Astro.props;
 ---
 
 <html lang={SITE_METADATA.language} class="scroll-smooth">
-    <ViewTransitions />
     <BaseHead title={title} description='Actualizing Developer Happiness' />
     <body class="chat-body">
         <div class="chat-shell">
