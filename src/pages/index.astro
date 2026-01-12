@@ -691,7 +691,15 @@ const suggestedPrompts = [
       boot();
     };
 
-    window.addEventListener('DOMContentLoaded', setupChat);
-    document.addEventListener('astro:page-load', setupChat);
+    const initChat = () => {
+      setupChat();
+    };
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', initChat);
+    } else {
+      initChat();
+    }
+    document.addEventListener('astro:page-load', initChat);
   </script>
 </RootLayout>
