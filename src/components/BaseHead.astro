@@ -37,6 +37,16 @@ const {title, description, image = '/blog-placeholder-1.jpg'} = Astro.props;
 <title>{title}</title>
 <meta name="description" content={description}/>
 
+<script is:inline>
+  (() => {
+    const storageKey = 'portfolio-theme';
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    const stored = localStorage.getItem(storageKey);
+    const theme = stored || (prefersLight ? 'light' : 'dark');
+    document.documentElement.dataset.theme = theme;
+  })();
+</script>
+
 <!-- Google Tag -->
 <GoogleTag />
 

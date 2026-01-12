@@ -8,31 +8,31 @@ module.exports = {
         extend: {
             colors: {
                 primary: {
-                    50: '#f0f9ff',
-                    100: '#e0f2fe',
-                    200: '#bae6fd',
-                    300: '#7dd3fc',
-                    400: '#38bdf8',
-                    500: '#0ea5e9',
-                    600: '#0284c7',
-                    700: '#0369a1',
-                    800: '#075985',
-                    900: '#0c4a6e',
+                    50: '#ecfdf7',
+                    100: '#d2f8e7',
+                    200: '#a7f1d3',
+                    300: '#6ee5b8',
+                    400: '#36d19a',
+                    500: '#10a37f',
+                    600: '#0d8d6f',
+                    700: '#0b705b',
+                    800: '#0c5a4a',
+                    900: '#0c483d',
                 },
                 dark: {
-                    bg: '#0a0a0a',
-                    surface: '#1a1a1a',
-                    border: '#2a2a2a',
+                    bg: '#343541',
+                    surface: '#444654',
+                    border: '#3f4050',
                     text: {
-                        primary: '#ffffff',
-                        secondary: '#a0a0a0',
-                        muted: '#6b7280',
+                        primary: '#f5f5f7',
+                        secondary: '#c5c5d2',
+                        muted: '#8e8ea0',
                     }
                 }
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', ...fontFamily.sans],
-                mono: ['JetBrains Mono', ...fontFamily.mono],
+                sans: ['Manrope', 'system-ui', ...fontFamily.sans],
+                mono: ['IBM Plex Mono', ...fontFamily.mono],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-in-out',
