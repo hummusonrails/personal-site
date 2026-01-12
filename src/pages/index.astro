@@ -222,6 +222,36 @@ const suggestedPrompts = [
         };
       }
 
+      if (includesAny(normalized, ['table of contents', 'toc'])) {
+        return {
+          paragraphs: [
+            'Table of Contents',
+            'Highlights are available on the book page.',
+          ],
+          items: [
+            { label: 'View the full table of contents', url: knowledge.pages.book, description: 'Part breakdown and chapter list.' },
+            { label: 'Get the book', url: knowledge.book.link, description: 'Pragmatic Bookshelf.' },
+          ],
+          footer: 'Want a specific chapter recommendation?',
+          suggestions: ['What does the book cover?', 'Get the book'],
+        };
+      }
+
+      if (includesAny(normalized, ['what does the book cover', 'book cover', 'what is the book about'])) {
+        return {
+          paragraphs: [
+            knowledge.book.title,
+            knowledge.book.description,
+          ],
+          items: [
+            { label: 'Book overview', url: knowledge.pages.book, description: 'Highlights and table of contents.' },
+            { label: 'Get the book', url: knowledge.book.link, description: 'Pragmatic Bookshelf.' },
+          ],
+          footer: 'Want a specific section or topic?',
+          suggestions: ['Show the table of contents', 'Get the book'],
+        };
+      }
+
       if (includesAny(normalized, ['book', 'vector', 'pragmatic'])) {
         return {
           paragraphs: [
