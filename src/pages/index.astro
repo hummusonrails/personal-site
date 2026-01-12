@@ -40,11 +40,203 @@ const suggestedPrompts = [
   "Share recent talks",
   "How can I contact Ben?",
 ];
+
+const initialPrompt = Astro.url.searchParams.get('prompt');
+
+const includesAny = (value, keywords) =>
+  keywords.some((word) => {
+    if (word.includes(' ')) {
+      return value.includes(word);
+    }
+    const re = new RegExp(`\\b${word}\\b`, 'i');
+    return re.test(value);
+  });
+
+const buildInitialResponse = (prompt) => {
+  if (!prompt) return null;
+  const normalized = prompt.toLowerCase();
+
+  if (includesAny(normalized, ['table of contents', 'toc'])) {
+    return {
+      paragraphs: [
+        'Table of Contents',
+        'Highlights are available on the book page.',
+      ],
+      items: [
+        { label: 'View the full table of contents', url: knowledge.pages.book, description: 'Part breakdown and chapter list.' },
+        { label: 'Get the book', url: knowledge.book.link, description: 'Pragmatic Bookshelf.' },
+      ],
+      footer: 'Want a specific chapter recommendation?',
+      suggestions: ['What does the book cover?', 'Get the book'],
+    };
+  }
+
+  if (includesAny(normalized, ['what does the book cover', 'book cover', 'what is the book about'])) {
+    return {
+      paragraphs: [
+        knowledge.book.title,
+        knowledge.book.description,
+      ],
+      items: [
+        { label: 'Book overview', url: knowledge.pages.book, description: 'Highlights and table of contents.' },
+        { label: 'Get the book', url: knowledge.book.link, description: 'Pragmatic Bookshelf.' },
+      ],
+      footer: 'Want a specific section or topic?',
+      suggestions: ['Show the table of contents', 'Get the book'],
+    };
+  }
+
+  if (includesAny(normalized, ['book', 'vector', 'pragmatic'])) {
+    return {
+      paragraphs: [
+        knowledge.book.title,
+        knowledge.book.description,
+      ],
+      items: [
+        { label: 'Get the book', url: knowledge.book.link, description: 'Pragmatic Bookshelf.' },
+        { label: 'Book overview', url: knowledge.pages.book, description: 'Highlights and table of contents.' },
+      ],
+      footer: 'Want a sample chapter or topic breakdown?',
+      suggestions: ['Show the table of contents', 'What does the book cover?'],
+    };
+  }
+
+  if (includesAny(normalized, ['workshop', 'workshops', 'project', 'projects'])) {
+    return {
+      paragraphs: [
+        'Here are the hands-on workshops Ben teaches.',
+      ],
+      items: knowledge.workshops.map((workshop) => ({
+        label: workshop.title,
+        url: workshop.link,
+        description: workshop.description,
+      })),
+      footer: 'Want a tailored workshop recommendation?',
+      suggestions: ['Which workshop is best for AI search?', 'Show workshops on Rust'],
+    };
+  }
+
+  if (includesAny(normalized, ['talk', 'talks', 'speaking', 'speaker', 'conference', 'recent talks'])) {
+    return {
+      paragraphs: [
+        'Loading the talks list right now.',
+        'Try again in a moment or open the talks page.',
+      ],
+      items: [{ label: 'Browse talks', url: knowledge.pages.talks }],
+      footer: '',
+      suggestions: ['List recent talks'],
+    };
+  }
+
+  if (includesAny(normalized, [
+    'blog',
+    'post',
+    'posts',
+    'writing',
+    'article',
+    'articles',
+    'read next',
+    'what should i read',
+    'what should i read next',
+    'recommend',
+  ])) {
+    return {
+      paragraphs: [
+        'Fetching the latest posts.',
+        'You can also open the blog archive.',
+      ],
+      items: [{ label: 'Open the blog', url: knowledge.pages.blog }],
+      footer: '',
+      suggestions: ['Show recent blog posts'],
+    };
+  }
+
+  if (includesAny(normalized, ['about', 'bio', 'background', 'who are you', 'who is'])) {
+    return {
+      paragraphs: [
+        `${knowledge.name} is a ${knowledge.role}.`,
+        knowledge.focus,
+      ],
+      items: [
+        { label: 'Read the full bio', url: knowledge.pages.about, description: 'Long-form background and story.' },
+      ],
+      footer: 'Want highlights from recent talks or writing?',
+      suggestions: ['Share recent talks', 'Show recent blog posts'],
+    };
+  }
+
+  if (includesAny(normalized, ['contact', 'email', 'reach', 'connect', 'hire'])) {
+    return {
+      paragraphs: [
+        'Here are the best ways to reach Ben.',
+      ],
+      items: [
+        { label: knowledge.links.email, url: `mailto:${knowledge.links.email}`, description: 'Primary email.' },
+        { label: 'LinkedIn', url: knowledge.links.linkedin, description: 'Connect professionally.' },
+        { label: 'GitHub', url: knowledge.links.github, description: 'Code and workshops.' },
+      ],
+      footer: 'Need a workshop or speaking inquiry? Include topic and event details.',
+      suggestions: ['Book Ben for a talk', "Sponsor Ben's work"],
+    };
+  }
+
+  return {
+    paragraphs: [
+      "I can help with Ben's writing, talks, workshops, book, or contact info.",
+      'Try one of these prompts to get started.',
+    ],
+    items: [],
+    footer: '',
+    suggestions: suggestedPrompts,
+  };
+};
+
+const initialResponse = buildInitialResponse(initialPrompt);
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
   <div class="chat-page">
-    <div class="chat-thread" id="chat-thread">
+    <div class="chat-thread" id="chat-thread" data-initial={initialPrompt ? 'true' : 'false'}>
+      {initialPrompt && initialResponse && (
+        <>
+          <div class="chat-message chat-message-user">
+            <div class="chat-avatar chat-avatar-user">You</div>
+            <div class="chat-message-content">
+              <p>{initialPrompt}</p>
+            </div>
+          </div>
+          <div class="chat-message chat-message-assistant">
+            <div class="chat-avatar chat-avatar-assistant">BG</div>
+            <div class="chat-message-content">
+              {initialResponse.paragraphs.map((text, index) => (
+                <p class={index === 0 ? 'chat-lede' : ''}>{text}</p>
+              ))}
+              {initialResponse.items.length > 0 && (
+                <ul class="chat-list">
+                  {initialResponse.items.map((item) => (
+                    <li>
+                      <a class="chat-link" href={item.url} target={item.url.startsWith('http') ? '_blank' : undefined} rel={item.url.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                        {item.label}
+                      </a>
+                      {item.description && <span class="chat-list-meta">{item.description}</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {initialResponse.footer && <p class="chat-footnote">{initialResponse.footer}</p>}
+              {initialResponse.suggestions && initialResponse.suggestions.length > 0 && (
+                <div class="chat-suggestions">
+                  {initialResponse.suggestions.map((prompt) => (
+                    <button class="chat-suggestion" type="button" data-prompt={prompt}>
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
       <div class="chat-empty" id="chat-empty">
         <p class="chat-empty-title">Ready when you are.</p>
         <p class="chat-empty-subtitle">Ask about Ben's work, writing, or speaking.</p>
@@ -681,7 +873,7 @@ const suggestedPrompts = [
       const boot = () => {
         const params = new URLSearchParams(window.location.search);
         const prompt = params.get('prompt') || sessionStorage.getItem('pendingPrompt');
-        if (prompt) {
+        if (prompt && thread.dataset.initial !== 'true') {
           handleSubmit(prompt);
           sessionStorage.removeItem('pendingPrompt');
         }
