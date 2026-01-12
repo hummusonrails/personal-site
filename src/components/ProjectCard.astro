@@ -25,13 +25,13 @@ const {title, description, github_link, blog_link} = Astro.props;
     
     <div class="border-t border-terminal-green">
         <div class="flex">
-            <a href={github_link} target="_blank" class="flex-1 p-4 retro-link text-center border-r border-terminal-green">
+            <a href={github_link} target="_blank" rel="noopener noreferrer" class="flex-1 p-4 retro-link text-center border-r border-terminal-green">
                 <pre class="inline-block mr-2">
 [GIT]
                 </pre>
                 SOURCE_CODE
             </a>
-            <a href={blog_link} target="_blank" class="flex-1 p-4 retro-link text-center">
+            <a href={blog_link} target="_blank" rel="noopener noreferrer" class="flex-1 p-4 retro-link text-center">
                 <pre class="inline-block mr-2">
 {blog_link?.startsWith('https://dev.to') ? '[DEV]' : '[WWW]'}
                 </pre>
