@@ -1,0 +1,56 @@
+name: Fetch X Articles
+
+on:
+  schedule:
+    # Run every Monday at 9am UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  fetch-articles:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Bird CLI
+        run: npm install -g @steipete/bird
+
+      - name: Fetch X articles
+        env:
+          AUTH_TOKEN: ${{ secrets.X_AUTH_TOKEN }}
+          CT0: ${{ secrets.X_CT0 }}
+        run: node scripts/fetch-x-articles.mjs
+
+      - name: Check for new articles
+        id: changes
+        run: |
+          git add src/content/blog/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "feat: import new X articles"
+          title: "New X articles import"
+          body: |
+            Automated import of new articles from X (@hummusonrails).
+
+            Please review the imported content before merging.
+          branch: x-articles-import
+          delete-branch: true
+          labels: content
