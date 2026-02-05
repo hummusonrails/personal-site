@@ -22,7 +22,7 @@ But I watch what's happening with Claude Code and tools like it, and the pace is
 
 The answer is yes. But not the way I did it. The skills that got me hired in 2017 are now table stakes that a $20/month tool can replicate. What matters now is everything that tool can't do.
 
-![](https://pbs.twimg.com/media/G_FRw68WoAA3n0x.png)
+![](https://pbs.twimg.com/media/G_FN6uyXUAA1Um6.png)
 
 ## The skill that's losing value fast
 
@@ -56,7 +56,7 @@ The concepts here aren't new. SOLID principles. Domain-driven design. Clean arch
 
 What's new is their importance. When you're writing every line yourself, bad design just slows you down. When an agent is writing code at 100x your speed, bad design means you're generating technical debt 100x faster.
 
-![](https://pbs.twimg.com/media/G_FWPuUW4AAl2Q7.jpg)
+![](https://pbs.twimg.com/media/G_FQC1DX0AAOkJz.jpg)
 
 ## Infrastructure: where code meets reality
 
@@ -72,7 +72,7 @@ Coding agents don't think about:
 - What happens to your data when a node fails mid-transaction
 Infrastructure knowledge lets you specify constraints that prevent expensive mistakes. "Write this function" becomes "write this function knowing it will be called 10,000 times per second and each call costs $0.000001 in compute."
 
-![](https://pbs.twimg.com/media/G_FQC1DX0AAOkJz.jpg)
+![](https://pbs.twimg.com/media/G_FQiefW8AAoU3t.jpg)
 
 ## Data structures: the performance foundation
 
@@ -89,7 +89,7 @@ The answer depends on:
 
 Coding agents will use whatever data structure seems obvious for the immediate task. They won't ask whether an array, a hash map, a tree, or a graph better serves your access patterns at scale.
 
-![](https://pbs.twimg.com/media/G_FN6uyXUAA1Um6.png)
+![](https://pbs.twimg.com/media/G_FUy4_WkAA0KME.jpg)
 
 ## Performance: the constraint that changes everything
 
@@ -105,7 +105,7 @@ Consider these real constraints:
 - Mobile users on have latency issues before your server even responds
 When you prompt a coding agent, you can specify these constraints. But only if you know they exist.
 
-![](https://pbs.twimg.com/media/G_FQiefW8AAoU3t.jpg)
+![](https://pbs.twimg.com/media/G_FRw68WoAA3n0x.png)
 
 ## How to actually learn this
 
@@ -121,7 +121,7 @@ Here's a learning path that works:
 
 **Read the boring stuff.** "Designing Data-Intensive Applications" by Martin Kleppmann. "Fundamentals of Software Architecture" by Mark Richards and Neal Ford. These two books will teach you more than 50 tutorials.
 
-![](https://pbs.twimg.com/media/G_FUy4_WkAA0KME.jpg)
+![](https://pbs.twimg.com/media/G_FWPuUW4AAl2Q7.jpg)
 
 ## The new developer job description
 

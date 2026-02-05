@@ -58,6 +58,16 @@ Protocols that mix metadata into response bodies tend to break middleware and pr
 
 v2 fixes this by going header-first, following RFC-6648 which deprecated the "X-" prefix for HTTP headers. Payment requirements now live in the PAYMENT-RESPONSE header. The response body stays application-specific:
 
+```typescript
+res.json({
+  kinds: [...v1Kinds, ...v2Kinds],
+  versions: { '1': { kinds: v1Kinds }, '2': { kinds: v2Kinds } },
+  signingAddresses: { settlement: FACILITATOR_ADDRESS },
+  extensions: [],
+});
+
+```
+
 This means a browser can render a human-facing HTML paywall while an agent reads machine-readable payment requirements from headers. It also makes x402 behave predictably inside Express, Next.js, proxies, and edge middleware.
 
 v2 also cleans up the payload structure. In v1, if a server accepted three tokens, it repeated the URL, description, and content type three times. v2 extracts shared resource metadata into a single object, reducing message size and eliminating inconsistencies.
@@ -78,6 +88,13 @@ v2 also makes payment selection explicit. In v1, the protocol used field matchin
 
 Nonce reuse is enforced as well. The implementation supports database-backed nonce tracking and includes an in-memory fallback with a warning that it's not production safe:
 
+```typescript
+const serialized = JSON.stringify(requirements);
+res.setHeader('PAYMENT-RESPONSE', serialized);
+res.status(402).json(requirements);
+
+```
+
 If you've ever debugged a double-charge issue, you know why this matters. Retries are inevitable. Idempotency has to be built in from the start.
 
 ## Lifecycle Hooks: Solving the Settlement Timing Problem
@@ -86,7 +103,23 @@ Remember that friction point about settlement failing after you've already shipp
 
 v2 introduces lifecycle hooks that let you control exactly when your logic runs relative to the payment flow. The private inference demo uses this pattern. When usage reaches a threshold, the backend returns an explicit settlementAuthorization. The client signs exactly that authorization using EIP-712 typed data for EIP-3009:
 
+```typescript
+if (usedNonces.has(nonce)) {
+  return { valid: false, invalidReason: 'Nonce has already been used' };
+}
+usedNonces.add(nonce);
+logger.warn('Using in-memory nonce tracking - not production safe!', { nonce });
+
+```
+
 The client then submits the signature along with the exact authorization fields that were signed:
+
+```typescript
+if (response.needsSignature && response.settlementAuthorization) {
+  setPendingSettlement(response.settlementAuthorization);
+  await handleSettlementSigning(response.settlementAuthorization);
+}
+```
 
 There's no inference step here. The server declares the intended payment requirement. The client signs it. The facilitator verifies it. Settlement is explicit and ordered. Your business logic runs when you decide it should.
 
@@ -105,6 +138,9 @@ If you want to see how all of this fits together, the fastest way is to run the 
 The private inference demo shows a full x402 v2 flow end to end, including header-based requirements, explicit authorization signing, batching, and settlement on Arbitrum. It's designed to be read, modified, and broken on purpose.
 
 The facilitator reference implementation shows what a v2-native facilitator actually looks like in practice. It exposes /supported, enforces CAIP-2 network identity, performs strict verification, and treats idempotency as a genuine concern rather than a footnote.
+
+![](https://pbs.twimg.com/media/G9qEfG7XkAAHWAy.jpg)
+*The private inference demo provided, running an x402 v2 flow where usage is accumulated and settlement is handled explicitly rather than per request.*
 
 Clone both repositories, run them locally, and trace a single request from 402 to settlement. Watch where headers are used, where assumptions are enforced, and where the protocol draws boundaries between application logic and payment logic.
 

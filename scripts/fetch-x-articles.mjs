@@ -97,11 +97,81 @@ function applyInlineStyles(text, inlineStyleRanges) {
   return result;
 }
 
+function resolveEntityContent(entity, mediaUrlMap) {
+  if (!entity?.value?.data) return null;
+  const data = entity.value.data;
+  const type = entity.value.type;
+
+  if (data.mediaItems?.length) {
+    const lines = [];
+    for (const mi of data.mediaItems) {
+      const url = mediaUrlMap.get(String(mi.mediaId));
+      if (url) lines.push(`![](${url})`);
+    }
+    if (data.caption) lines.push(`*${data.caption}*`);
+    return lines.length ? lines.join("\n") : null;
+  }
+  if (data.markdown) return data.markdown;
+  if (type === "LINK" && data.url) return null; // inline links handled in text
+  return null;
+}
+
 function draftJsToMarkdown(contentState, mediaUrlMap, entityMap) {
   const blocks = contentState.blocks || [];
+  const entMap = Array.isArray(entityMap) ? entityMap : [];
+
+  // X stores atomic blocks in authoring order, not visual order.
+  // The entity's `key` field (a string number) gives the intended
+  // visual position. We collect all atomic block slots, sort entities
+  // by their key, then place the correctly-ordered content into each slot.
+  const atomicSlots = []; // indices into blocks[] where atomic blocks sit
+  const atomicEntities = []; // { entityVisualKey, entityIdx }
+
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i].type === "atomic") {
+      const er = blocks[i].entityRanges?.[0];
+      if (er != null) {
+        atomicSlots.push(i);
+        const ent = entMap[er.key];
+        const visualKey = parseInt(ent?.key ?? "9999", 10);
+        atomicEntities.push({ visualKey, entityIdx: er.key });
+      }
+    }
+  }
+
+  // Sort entities by visual key and assign to slots in order
+  const sortedEntities = [...atomicEntities].sort(
+    (a, b) => a.visualKey - b.visualKey
+  );
+  const slotToEntity = new Map();
+  for (let i = 0; i < atomicSlots.length; i++) {
+    if (i < sortedEntities.length) {
+      slotToEntity.set(atomicSlots[i], sortedEntities[i].entityIdx);
+    }
+  }
+
+  // Also collect entities referenced from non-atomic blocks (inline media)
+  // that aren't already placed in an atomic slot
+  const placedEntityIndices = new Set(slotToEntity.values());
+  const inlineMediaEntities = [];
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i].type !== "atomic") {
+      for (const er of blocks[i].entityRanges || []) {
+        const ent = entMap[er.key];
+        if (
+          ent?.value?.data?.mediaItems?.length &&
+          !placedEntityIndices.has(er.key)
+        ) {
+          inlineMediaEntities.push({ blockIdx: i, entityIdx: er.key });
+        }
+      }
+    }
+  }
+
   const lines = [];
 
-  for (const block of blocks) {
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
     const type = block.type || "unstyled";
     const text = applyInlineStyles(block.text, block.inlineStyleRanges);
 
@@ -125,31 +195,30 @@ function draftJsToMarkdown(contentState, mediaUrlMap, entityMap) {
         lines.push(`1. ${text}`);
         break;
       case "atomic": {
-        // Resolve image from entity reference
-        const er = block.entityRanges?.[0];
-        if (er != null) {
-          const entity = Array.isArray(entityMap)
-            ? entityMap[er.key]
-            : entityMap?.[String(er.key)];
-          const mediaItems =
-            entity?.value?.data?.mediaItems || [];
-          for (const mi of mediaItems) {
-            const url = mediaUrlMap.get(String(mi.mediaId));
-            if (url) {
-              lines.push(`![](${url})`, "");
-            }
-          }
+        const entIdx = slotToEntity.get(i);
+        if (entIdx != null) {
+          const entity = entMap[entIdx];
+          const content = resolveEntityContent(entity, mediaUrlMap);
+          if (content) lines.push(content, "");
         }
         break;
       }
-      default:
-        // "unstyled" and anything else → plain paragraph
+      default: {
         lines.push(text, "");
+        // If this non-atomic block has an inline media entity, add it after
+        const inlineMedia = inlineMediaEntities.find(
+          (im) => im.blockIdx === i
+        );
+        if (inlineMedia) {
+          const entity = entMap[inlineMedia.entityIdx];
+          const content = resolveEntityContent(entity, mediaUrlMap);
+          if (content) lines.push(content, "");
+        }
         break;
+      }
     }
   }
 
-  // Clean up: collapse 3+ blank lines into 2, trim trailing whitespace
   return lines
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")

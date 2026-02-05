@@ -26,6 +26,9 @@ A skill is a structured set of instructions, references, and decision logic that
 
 With this skill loaded, Claude knows the exact stack, project layout, and commands to run at each step.
 
+![](https://pbs.twimg.com/media/HAYZbfGWQAA82vc.jpg)
+*Skills are triggered in the context window via your system prompt. (Source: Anthropic Blog [https://claude.com/blog/equipping-agents-for-the-real-world-with-agent-skills])*
+
 ## The stack
 
 The skill is opinionated. That's intentional. When Claude has to choose between five ways to do something, it often picks the wrong one or asks you to decide. Narrowing the options produces better results.
@@ -40,7 +43,8 @@ Here's what the skill specifies:
 
 **pnpm manages the monorepo.** The whole project lives in a single workspace with apps/frontend, apps/contracts-stylus, apps/contracts-solidity, and apps/nitro-devnode as subdirectories.
 
-![](https://pbs.twimg.com/media/HAYbZchXUAErT0l.jpg)
+![](https://pbs.twimg.com/media/HAYaW7-WcAAgjwr.jpg)
+*The monorepo layout the skill generates. Each directory maps to a layer of the stack, and Claude knows which tools and commands belong to each.*
 
 ## How the decision flow works
 
@@ -70,13 +74,12 @@ deployment.md and testing.md cover the path from local to mainnet, and testing s
 
 **Claude doesn't load all of these at once.** It reads the main skill file, determines what you need, and pulls in the relevant references. Context stays focused.
 
-![](https://pbs.twimg.com/media/HAYclzrXoAAARNs.jpg)
-
 ## A concrete example
 
 I recorded a full walkthrough of this process. If you want to see it in action before reading the breakdown, you can go watch it on YouTube.
 
-![](https://pbs.twimg.com/media/HAYaW7-WcAAgjwr.jpg)
+![](https://pbs.twimg.com/media/HAYbZchXUAErT0l.jpg)
+*Watch the video at https://youtu.be/vsejiaOTmJA*
 
 Say you ask Claude: "Build me an NFT contract on Arbitrum using Rust with a React frontend."
 
@@ -110,11 +113,19 @@ If you're building on Arbitrum and you use Claude as a coding tool, this skill m
 
 If you've tried building dApps with Claude before and found it picking outdated libraries or structuring projects badly, that's what this solves. **Claude is good at writing code. It's bad at knowing which code to write for a specific ecosystem.** The skill fills that gap.
 
-![](https://pbs.twimg.com/media/HAYZbfGWQAA82vc.jpg)
+![](https://pbs.twimg.com/media/HAYclzrXoAAARNs.jpg)
+*Most of a new project's time goes to tooling research, scaffolding, and debugging wiring between layers. The skill compresses all of that into one step.*
 
 ## Try it yourself
 
 The skill and all its references are available on GitHub and ClawHub. You can install it in one line:
+
+![](https://pbs.twimg.com/media/HAYbGefX0AAIGRQ.jpg)
+*How the skill routes Claude's decisions. Your prompt enters at the top, the decision flow picks the right contract path, and only the relevant reference docs get loaded into context.*
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/hummusonrails/arbitrum-dapp-skill/main/install.sh)
+```
 
 Load it into your Claude environment and ask it to build something. Start with the counter example if you want to see the full flow before building something custom.
 
