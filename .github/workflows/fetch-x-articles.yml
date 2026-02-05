@@ -23,7 +23,7 @@ jobs:
           node-version: "20"
 
       - name: Install Bird CLI
-        run: npm install -g @steipete/bird
+        run: npm install -g @steipete/bird@0.8.0
 
       - name: Fetch X articles
         env:
