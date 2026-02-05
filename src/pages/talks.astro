@@ -40,20 +40,20 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
 <RootLayout title={SITE_METADATA.title}>
     <div class="section-container animate-fade-in">
         <div class="max-w-7xl mx-auto">
-            <div class="mb-12">
+            <div class="mb-10">
                 <p class="section-title">Speaking</p>
-                <h1 class="text-4xl md:text-5xl font-bold mb-6">
-                    Conference <span class="text-primary-500">Talks</span>
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">
+                    Conference Talks
                 </h1>
-                <p class="text-xl text-dark-text-secondary max-w-2xl">
+                <p class="text-lg text-dark-text-secondary max-w-2xl">
                     Click any talk to watch it on the big screen
                 </p>
             </div>
 
             <!-- Theater Container -->
-            <div class="theater-container relative mb-16" role="region" aria-label="Video theater">
+            <div class="theater-container relative mb-12" role="region" aria-label="Video theater">
                 <!-- Movie Screen -->
-                <div class="screen-wrapper relative bg-gradient-to-b from-dark-bg to-dark-surface p-8 rounded-lg shadow-2xl">
+                <div class="screen-wrapper relative bg-gradient-to-b from-dark-bg to-dark-surface p-8 rounded-lg">
                     <!-- Red Theater Curtains -->
                     <div class="curtains absolute inset-0 z-10 pointer-events-none">
                         <svg viewBox="0 0 1000 600" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -224,7 +224,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {recentTalks.map((talk) => (
                         <button
-                            class="talk-card card text-left hover:border-primary-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all cursor-pointer group"
+                            class="talk-card card text-left focus:ring-2 focus:ring-[var(--text-muted)] focus:outline-none transition-colors cursor-pointer group"
                             data-youtube-id={talk.youtubeId || ''}
                             data-has-video={talk.youtubeId ? 'true' : 'false'}
                             data-title={talk.data.presentation}
@@ -238,14 +238,14 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                             <div class="aspect-video bg-dark-surface rounded overflow-hidden mb-4 relative">
                                 {talk.youtubeId ? (
                                     <>
-                                        <img 
+                                        <img
                                             src={`https://img.youtube.com/vi/${talk.youtubeId}/maxresdefault.jpg`}
                                             alt={`Video thumbnail for ${talk.data.presentation} presented at ${talk.data.conference}`}
-                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            class="w-full h-full object-cover"
                                             onerror="this.src='https://img.youtube.com/vi/${talk.youtubeId}/hqdefault.jpg'"
                                         />
-                                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center" aria-hidden="true">
-                                            <svg class="w-16 h-16 text-white opacity-80 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center" aria-hidden="true">
+                                            <svg class="w-14 h-14 text-white opacity-80" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z"/>
                                             </svg>
                                         </div>
@@ -259,7 +259,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                                     </div>
                                 )}
                             </div>
-                            <h3 class="font-semibold mb-2 group-hover:text-primary-500 transition-colors">
+                            <h3 class="font-semibold mb-2 group-hover:text-[var(--text-primary)] transition-colors">
                                 {talk.data.presentation}
                             </h3>
                             <p class="text-sm text-dark-text-secondary">
@@ -282,14 +282,14 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                     <h2 id="earlier-talks-heading" class="text-2xl font-bold mb-6">Earlier Talks & Events</h2>
                     <div class="grid md:grid-cols-2 gap-6">
                         {olderTalks.map((talk) => (
-                            <a 
+                            <a
                                 href={talk.data.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="card hover:border-primary-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all group"
+                                class="card focus:ring-2 focus:ring-[var(--text-muted)] focus:outline-none transition-colors group"
                                 aria-label={`View ${talk.data.presentation} from ${talk.data.conference} (opens in new tab)`}
                             >
-                                <h3 class="font-semibold mb-2 group-hover:text-primary-500 transition-colors">
+                                <h3 class="font-semibold mb-2 group-hover:text-[var(--text-primary)] transition-colors">
                                     {talk.data.presentation}
                                 </h3>
                                 <p class="text-sm text-dark-text-secondary">

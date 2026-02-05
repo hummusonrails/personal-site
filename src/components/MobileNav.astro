@@ -4,10 +4,10 @@ import {NAVIGATION} from '@/consts';
 
 <button 
     id="mobileMenuToggle"
-    aria-label="Open Menu" 
+    aria-label="Open Menu"
     aria-expanded="false"
     aria-controls="mobileMenuContainer"
-    class="md:hidden toggle-menu p-2 hover:text-primary-500 transition-colors"
+    class="md:hidden toggle-menu p-2 hover:text-[var(--text-primary)] transition-colors"
 >
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -23,9 +23,9 @@ import {NAVIGATION} from '@/consts';
     class="translate-x-full fixed left-0 top-0 z-50 h-full w-full transform bg-dark-bg backdrop-blur-lg bg-opacity-95 duration-300 ease-in-out"
 >
     <div class="flex justify-end p-6">
-        <button 
+        <button
             id="mobileMenuClose"
-            class="toggle-menu p-2 hover:text-primary-500 transition-colors" 
+            class="toggle-menu p-2 hover:text-[var(--text-primary)] transition-colors"
             aria-label="Close Menu"
         >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,9 +40,9 @@ import {NAVIGATION} from '@/consts';
         </div>
         
         {NAVIGATION.map(({href, title}) => (
-            <a 
-                href={href} 
-                class="mobile-nav-link block py-4 text-2xl font-medium text-dark-text hover:text-primary-500 border-b border-dark-border last:border-0 transition-colors"
+            <a
+                href={href}
+                class="mobile-nav-link block py-4 text-2xl font-medium text-dark-text hover:text-[var(--text-primary)] border-b border-dark-border last:border-0 transition-colors"
             >
                 {title}
             </a>

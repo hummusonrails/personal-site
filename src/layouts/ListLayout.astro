@@ -42,7 +42,7 @@ export const prerender = true;
                 )}
                 
                 {page.data.map(({slug, data: {date, title, summary, tags}}) => (
-                    <article class="card hover:border-primary-500 transition-all group">
+                    <article class="card hover:border-[var(--dark-border)] transition-all group">
                         <div class="space-y-4 md:grid md:grid-cols-4 md:gap-6 md:space-y-0">
                             <div class="md:col-span-1">
                                 <time class="text-sm text-dark-text-muted font-mono">
@@ -51,7 +51,7 @@ export const prerender = true;
                             </div>
                             <div class="md:col-span-3 space-y-3">
                                 <div>
-                                    <h2 class="text-2xl font-bold mb-3 group-hover:text-primary-500 transition-colors">
+                                    <h2 class="text-2xl font-bold mb-3 group-hover:text-[var(--text-primary)] transition-colors">
                                         <Link href={`/blog/${slug}`} class="no-underline">
                                             {title}
                                         </Link>

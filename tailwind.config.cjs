@@ -31,8 +31,8 @@ module.exports = {
                 }
             },
             fontFamily: {
-                sans: ['Manrope', 'system-ui', ...fontFamily.sans],
-                mono: ['IBM Plex Mono', ...fontFamily.mono],
+                sans: ['Sohne', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', ...fontFamily.sans],
+                mono: ['Sohne Mono', 'IBM Plex Mono', ...fontFamily.mono],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-in-out',

@@ -43,13 +43,13 @@ export const prerender = true;
     <article class="section-container animate-fade-in">
       <div class="max-w-4xl mx-auto">
         <!-- Article Header -->
-        <header class="mb-12">
-          <div class="mb-4">
+        <header class="mb-10">
+          <div class="mb-3">
             <time class="text-sm text-dark-text-muted font-mono">
               <FormattedDate date={post.date} />
             </time>
           </div>
-          <h1 class="text-4xl md:text-5xl font-bold mb-6">
+          <h1 class="text-3xl md:text-4xl font-bold mb-5">
             {post.title}
           </h1>
           
@@ -69,7 +69,7 @@ export const prerender = true;
                 <div>
                   <div class="font-semibold text-white">{name}</div>
                   {twitter && (
-                    <Link href={twitter} class="text-sm text-dark-text-secondary hover:text-primary-500 transition-colors no-underline">
+                    <Link href={twitter} class="text-sm text-dark-text-secondary hover:text-[var(--text-primary)] transition-colors no-underline">
                       {twitter.replace("https://twitter.com/", "@")}
                     </Link>
                   )}
@@ -85,11 +85,11 @@ export const prerender = true;
         </div>
 
         <!-- Footer -->
-        <footer class="border-t border-dark-border pt-8 space-y-8">
+        <footer class="border-t border-dark-border pt-6 space-y-6">
           {tags.length > 0 && (
             <div>
-              <h2 class="text-sm font-semibold text-dark-text-secondary mb-3">Tags</h2>
-              <div class="flex flex-wrap gap-2">
+              <h2 class="text-sm font-medium text-dark-text-muted mb-2">Tags</h2>
+              <div class="flex flex-wrap gap-1.5">
                 {tags.map((tag) => (
                   <Tag slug={tag.slug} />
                 ))}
@@ -98,19 +98,19 @@ export const prerender = true;
           )}
 
           {(next || prev) && (
-            <nav class="grid md:grid-cols-2 gap-6">
+            <nav class="grid md:grid-cols-2 gap-4">
               {prev && (
-                <div class="card">
-                  <div class="text-sm text-dark-text-secondary mb-2">← Previous Post</div>
-                  <Link href={`/blog/${prev.id}`} class="text-lg font-semibold hover:text-primary-500 transition-colors no-underline">
+                <div class="py-3 border-b border-[var(--dark-border)] md:border-b-0">
+                  <div class="text-xs text-dark-text-muted mb-1">Previous</div>
+                  <Link href={`/blog/${prev.id}`} class="font-medium hover:text-[var(--text-primary)] transition-colors no-underline">
                     {prev.title}
                   </Link>
                 </div>
               )}
               {next && (
-                <div class="card text-right">
-                  <div class="text-sm text-dark-text-secondary mb-2">Next Post →</div>
-                  <Link href={`/blog/${next.id}`} class="text-lg font-semibold hover:text-primary-500 transition-colors no-underline">
+                <div class="py-3 text-right">
+                  <div class="text-xs text-dark-text-muted mb-1">Next</div>
+                  <Link href={`/blog/${next.id}`} class="font-medium hover:text-[var(--text-primary)] transition-colors no-underline">
                     {next.title}
                   </Link>
                 </div>
@@ -118,9 +118,9 @@ export const prerender = true;
             </nav>
           )}
 
-          <div class="text-center pt-4">
+          <div class="text-center pt-3">
             <Link href="/blog" class="modern-button-primary modern-button no-underline" aria-label="Back to the blog">
-              ← Back to Blog
+              Back to Blog
             </Link>
           </div>
         </footer>

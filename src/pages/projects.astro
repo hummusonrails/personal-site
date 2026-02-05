@@ -7,12 +7,12 @@ import { WORKSHOPS } from "@/data/workshops";
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
     <div class="section-container animate-fade-in">
         <div class="max-w-6xl mx-auto">
-            <div class="mb-12">
+            <div class="mb-8">
                 <p class="section-title">Learning</p>
-                <h1 class="text-4xl md:text-5xl font-bold mb-6">
-                    Developer <span class="text-primary-500">Workshops</span>
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">
+                    Developer Workshops
                 </h1>
-                <p class="text-xl text-dark-text-secondary max-w-2xl">
+                <p class="text-lg text-dark-text-secondary max-w-2xl">
                     Hands-on workshops and tutorials for developers.
                 </p>
             </div>
@@ -21,17 +21,17 @@ import { WORKSHOPS } from "@/data/workshops";
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {WORKSHOPS.map((project) => (
                     <div class="card group flex flex-col">
-                        <h3 class="text-xl font-semibold mb-3 group-hover:text-primary-500 transition-colors">
+                        <h3 class="text-xl font-semibold mb-3 group-hover:text-[var(--text-primary)] transition-colors">
                             {project.title}
                         </h3>
                         <p class="text-dark-text-secondary mb-6 line-clamp-2">
                             {project.description}
                         </p>
                         <div class="mt-auto pt-4">
-                            <a href={project.link} 
+                            <a href={project.link}
                                target="_blank"
                                rel="noopener noreferrer"
-                               class="text-sm text-primary-500 hover:text-primary-400 transition-colors font-medium">
+                               class="text-sm text-[var(--text-primary)] hover:text-[var(--text-primary)] transition-colors font-medium">
                                 View Workshop ->
                             </a>
                         </div>
