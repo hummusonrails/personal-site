@@ -15,7 +15,6 @@
 import { execSync } from "node:child_process";
 import {
   existsSync,
-  mkdirSync,
   readFileSync,
   readdirSync,
   writeFileSync,
@@ -26,14 +25,140 @@ const X_HANDLE = "hummusonrails";
 const BLOG_DIR = new URL("../src/content/blog", import.meta.url).pathname;
 const TWEET_COUNT = 200;
 
-// Tags to auto-assign based on keyword matching in title only (not body,
-// to avoid false positives from incidental mentions)
+// Tags to auto-assign based on keyword matching in title only
 const TAG_RULES = [
   { tag: "ai", keywords: ["claude", "openai", "llm", "gpt", "vibe cod", "ai "] },
   { tag: "blockchain", keywords: ["arbitrum", "ethereum", "dapp", "smart contract", "web3", "x402", "solidity", "stylus"] },
   { tag: "career", keywords: ["hiring", "career", "candidates", "developer who doesn"] },
   { tag: "devrel", keywords: ["devrel", "developer relations", "developer advocacy"] },
 ];
+
+// ---------------------------------------------------------------------------
+// Draft.js → Markdown converter
+// ---------------------------------------------------------------------------
+
+function buildMediaUrlMap(articleResult) {
+  const map = new Map();
+  for (const me of articleResult.media_entities || []) {
+    const url = me.media_info?.original_img_url;
+    if (url) map.set(String(me.media_id), url);
+  }
+  return map;
+}
+
+function applyInlineStyles(text, inlineStyleRanges) {
+  if (!text || !inlineStyleRanges?.length) return text;
+
+  // Build a character-level style map
+  const chars = [...text];
+  const styles = chars.map(() => new Set());
+  for (const { style, offset, length } of inlineStyleRanges) {
+    for (let i = offset; i < offset + length && i < chars.length; i++) {
+      styles[i].add(style);
+    }
+  }
+
+  // Walk characters and insert markdown markers at style boundaries
+  let result = "";
+  let activeBold = false;
+  let activeItalic = false;
+
+  for (let i = 0; i < chars.length; i++) {
+    const wantsBold = styles[i].has("Bold");
+    const wantsItalic = styles[i].has("Italic");
+
+    // Close styles in reverse order
+    if (activeItalic && !wantsItalic) {
+      result += "*";
+      activeItalic = false;
+    }
+    if (activeBold && !wantsBold) {
+      result += "**";
+      activeBold = false;
+    }
+
+    // Open styles
+    if (!activeBold && wantsBold) {
+      result += "**";
+      activeBold = true;
+    }
+    if (!activeItalic && wantsItalic) {
+      result += "*";
+      activeItalic = true;
+    }
+
+    result += chars[i];
+  }
+
+  // Close any still-open styles
+  if (activeItalic) result += "*";
+  if (activeBold) result += "**";
+
+  return result;
+}
+
+function draftJsToMarkdown(contentState, mediaUrlMap, entityMap) {
+  const blocks = contentState.blocks || [];
+  const lines = [];
+
+  for (const block of blocks) {
+    const type = block.type || "unstyled";
+    const text = applyInlineStyles(block.text, block.inlineStyleRanges);
+
+    switch (type) {
+      case "header-one":
+        lines.push(`# ${text}`, "");
+        break;
+      case "header-two":
+        lines.push(`## ${text}`, "");
+        break;
+      case "header-three":
+        lines.push(`### ${text}`, "");
+        break;
+      case "blockquote":
+        lines.push(`> ${text}`, "");
+        break;
+      case "unordered-list-item":
+        lines.push(`- ${text}`);
+        break;
+      case "ordered-list-item":
+        lines.push(`1. ${text}`);
+        break;
+      case "atomic": {
+        // Resolve image from entity reference
+        const er = block.entityRanges?.[0];
+        if (er != null) {
+          const entity = Array.isArray(entityMap)
+            ? entityMap[er.key]
+            : entityMap?.[String(er.key)];
+          const mediaItems =
+            entity?.value?.data?.mediaItems || [];
+          for (const mi of mediaItems) {
+            const url = mediaUrlMap.get(String(mi.mediaId));
+            if (url) {
+              lines.push(`![](${url})`, "");
+            }
+          }
+        }
+        break;
+      }
+      default:
+        // "unstyled" and anything else → plain paragraph
+        lines.push(text, "");
+        break;
+    }
+  }
+
+  // Clean up: collapse 3+ blank lines into 2, trim trailing whitespace
+  return lines
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function slugify(title) {
   return title
@@ -47,13 +172,11 @@ function detectTags(title) {
   const matched = TAG_RULES.filter((rule) =>
     rule.keywords.some((kw) => text.includes(kw))
   ).map((rule) => rule.tag);
-
   const tags = [...new Set(matched)];
   return tags.length > 0 ? tags : ["posts"];
 }
 
 function parseDate(twitterDate) {
-  // "Thu Feb 05 09:03:12 +0000 2026" -> "2026-02-05"
   const d = new Date(twitterDate);
   return d.toISOString().split("T")[0];
 }
@@ -64,8 +187,7 @@ function buildFrontmatter(article) {
     .map((t) => `  - slug: ${t}\n    collection: tags`)
     .join("\n");
   const date = parseDate(article.createdAt);
-  const summary = article.previewText || article.text.split("\n\n")[1] || "";
-  // Truncate summary to ~200 chars
+  const summary = article.previewText || "";
   const truncSummary =
     summary.length > 200 ? summary.slice(0, 197) + "..." : summary;
   const canonicalUrl = `https://x.com/${X_HANDLE}/article/${article.id}`;
@@ -87,21 +209,6 @@ canonicalUrl: '${canonicalUrl}'`;
 
   fm += "\n---";
   return fm;
-}
-
-function articleToMarkdown(article) {
-  const frontmatter = buildFrontmatter(article);
-  // The text from Bird already has the title as first line — strip it
-  let body = article.text;
-  const firstNewline = body.indexOf("\n");
-  if (firstNewline !== -1) {
-    const firstLine = body.slice(0, firstNewline).trim();
-    if (firstLine === article.title) {
-      body = body.slice(firstNewline + 1).trimStart();
-    }
-  }
-
-  return `${frontmatter}\n\n${body}\n`;
 }
 
 function getExistingCanonicalUrls() {
@@ -127,62 +234,57 @@ function getExistingSlugs() {
   return slugs;
 }
 
+// ---------------------------------------------------------------------------
+// Bird CLI wrappers
+// ---------------------------------------------------------------------------
+
+function parseJsonOutput(raw) {
+  const jsonStart = raw.indexOf("{");
+  if (jsonStart === -1) throw new Error("No JSON in bird output");
+  return JSON.parse(raw.slice(jsonStart));
+}
+
 function fetchTweets() {
   console.log(`Fetching tweets from @${X_HANDLE}...`);
-  const cmd = `bird user-tweets @${X_HANDLE} -n ${TWEET_COUNT} --json`;
-  const result = execSync(cmd, {
-    encoding: "utf-8",
-    timeout: 120_000,
-    // Bird picks up AUTH_TOKEN and CT0 from env or browser cookies
-    stdio: ["pipe", "pipe", "pipe"],
-  });
-
-  // Skip any non-JSON preamble lines (bird prints info messages to stdout)
-  const jsonStart = result.indexOf("{");
-  if (jsonStart === -1) {
-    throw new Error("No JSON output from bird CLI");
-  }
-  return JSON.parse(result.slice(jsonStart));
+  const result = execSync(
+    `bird user-tweets @${X_HANDLE} -n ${TWEET_COUNT} --json`,
+    { encoding: "utf-8", timeout: 120_000, stdio: ["pipe", "pipe", "pipe"] }
+  );
+  return parseJsonOutput(result);
 }
 
-function extractArticles(data) {
-  const articles = new Map();
-
-  for (const tweet of data.tweets || []) {
-    // Check direct tweet and quoted tweets
-    for (const source of [tweet, tweet.quotedTweet].filter(Boolean)) {
-      if (!source.article) continue;
-      if (source.author?.username !== X_HANDLE) continue;
-      if (articles.has(source.id)) continue;
-
-      articles.set(source.id, {
-        id: source.id,
-        title: source.article.title,
-        previewText: source.article.previewText || "",
-        coverImage: source.article.coverImage || "",
-        createdAt: source.createdAt,
-        text: "", // will be filled by individual fetch
-      });
-    }
-  }
-
-  return [...articles.values()];
-}
-
-function fetchArticleContent(articleId) {
-  const cmd = `bird read ${articleId} --json`;
-  const result = execSync(cmd, {
+function fetchArticleFull(articleId) {
+  const result = execSync(`bird read ${articleId} --json-full`, {
     encoding: "utf-8",
     timeout: 30_000,
     stdio: ["pipe", "pipe", "pipe"],
   });
-  const jsonStart = result.indexOf("{");
-  if (jsonStart === -1) throw new Error(`No JSON for article ${articleId}`);
-  return JSON.parse(result.slice(jsonStart));
+  return parseJsonOutput(result);
 }
 
+function extractArticles(data) {
+  const articles = new Map();
+  for (const tweet of data.tweets || []) {
+    for (const source of [tweet, tweet.quotedTweet].filter(Boolean)) {
+      if (!source.article) continue;
+      if (source.author?.username !== X_HANDLE) continue;
+      if (articles.has(source.id)) continue;
+      articles.set(source.id, {
+        id: source.id,
+        title: source.article.title,
+        previewText: source.article.previewText || "",
+        createdAt: source.createdAt,
+      });
+    }
+  }
+  return [...articles.values()];
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
 async function main() {
-  // 1. Fetch timeline to discover articles
   const data = fetchTweets();
   const articles = extractArticles(data);
   console.log(`Found ${articles.length} articles by @${X_HANDLE}`);
@@ -192,11 +294,9 @@ async function main() {
     return;
   }
 
-  // 2. Check which articles are already imported
   const existingUrls = getExistingCanonicalUrls();
   const existingSlugs = getExistingSlugs();
 
-  // 3. Fetch full content and write markdown for new articles
   let imported = 0;
   for (const article of articles) {
     const canonicalUrl = `https://x.com/${X_HANDLE}/article/${article.id}`;
@@ -206,28 +306,46 @@ async function main() {
     }
 
     console.log(`  Fetching content: ${article.title}...`);
-    const full = fetchArticleContent(article.id);
-    article.text = full.text || "";
-    article.coverImage = full.article?.coverImage || article.coverImage;
+    const full = fetchArticleFull(article.id);
 
-    if (!article.text) {
-      console.log(`  WARN: Empty content for "${article.title}", skipping`);
+    // Extract Draft.js content from the raw API response
+    const rawArticle =
+      full._raw?.article?.article_results?.result || {};
+    const contentState = rawArticle.content_state;
+
+    if (!contentState?.blocks?.length) {
+      console.log(`  WARN: No content blocks for "${article.title}", skipping`);
       continue;
     }
 
-    const md = articleToMarkdown(article);
-    let slug = slugify(article.title);
+    // Build media URL lookup and convert Draft.js to markdown
+    const mediaUrlMap = buildMediaUrlMap(rawArticle);
+    const entityMap = contentState.entityMap || [];
+    const body = draftJsToMarkdown(contentState, mediaUrlMap, entityMap);
 
-    // Avoid collisions with existing posts
-    if (existingSlugs.has(slug)) {
-      slug = `${slug}-x-article`;
+    // Cover image
+    const coverImage =
+      rawArticle.cover_media?.media_info?.original_img_url || "";
+
+    // Strip title if it's the first line
+    let cleanBody = body;
+    const firstLine = body.split("\n")[0].trim();
+    if (firstLine === article.title) {
+      cleanBody = body.slice(body.indexOf("\n") + 1).trimStart();
     }
+
+    article.coverImage = coverImage;
+    const frontmatter = buildFrontmatter(article);
+    const md = `${frontmatter}\n\n${cleanBody}\n`;
+
+    let slug = slugify(article.title);
+    if (existingSlugs.has(slug)) slug = `${slug}-x-article`;
 
     const filePath = join(BLOG_DIR, `${slug}.md`);
     writeFileSync(filePath, md, "utf-8");
     existingSlugs.add(slug);
     imported++;
-    console.log(`  WROTE: ${filePath}`);
+    console.log(`  WROTE: ${filePath} (${mediaUrlMap.size} images)`);
   }
 
   console.log(`\nDone. Imported ${imported} new article(s).`);

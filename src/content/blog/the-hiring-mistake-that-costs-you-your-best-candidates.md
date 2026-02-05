@@ -9,13 +9,14 @@ tags:
 authors:
   - default
 canonicalUrl: 'https://x.com/hummusonrails/article/2012566837410570491'
+images: 'https://pbs.twimg.com/media/G-4StQwXIAAH7V5.jpg'
 ---
 
 You're probably passing on your strongest applicants without realizing it.
 
 I've reviewed hundreds of tech resumes. The ones that get filtered out first are career switchers. Former teachers, salespeople, support specialists. Hiring managers see "non-traditional background" and move them to the B pile.
 
-This is backwards. Career switchers bring pivot skills that traditional candidates take years to develop.
+This is backwards. **Career switchers bring pivot skills that traditional candidates take years to develop.**
 
 ## What pivot skills actually are
 
@@ -27,6 +28,8 @@ The author who became a developer brings documentation skills that make your cod
 
 These skills don't appear on a CS curriculum. They come from years of professional experience in other fields. And they compound with technical ability in ways that are hard to quantify but impossible to ignore once you've seen them in action.
 
+![](https://pbs.twimg.com/media/G-4PBFCWYAA5iNG.png)
+
 ## Meet Sophie
 
 Sophie is 32. They just finished a coding bootcamp after 8 years in technical support. Their resume lands on your desk alongside 10 recent CS graduates.
@@ -35,7 +38,7 @@ You might rank Sophie lower. Less technical training. No internships at recogniz
 
 But think about what 8 years in technical support actually means. Sophie can hear a user describe a problem, translate it into a workable bug report, break it into component parts, diagnose the root cause, and communicate the solution clearly.
 
-That skill set takes years to develop in a new developer. Sophie has it on day one.
+**That skill set takes years to develop in a new developer. Sophie has it on day one.**
 
 Sophie has also learned patience with frustrated users. They've figured out how to explain technical concepts to non-technical people. They understand that the first description of a problem is rarely the actual problem. These are not soft skills. These are professional competencies that directly affect code quality and team productivity.
 
@@ -61,7 +64,7 @@ Career switchers do this instinctively. They've spent years translating between 
 
 I remember countless times when my colleagues and I received poorly written specs from the business side. Before committing any code to an editor, our first job was figuring out exactly what was being asked of us. What precisely was the problem we were meant to solve?
 
-Your company's specs problem? A career switcher was solving that in their last job.
+**Your company's specs problem? A career switcher was solving that in their last job.**
 
 ## I know because I was one
 
@@ -71,13 +74,15 @@ My first manager didn't hire me for altruistic reasons. There was a cost-saving 
 
 My education and communication background shaped how I approached every technical problem, every code review, every stakeholder meeting. The strategic planning skills I developed running programs transferred directly to architecting systems. The communication skills I built explaining complex policies to community members helped me write better documentation and give clearer code reviews.
 
+![](https://pbs.twimg.com/media/G-4P2MpWAAA40uY.png)
+
 ## The data backs this up
 
 According to the U.S. Bureau of Labor and Statistics, tech workers earn 3x more than the national average. That earning potential drives career switches. People make the leap because it can transform their financial security, their ability to save for retirement, their family's stability. The ability to earn more can mean building generational wealth. It's common to understate how much this matters, but we shouldn't. The financial upside of tech careers is life-changing for many people.
 
 But the industry is full of people who followed the traditional path. Hacking as kids, CS in college, big-name internships. Career switchers look like anomalies. They get treated like liabilities.
 
-They're not liabilities. They're assets with compound skills. It's time to pay attention to them.
+**They're not liabilities. They're assets with compound skills. It's time to pay attention to them.**
 
 ## What you can do
 
@@ -89,4 +94,4 @@ When you interview career switchers, ask about their previous work. How did they
 
 The next Sophie who lands on your desk might be exactly who your team needs. Give them the interview where they can prove it.
 
-What pivot skills have you seen make a difference on your team?
+*What pivot skills have you seen make a difference on your team?*
