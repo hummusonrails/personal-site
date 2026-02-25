@@ -1,17 +1,20 @@
 ---
-import type {CollectionEntry} from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import ChatSidebar from '../components/ChatSidebar.astro';
 
 import {SITE_METADATA} from "../consts";
 
-type Props = CollectionEntry<'blog'>['data'];
+interface Props {
+    title: string;
+    description?: string;
+    canonicalUrl?: string;
+}
 
-const {title, description} = Astro.props;
+const {title, description, canonicalUrl} = Astro.props;
 ---
 
 <html lang={SITE_METADATA.language} class="scroll-smooth">
-    <BaseHead title={title} description='Actualizing Developer Happiness' />
+    <BaseHead title={title} description='Actualizing Developer Happiness' canonicalUrl={canonicalUrl} />
     <body class="chat-body">
         <div class="chat-shell">
             <input id="chat-sidebar-toggle" class="chat-sidebar-toggle" type="checkbox" aria-label="Toggle sidebar" />

@@ -37,7 +37,7 @@ const content = post.content ? post.content : "";
 export const prerender = true;
 ---
 
-<RootLayout title={post.title} description={post.summary}>
+<RootLayout title={post.title} description={post.summary} canonicalUrl={post.canonicalUrl}>
   <SectionContainer>
     <ScrollTopAndComments />
     <article class="section-container animate-fade-in">

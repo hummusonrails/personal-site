@@ -9,11 +9,11 @@ interface Props {
     title: string;
     description: string;
     image?: string;
+    canonicalUrl?: string;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
-const {title, description, image = '/blog-placeholder-1.jpg'} = Astro.props;
+const {title, description, image = '/blog-placeholder-1.jpg', canonicalUrl} = Astro.props;
+const canonicalURL = canonicalUrl || new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <!-- Global Metadata -->
