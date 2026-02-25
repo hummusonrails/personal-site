@@ -1,0 +1,135 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Blog Posts" activeSection="blog">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">Blog Posts</span>
+  </Fragment>
+
+  <Fragment slot="actions">
+    <a href="/admin/blog/new" class="cms-btn cms-btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Post
+    </a>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">Blog Posts</h1>
+      <p class="cms-page-subtitle" id="post-count"></p>
+    </div>
+  </div>
+
+  <div id="posts-container">
+    <div class="cms-loading-overlay">
+      <div class="cms-spinner"></div>
+      <span>Loading posts...</span>
+    </div>
+  </div>
+
+  <div id="delete-modal" style="display:none;"></div>
+
+  <script is:inline>
+    let postsData = [];
+
+    async function loadPosts() {
+      try {
+        const res = await fetch('/api/admin/blog');
+        postsData = await res.json();
+        renderPosts();
+      } catch (err) {
+        document.getElementById('posts-container').innerHTML =
+          '<div class="cms-empty"><div class="cms-empty-text">Failed to load posts</div></div>';
+      }
+    }
+
+    function renderPosts() {
+      const container = document.getElementById('posts-container');
+      const count = document.getElementById('post-count');
+      count.textContent = `${postsData.length} post${postsData.length !== 1 ? 's' : ''}`;
+
+      if (postsData.length === 0) {
+        container.innerHTML = `
+          <div class="cms-empty">
+            <div class="cms-empty-icon">&#9997;</div>
+            <div class="cms-empty-text">No blog posts yet. Create your first one.</div>
+            <a href="/admin/blog/new" class="cms-btn cms-btn-primary">New Post</a>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="cms-table-wrap">
+          <table class="cms-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${postsData.map(p => `
+                <tr>
+                  <td><a href="/admin/blog/${p.slug}" style="color:inherit;text-decoration:none;">${p.title}</a></td>
+                  <td>${new Date(p.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                  <td><span class="cms-badge ${p.draft ? 'cms-badge-yellow' : 'cms-badge-green'}">${p.draft ? 'Draft' : 'Published'}</span></td>
+                  <td>
+                    <div class="cms-actions">
+                      <a href="/admin/blog/${p.slug}" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</a>
+                      <button onclick="confirmDelete('${p.slug}', '${p.sha}')" class="cms-btn cms-btn-danger cms-btn-sm">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function confirmDelete(slug, sha) {
+      const modal = document.getElementById('delete-modal');
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="cms-modal-backdrop" onclick="closeModal()">
+          <div class="cms-modal" onclick="event.stopPropagation()">
+            <h3 class="cms-modal-title">Delete Post</h3>
+            <p class="cms-modal-body">Are you sure you want to delete "<strong>${slug}</strong>"? This cannot be undone.</p>
+            <div class="cms-modal-actions">
+              <button class="cms-btn cms-btn-secondary" onclick="closeModal()">Cancel</button>
+              <button class="cms-btn cms-btn-danger" onclick="deletePost('${slug}', '${sha}')">Delete</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function closeModal() {
+      document.getElementById('delete-modal').style.display = 'none';
+    }
+
+    async function deletePost(slug, sha) {
+      try {
+        const res = await fetch('/api/admin/blog', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, sha }),
+        });
+        if (res.ok) {
+          window.showToast('Post deleted successfully', 'success');
+          closeModal();
+          loadPosts();
+        } else {
+          window.showToast('Failed to delete post', 'error');
+        }
+      } catch {
+        window.showToast('Failed to delete post', 'error');
+      }
+    }
+
+    loadPosts();
+  </script>
+</AdminLayout>

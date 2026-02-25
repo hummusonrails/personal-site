@@ -1,0 +1,42 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import BlogEditor from '../../../components/admin/BlogEditor';
+import { getFile } from '../../../lib/github';
+import matter from 'gray-matter';
+
+const { slug } = Astro.params;
+
+let initialData = null;
+try {
+  const file = await getFile(`src/content/blog/${slug}.md`);
+  if (file) {
+    const { data, content } = matter(file.content);
+    initialData = { frontmatter: data, content, sha: file.sha };
+  }
+} catch (e) {
+  // File not found, will show empty editor
+}
+
+if (!initialData) {
+  return Astro.redirect('/admin/blog');
+}
+---
+
+<AdminLayout title={`Edit: ${initialData.frontmatter.title}`} activeSection="blog">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <a href="/admin/blog">Blog Posts</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">{initialData.frontmatter.title}</span>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">Edit Post</h1>
+      <p class="cms-page-subtitle">{initialData.frontmatter.title}</p>
+    </div>
+  </div>
+
+  <BlogEditor client:load mode="edit" slug={slug} initialData={initialData} />
+</AdminLayout>

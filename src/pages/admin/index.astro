@@ -1,0 +1,96 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Dashboard" activeSection="dashboard">
+  <Fragment slot="breadcrumb">
+    <span class="cms-breadcrumb-current">Dashboard</span>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">Dashboard</h1>
+      <p class="cms-page-subtitle">Manage your content at a glance</p>
+    </div>
+  </div>
+
+  <div class="cms-stats" id="stats-grid">
+    <div class="cms-stat">
+      <div class="cms-stat-label">Blog Posts</div>
+      <div class="cms-stat-value" id="stat-blog">--</div>
+    </div>
+    <div class="cms-stat">
+      <div class="cms-stat-label">Talks</div>
+      <div class="cms-stat-value" id="stat-talks">--</div>
+    </div>
+    <div class="cms-stat">
+      <div class="cms-stat-label">Workshops</div>
+      <div class="cms-stat-value" id="stat-projects">--</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="cms-card">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Recent Blog Posts</h3>
+      <div id="recent-posts" style="display:flex;flex-direction:column;gap:8px;">
+        <div class="cms-loading-overlay" style="padding:24px;">
+          <div class="cms-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cms-card">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Quick Actions</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="/admin/blog/new" class="cms-btn cms-btn-primary" style="justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Blog Post
+        </a>
+        <a href="/admin/talks/new" class="cms-btn cms-btn-secondary" style="justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Talk
+        </a>
+        <a href="/admin/projects" class="cms-btn cms-btn-secondary" style="justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Workshop
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (async () => {
+      try {
+        const [blogRes, talksRes, projectsRes] = await Promise.all([
+          fetch('/api/admin/blog'),
+          fetch('/api/admin/talks'),
+          fetch('/api/admin/projects'),
+        ]);
+
+        const posts = await blogRes.json();
+        const talks = await talksRes.json();
+        const projects = await projectsRes.json();
+
+        document.getElementById('stat-blog').textContent = Array.isArray(posts) ? posts.length : '0';
+        document.getElementById('stat-talks').textContent = Array.isArray(talks) ? talks.length : '0';
+        document.getElementById('stat-projects').textContent =
+          projects.workshops ? projects.workshops.length : '0';
+
+        // Show recent posts
+        const recent = document.getElementById('recent-posts');
+        if (Array.isArray(posts) && posts.length > 0) {
+          recent.innerHTML = posts.slice(0, 5).map(p => `
+            <a href="/admin/blog/${p.slug}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:6px;text-decoration:none;color:inherit;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+              <span style="font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;">${p.title}</span>
+              <span class="cms-badge ${p.draft ? 'cms-badge-yellow' : 'cms-badge-green'}">${p.draft ? 'Draft' : 'Published'}</span>
+            </a>
+          `).join('');
+        } else {
+          recent.innerHTML = '<div class="cms-empty" style="padding:24px;"><div class="cms-empty-text">No posts yet</div></div>';
+        }
+      } catch (err) {
+        console.error('Dashboard load error:', err);
+      }
+    })();
+  </script>
+</AdminLayout>

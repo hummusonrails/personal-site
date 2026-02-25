@@ -1,0 +1,23 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import BlogEditor from '../../../components/admin/BlogEditor';
+---
+
+<AdminLayout title="New Post" activeSection="blog">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <a href="/admin/blog">Blog Posts</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">New Post</span>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">New Blog Post</h1>
+      <p class="cms-page-subtitle">Write, import from URL, or upload markdown</p>
+    </div>
+  </div>
+
+  <BlogEditor client:load mode="new" />
+</AdminLayout>

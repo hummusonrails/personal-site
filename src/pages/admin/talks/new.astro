@@ -1,0 +1,148 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="New Talk" activeSection="talks">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <a href="/admin/talks">Talks</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">New Talk</span>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">New Talk</h1>
+      <p class="cms-page-subtitle">Add a new presentation or talk</p>
+    </div>
+  </div>
+
+  <div style="max-width:640px;">
+    <form id="talk-form">
+      <div class="cms-card">
+        <div class="cms-form-group">
+          <label class="cms-label" for="presentation">Presentation Title</label>
+          <input class="cms-input" type="text" id="presentation" required placeholder="My Amazing Talk" />
+        </div>
+
+        <div class="cms-form-row">
+          <div class="cms-form-group">
+            <label class="cms-label" for="conference">Conference</label>
+            <input class="cms-input" type="text" id="conference" required placeholder="DevRelCon" />
+          </div>
+          <div class="cms-form-group">
+            <label class="cms-label" for="region">Region</label>
+            <select class="cms-select" id="region" required>
+              <option value="NA">NA (North America)</option>
+              <option value="EMEA">EMEA (Europe/Middle East/Africa)</option>
+              <option value="APAC">APAC (Asia-Pacific)</option>
+              <option value="LATAM">LATAM (Latin America)</option>
+              <option value="Global">Global / Online</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cms-form-row">
+          <div class="cms-form-group">
+            <label class="cms-label" for="date">Date</label>
+            <input class="cms-input" type="date" id="date" required />
+          </div>
+          <div class="cms-form-group">
+            <label class="cms-label" for="link">Video / Event Link</label>
+            <input class="cms-input" type="url" id="link" required placeholder="https://youtube.com/..." />
+          </div>
+        </div>
+
+        <div class="cms-form-group">
+          <label class="cms-label" for="image">Conference Image Path (optional)</label>
+          <input class="cms-input" type="text" id="image" placeholder="static/images/presentations/conf.png" />
+        </div>
+
+        <div class="cms-form-actions">
+          <a href="/admin/talks" class="cms-btn cms-btn-secondary">Cancel</a>
+          <button type="button" id="preview-btn" class="cms-btn cms-btn-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Preview
+          </button>
+          <button type="submit" class="cms-btn cms-btn-primary" id="save-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Create Talk
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script is:inline>
+    function generateSlug(text) {
+      return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+    }
+
+    function getFormData() {
+      return {
+        presentation: document.getElementById('presentation').value,
+        conference: document.getElementById('conference').value,
+        region: document.getElementById('region').value,
+        date: document.getElementById('date').value,
+        link: document.getElementById('link').value,
+        image: document.getElementById('image').value || undefined,
+      };
+    }
+
+    document.getElementById('talk-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+
+      const data = getFormData();
+      const slug = generateSlug(data.presentation + '-' + data.conference);
+
+      try {
+        const res = await fetch('/api/admin/talks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, frontmatter: data }),
+        });
+        if (res.ok) {
+          window.showToast('Talk created!', 'success');
+          setTimeout(() => window.location.href = '/admin/talks', 1000);
+        } else {
+          const err = await res.json();
+          window.showToast(err.error || 'Failed to create talk', 'error');
+        }
+      } catch {
+        window.showToast('Failed to create talk', 'error');
+      }
+      btn.disabled = false;
+    });
+
+    document.getElementById('preview-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('preview-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="cms-spinner" style="width:14px;height:14px;"></span> Deploying...';
+
+      const data = getFormData();
+      const slug = generateSlug(data.presentation + '-' + data.conference);
+
+      try {
+        const res = await fetch('/api/admin/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contentType: 'talk', slug, frontmatter: data }),
+        });
+        const result = await res.json();
+        if (result.previewUrl) {
+          window.open(result.previewUrl, '_blank');
+          window.showToast('Preview deployment ready!', 'success');
+        } else {
+          window.showToast(result.message || 'Preview branch created', 'info');
+        }
+      } catch {
+        window.showToast('Preview failed', 'error');
+      }
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Preview';
+    });
+  </script>
+</AdminLayout>

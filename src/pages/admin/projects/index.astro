@@ -1,0 +1,217 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Workshops" activeSection="projects">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">Workshops</span>
+  </Fragment>
+
+  <Fragment slot="actions">
+    <button id="add-btn" class="cms-btn cms-btn-primary" onclick="openModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Workshop
+    </button>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">Developer Workshops</h1>
+      <p class="cms-page-subtitle" id="project-count"></p>
+    </div>
+  </div>
+
+  <div id="projects-container">
+    <div class="cms-loading-overlay">
+      <div class="cms-spinner"></div>
+      <span>Loading workshops...</span>
+    </div>
+  </div>
+
+  <div id="workshop-modal" style="display:none;"></div>
+  <div id="delete-modal" style="display:none;"></div>
+
+  <script is:inline>
+    let workshopsData = [];
+    let workshopSha = '';
+
+    async function loadProjects() {
+      try {
+        const res = await fetch('/api/admin/projects');
+        const data = await res.json();
+        workshopsData = data.workshops || [];
+        workshopSha = data.sha || '';
+        renderProjects();
+      } catch (err) {
+        document.getElementById('projects-container').innerHTML =
+          '<div class="cms-empty"><div class="cms-empty-text">Failed to load workshops</div></div>';
+      }
+    }
+
+    function renderProjects() {
+      const container = document.getElementById('projects-container');
+      const count = document.getElementById('project-count');
+      count.textContent = `${workshopsData.length} workshop${workshopsData.length !== 1 ? 's' : ''}`;
+
+      if (workshopsData.length === 0) {
+        container.innerHTML = `
+          <div class="cms-empty">
+            <div class="cms-empty-icon">&#128218;</div>
+            <div class="cms-empty-text">No workshops yet.</div>
+            <button class="cms-btn cms-btn-primary" onclick="openModal()">New Workshop</button>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="cms-table-wrap">
+          <table class="cms-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Link</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${workshopsData.map((w, i) => `
+                <tr>
+                  <td>${w.title}</td>
+                  <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${w.description}</td>
+                  <td><a href="${w.link}" target="_blank" style="color:var(--cms-primary);text-decoration:none;font-size:12px;">View</a></td>
+                  <td>
+                    <div class="cms-actions">
+                      <button onclick="openModal(${i})" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</button>
+                      <button onclick="confirmDelete(${i})" class="cms-btn cms-btn-danger cms-btn-sm">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function openModal(editIndex) {
+      const isEdit = editIndex !== undefined;
+      const workshop = isEdit ? workshopsData[editIndex] : { title: '', description: '', link: '' };
+      const modal = document.getElementById('workshop-modal');
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="cms-modal-backdrop" onclick="closeWorkshopModal()">
+          <div class="cms-modal" onclick="event.stopPropagation()" style="max-width:520px;">
+            <h3 class="cms-modal-title">${isEdit ? 'Edit' : 'New'} Workshop</h3>
+            <form id="workshop-form">
+              <div class="cms-form-group">
+                <label class="cms-label" for="w-title">Title</label>
+                <input class="cms-input" type="text" id="w-title" required value="${workshop.title}" />
+              </div>
+              <div class="cms-form-group">
+                <label class="cms-label" for="w-description">Description</label>
+                <input class="cms-input" type="text" id="w-description" required value="${workshop.description}" />
+              </div>
+              <div class="cms-form-group">
+                <label class="cms-label" for="w-link">GitHub Link</label>
+                <input class="cms-input" type="url" id="w-link" required value="${workshop.link}" placeholder="https://github.com/..." />
+              </div>
+              <div class="cms-modal-actions">
+                <button type="button" class="cms-btn cms-btn-secondary" onclick="closeWorkshopModal()">Cancel</button>
+                <button type="submit" class="cms-btn cms-btn-primary" id="w-save-btn">
+                  ${isEdit ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>`;
+
+      document.getElementById('workshop-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('w-save-btn');
+        btn.disabled = true;
+
+        const workshopData = {
+          title: document.getElementById('w-title').value,
+          description: document.getElementById('w-description').value,
+          link: document.getElementById('w-link').value,
+        };
+
+        try {
+          const res = await fetch('/api/admin/projects', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: isEdit ? 'update' : 'add',
+              workshop: workshopData,
+              index: isEdit ? editIndex : undefined,
+              sha: workshopSha,
+            }),
+          });
+          if (res.ok) {
+            const result = await res.json();
+            workshopSha = result.sha;
+            window.showToast(isEdit ? 'Workshop updated!' : 'Workshop created!', 'success');
+            closeWorkshopModal();
+            loadProjects();
+          } else {
+            const err = await res.json();
+            window.showToast(err.error || 'Failed to save', 'error');
+          }
+        } catch {
+          window.showToast('Failed to save', 'error');
+        }
+        btn.disabled = false;
+      });
+    }
+
+    function closeWorkshopModal() {
+      document.getElementById('workshop-modal').style.display = 'none';
+    }
+
+    function confirmDelete(index) {
+      const w = workshopsData[index];
+      const modal = document.getElementById('delete-modal');
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="cms-modal-backdrop" onclick="closeDeleteModal()">
+          <div class="cms-modal" onclick="event.stopPropagation()">
+            <h3 class="cms-modal-title">Delete Workshop</h3>
+            <p class="cms-modal-body">Delete "<strong>${w.title}</strong>"?</p>
+            <div class="cms-modal-actions">
+              <button class="cms-btn cms-btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+              <button class="cms-btn cms-btn-danger" onclick="deleteWorkshop(${index})">Delete</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').style.display = 'none';
+    }
+
+    async function deleteWorkshop(index) {
+      try {
+        const res = await fetch('/api/admin/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', index, sha: workshopSha }),
+        });
+        if (res.ok) {
+          const result = await res.json();
+          workshopSha = result.sha;
+          window.showToast('Workshop deleted', 'success');
+          closeDeleteModal();
+          loadProjects();
+        } else {
+          window.showToast('Failed to delete workshop', 'error');
+        }
+      } catch {
+        window.showToast('Failed to delete workshop', 'error');
+      }
+    }
+
+    loadProjects();
+  </script>
+</AdminLayout>

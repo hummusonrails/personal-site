@@ -1,0 +1,137 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Talks" activeSection="talks">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">Talks</span>
+  </Fragment>
+
+  <Fragment slot="actions">
+    <a href="/admin/talks/new" class="cms-btn cms-btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Talk
+    </a>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">Talks & Presentations</h1>
+      <p class="cms-page-subtitle" id="talk-count"></p>
+    </div>
+  </div>
+
+  <div id="talks-container">
+    <div class="cms-loading-overlay">
+      <div class="cms-spinner"></div>
+      <span>Loading talks...</span>
+    </div>
+  </div>
+
+  <div id="delete-modal" style="display:none;"></div>
+
+  <script is:inline>
+    let talksData = [];
+
+    async function loadTalks() {
+      try {
+        const res = await fetch('/api/admin/talks');
+        talksData = await res.json();
+        renderTalks();
+      } catch (err) {
+        document.getElementById('talks-container').innerHTML =
+          '<div class="cms-empty"><div class="cms-empty-text">Failed to load talks</div></div>';
+      }
+    }
+
+    function renderTalks() {
+      const container = document.getElementById('talks-container');
+      const count = document.getElementById('talk-count');
+      count.textContent = `${talksData.length} talk${talksData.length !== 1 ? 's' : ''}`;
+
+      if (talksData.length === 0) {
+        container.innerHTML = `
+          <div class="cms-empty">
+            <div class="cms-empty-icon">&#127908;</div>
+            <div class="cms-empty-text">No talks yet. Add your first one.</div>
+            <a href="/admin/talks/new" class="cms-btn cms-btn-primary">New Talk</a>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="cms-table-wrap">
+          <table class="cms-table">
+            <thead>
+              <tr>
+                <th>Presentation</th>
+                <th>Conference</th>
+                <th>Region</th>
+                <th>Date</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${talksData.map(t => `
+                <tr>
+                  <td>${t.presentation}</td>
+                  <td>${t.conference}</td>
+                  <td><span class="cms-badge cms-badge-gray">${t.region}</span></td>
+                  <td>${new Date(t.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</td>
+                  <td>
+                    <div class="cms-actions">
+                      <a href="/admin/talks/${t.slug}" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</a>
+                      <button onclick="confirmDelete('${t.slug}', '${t.sha}')" class="cms-btn cms-btn-danger cms-btn-sm">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function confirmDelete(slug, sha) {
+      const modal = document.getElementById('delete-modal');
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="cms-modal-backdrop" onclick="closeModal()">
+          <div class="cms-modal" onclick="event.stopPropagation()">
+            <h3 class="cms-modal-title">Delete Talk</h3>
+            <p class="cms-modal-body">Are you sure you want to delete "<strong>${slug}</strong>"?</p>
+            <div class="cms-modal-actions">
+              <button class="cms-btn cms-btn-secondary" onclick="closeModal()">Cancel</button>
+              <button class="cms-btn cms-btn-danger" onclick="deleteTalk('${slug}', '${sha}')">Delete</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function closeModal() {
+      document.getElementById('delete-modal').style.display = 'none';
+    }
+
+    async function deleteTalk(slug, sha) {
+      try {
+        const res = await fetch('/api/admin/talks', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, sha }),
+        });
+        if (res.ok) {
+          window.showToast('Talk deleted', 'success');
+          closeModal();
+          loadTalks();
+        } else {
+          window.showToast('Failed to delete talk', 'error');
+        }
+      } catch {
+        window.showToast('Failed to delete talk', 'error');
+      }
+    }
+
+    loadTalks();
+  </script>
+</AdminLayout>

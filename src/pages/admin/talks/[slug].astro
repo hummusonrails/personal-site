@@ -1,0 +1,136 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getFile } from '../../../lib/github';
+import matter from 'gray-matter';
+
+const { slug } = Astro.params;
+
+let talkData = null;
+let sha = '';
+try {
+  const file = await getFile(`src/content/talks/${slug}.md`);
+  if (file) {
+    const { data } = matter(file.content);
+    talkData = data;
+    sha = file.sha;
+  }
+} catch {
+  // not found
+}
+
+if (!talkData) {
+  return Astro.redirect('/admin/talks');
+}
+
+const dateStr = talkData.date
+  ? new Date(talkData.date).toISOString().split('T')[0]
+  : '';
+---
+
+<AdminLayout title={`Edit: ${talkData.presentation}`} activeSection="talks">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <a href="/admin/talks">Talks</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">{talkData.presentation}</span>
+  </Fragment>
+
+  <div class="cms-page-header">
+    <div>
+      <h1 class="cms-page-title">Edit Talk</h1>
+      <p class="cms-page-subtitle">{talkData.presentation}</p>
+    </div>
+  </div>
+
+  <div style="max-width:640px;">
+    <form id="talk-form">
+      <input type="hidden" id="sha" value={sha} />
+
+      <div class="cms-card">
+        <div class="cms-form-group">
+          <label class="cms-label" for="presentation">Presentation Title</label>
+          <input class="cms-input" type="text" id="presentation" required value={talkData.presentation} />
+        </div>
+
+        <div class="cms-form-row">
+          <div class="cms-form-group">
+            <label class="cms-label" for="conference">Conference</label>
+            <input class="cms-input" type="text" id="conference" required value={talkData.conference} />
+          </div>
+          <div class="cms-form-group">
+            <label class="cms-label" for="region">Region</label>
+            <select class="cms-select" id="region" required>
+              <option value="NA" selected={talkData.region === 'NA'}>NA</option>
+              <option value="EMEA" selected={talkData.region === 'EMEA'}>EMEA</option>
+              <option value="APAC" selected={talkData.region === 'APAC'}>APAC</option>
+              <option value="LATAM" selected={talkData.region === 'LATAM'}>LATAM</option>
+              <option value="Global" selected={talkData.region === 'Global'}>Global</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cms-form-row">
+          <div class="cms-form-group">
+            <label class="cms-label" for="date">Date</label>
+            <input class="cms-input" type="date" id="date" required value={dateStr} />
+          </div>
+          <div class="cms-form-group">
+            <label class="cms-label" for="link">Video / Event Link</label>
+            <input class="cms-input" type="url" id="link" required value={talkData.link} />
+          </div>
+        </div>
+
+        <div class="cms-form-group">
+          <label class="cms-label" for="image">Conference Image Path</label>
+          <input class="cms-input" type="text" id="image" value={talkData.image || ''} />
+        </div>
+
+        <div class="cms-form-actions">
+          <a href="/admin/talks" class="cms-btn cms-btn-secondary">Cancel</a>
+          <button type="submit" class="cms-btn cms-btn-primary" id="save-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Update Talk
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script is:inline define:vars={{ slug }}>
+    document.getElementById('talk-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+
+      const data = {
+        presentation: document.getElementById('presentation').value,
+        conference: document.getElementById('conference').value,
+        region: document.getElementById('region').value,
+        date: document.getElementById('date').value,
+        link: document.getElementById('link').value,
+        image: document.getElementById('image').value || undefined,
+      };
+      const sha = document.getElementById('sha').value;
+
+      try {
+        const res = await fetch('/api/admin/talks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, frontmatter: data, sha }),
+        });
+        if (res.ok) {
+          const result = await res.json();
+          document.getElementById('sha').value = result.sha;
+          window.showToast('Talk updated!', 'success');
+        } else {
+          const err = await res.json();
+          window.showToast(err.error || 'Update failed', 'error');
+        }
+      } catch {
+        window.showToast('Update failed', 'error');
+      }
+      btn.disabled = false;
+    });
+  </script>
+</AdminLayout>
