@@ -12,7 +12,7 @@ interface Props {
     canonicalUrl?: string;
 }
 
-const {title, description, image = '/blog-placeholder-1.jpg', canonicalUrl} = Astro.props;
+const {title, description, image = '/static/images/twitter-card.png', canonicalUrl} = Astro.props;
 const canonicalURL = canonicalUrl || new URL(Astro.url.pathname, Astro.site).toString();
 ---
 

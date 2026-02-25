@@ -21,6 +21,8 @@ if (!entry) {
 // Extract frontmatter and render content
 const { Content } = await entry.render();
 
+const ogImage = entry.data.images || `/api/og/${slug}.png`;
+
 const post = {
   title: entry.data.title,
   date: entry.data.date,
@@ -28,6 +30,7 @@ const post = {
   tags: entry.data.tags,
   authors: entry.data.authors,
   canonicalUrl: entry.data.canonicalUrl,
+  image: ogImage,
   Component: Content,
 };
 

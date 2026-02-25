@@ -8,13 +8,14 @@ interface Props {
     title: string;
     description?: string;
     canonicalUrl?: string;
+    image?: string;
 }
 
-const {title, description, canonicalUrl} = Astro.props;
+const {title, description, canonicalUrl, image} = Astro.props;
 ---
 
 <html lang={SITE_METADATA.language} class="scroll-smooth">
-    <BaseHead title={title} description='Actualizing Developer Happiness' canonicalUrl={canonicalUrl} />
+    <BaseHead title={title} description='Actualizing Developer Happiness' canonicalUrl={canonicalUrl} image={image} />
     <body class="chat-body">
         <div class="chat-shell">
             <input id="chat-sidebar-toggle" class="chat-sidebar-toggle" type="checkbox" aria-label="Toggle sidebar" />
