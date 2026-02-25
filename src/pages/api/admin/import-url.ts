@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import { Readability } from '@mozilla/readability';
 import TurndownService from 'turndown';
+import { gfm } from 'turndown-plugin-gfm';
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
@@ -28,8 +29,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const html = await res.text();
-    const dom = new JSDOM(html, { url });
-    const doc = dom.window.document;
+    const { document: doc } = parseHTML(html);
 
     // Extract metadata
     const metaTitle =
@@ -63,6 +63,9 @@ export const POST: APIRoute = async ({ request }) => {
       bulletListMarker: '-',
     });
 
+    // Enable GFM tables, strikethrough, etc.
+    turndown.use(gfm);
+
     // Keep code blocks
     turndown.addRule('pre-code', {
       filter: (node) => {
@@ -73,6 +76,22 @@ export const POST: APIRoute = async ({ request }) => {
         if (!code) return _content;
         const lang = code.className?.replace('language-', '') || '';
         return `\n\`\`\`${lang}\n${code.textContent}\n\`\`\`\n`;
+      },
+    });
+
+    // Preserve YouTube and video iframes as HTML
+    turndown.addRule('iframe', {
+      filter: 'iframe',
+      replacement: (_content, node) => {
+        const el = node as HTMLElement;
+        const src = el.getAttribute('src') || '';
+        if (src.includes('youtube.com') || src.includes('youtu.be') || src.includes('vimeo.com')) {
+          const width = el.getAttribute('width') || '560';
+          const height = el.getAttribute('height') || '315';
+          const title = el.getAttribute('title') || 'Video player';
+          return `\n\n<iframe width="${width}" height="${height}" src="${src}" title="${title}" frameborder="0" allowfullscreen></iframe>\n\n`;
+        }
+        return '';
       },
     });
 

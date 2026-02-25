@@ -232,29 +232,80 @@ export async function deletePreviewBranch(branchName: string): Promise<void> {
   );
 }
 
-export async function getVercelPreviewUrl(branchName: string): Promise<string | null> {
+function getVercelCreds() {
   const token = import.meta.env.VERCEL_TOKEN || process.env.VERCEL_TOKEN;
   const projectId = import.meta.env.VERCEL_PROJECT_ID || process.env.VERCEL_PROJECT_ID;
-  if (!token || !projectId) return null;
+  return token && projectId ? { token, projectId } : null;
+}
 
-  for (let i = 0; i < 12; i++) {
-    const res = await fetch(
-      `https://api.vercel.com/v6/deployments?projectId=${projectId}&limit=5&state=BUILDING,READY`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    if (!res.ok) return null;
-    const data = await res.json();
-    const deployment = data.deployments?.find(
-      (d: any) => d.meta?.githubCommitRef === branchName
-    );
-    if (deployment) {
-      if (deployment.state === 'READY') return `https://${deployment.url}`;
-      if (deployment.state === 'BUILDING') {
-        await new Promise((r) => setTimeout(r, 5000));
-        continue;
-      }
-    }
-    await new Promise((r) => setTimeout(r, 5000));
-  }
+export async function getVercelPreviewUrl(branchName: string): Promise<string | null> {
+  const creds = getVercelCreds();
+  if (!creds) return null;
+
+  const res = await fetch(
+    `https://api.vercel.com/v6/deployments?projectId=${creds.projectId}&limit=5&state=BUILDING,READY`,
+    { headers: { Authorization: `Bearer ${creds.token}` } }
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  const deployment = data.deployments?.find(
+    (d: any) => d.meta?.githubCommitRef === branchName
+  );
+  if (deployment?.state === 'READY') return `https://${deployment.url}`;
   return null;
+}
+
+export async function deleteVercelDeployments(branchName: string): Promise<void> {
+  const creds = getVercelCreds();
+  if (!creds) return;
+
+  // Find all deployments for this branch
+  const res = await fetch(
+    `https://api.vercel.com/v6/deployments?projectId=${creds.projectId}&limit=20`,
+    { headers: { Authorization: `Bearer ${creds.token}` } }
+  );
+  if (!res.ok) return;
+  const data = await res.json();
+  const deployments = data.deployments?.filter(
+    (d: any) => d.meta?.githubCommitRef === branchName
+  ) || [];
+
+  // Delete each deployment
+  for (const d of deployments) {
+    await fetch(`https://api.vercel.com/v13/deployments/${d.uid}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${creds.token}` },
+    });
+  }
+}
+
+export async function listPreviewBranches(): Promise<string[]> {
+  const token = getToken();
+  if (!token) return [];
+
+  const res = await fetch(
+    `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/refs/heads/preview-`,
+    {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json' },
+    }
+  );
+  if (!res.ok) return [];
+  const refs = await res.json();
+  if (!Array.isArray(refs)) return [];
+  return refs.map((r: any) => r.ref.replace('refs/heads/', ''));
+}
+
+export async function cleanupAllPreviews(): Promise<{ deleted: number }> {
+  const branches = await listPreviewBranches();
+  let deleted = 0;
+  for (const branch of branches) {
+    try {
+      await deleteVercelDeployments(branch);
+      await deletePreviewBranch(branch);
+      deleted++;
+    } catch {
+      // Continue cleaning up others
+    }
+  }
+  return { deleted };
 }

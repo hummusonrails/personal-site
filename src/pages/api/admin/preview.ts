@@ -4,6 +4,8 @@ import {
   pushToPreviewBranch,
   getVercelPreviewUrl,
   deletePreviewBranch,
+  deleteVercelDeployments,
+  cleanupAllPreviews,
 } from '../../../lib/github';
 import matter from 'gray-matter';
 
@@ -15,14 +17,34 @@ export const POST: APIRoute = async ({ request }) => {
     const { branchName } = body;
     if (branchName) {
       try {
+        await deleteVercelDeployments(branchName);
         await deletePreviewBranch(branchName);
       } catch {
-        // Branch may already be deleted
+        // Branch/deployment may already be deleted
       }
     }
     return new Response(JSON.stringify({ ok: true }), {
       headers: { 'Content-Type': 'application/json' },
     });
+  }
+
+  if (action === 'cleanup-all') {
+    const result = await cleanupAllPreviews();
+    return new Response(JSON.stringify({ ok: true, ...result }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (action === 'status') {
+    const { branchName } = body;
+    if (!branchName) {
+      return new Response(JSON.stringify({ error: 'Missing branchName' }), { status: 400 });
+    }
+    const previewUrl = await getVercelPreviewUrl(branchName);
+    return new Response(
+      JSON.stringify({ previewUrl, status: previewUrl ? 'ready' : 'building' }),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
   if (!contentType || !slug) {
@@ -71,17 +93,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     await pushToPreviewBranch(branchName, filePath, fileContent, `Preview: ${slug}`);
 
-    // Try to get Vercel preview URL
-    const previewUrl = await getVercelPreviewUrl(branchName);
-
     return new Response(
       JSON.stringify({
         ok: true,
         branchName,
-        previewUrl,
-        message: previewUrl
-          ? 'Preview deployment ready'
-          : 'Preview branch created. Vercel deployment may take a few minutes.',
       }),
       { headers: { 'Content-Type': 'application/json' } }
     );

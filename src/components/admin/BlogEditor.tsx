@@ -1,11 +1,36 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
+import { Node, mergeAttributes } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
+import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
 import TurndownService from 'turndown';
+
+const Iframe = Node.create({
+  name: 'iframe',
+  group: 'block',
+  atom: true,
+  addAttributes() {
+    return {
+      src: { default: null },
+      width: { default: '560' },
+      height: { default: '315' },
+      title: { default: '' },
+      frameborder: { default: '0' },
+      allowfullscreen: { default: true },
+      allow: { default: '' },
+    };
+  },
+  parseHTML() {
+    return [{ tag: 'iframe' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { class: 'iframe-wrapper' }, ['iframe', mergeAttributes(HTMLAttributes)]];
+  },
+});
 
 const AVAILABLE_TAGS = [
   'ai', 'blockchain', 'career', 'couchbase', 'devrel', 'docker', 'elixir',
@@ -39,6 +64,45 @@ turndown.addRule('pre-code', {
   },
 });
 
+// Preserve iframes when converting rich text back to markdown
+turndown.addRule('iframe', {
+  filter: 'iframe',
+  replacement: (_content, node) => {
+    const el = node as HTMLElement;
+    const src = el.getAttribute('src') || '';
+    const width = el.getAttribute('width') || '560';
+    const height = el.getAttribute('height') || '315';
+    const title = el.getAttribute('title') || 'Video player';
+    return `\n\n<iframe width="${width}" height="${height}" src="${src}" title="${title}" frameborder="0" allowfullscreen></iframe>\n\n`;
+  },
+});
+
+// Preserve iframe wrapper divs
+turndown.addRule('iframe-wrapper', {
+  filter: (node) => node.nodeName === 'DIV' && node.classList.contains('iframe-wrapper'),
+  replacement: (_content) => _content,
+});
+
+// Convert HTML tables to markdown tables
+turndown.addRule('table', {
+  filter: 'table',
+  replacement: (_content, node) => {
+    const el = node as HTMLElement;
+    const rows = el.querySelectorAll('tr');
+    if (!rows.length) return _content;
+    const lines: string[] = [];
+    rows.forEach((row, i) => {
+      const cells = row.querySelectorAll('th, td');
+      const cellTexts = Array.from(cells).map(c => c.textContent?.trim() || '');
+      lines.push(`| ${cellTexts.join(' | ')} |`);
+      if (i === 0) {
+        lines.push(`| ${cellTexts.map(() => '---').join(' | ')} |`);
+      }
+    });
+    return `\n\n${lines.join('\n')}\n\n`;
+  },
+});
+
 export default function BlogEditor({ mode, slug: initialSlug, initialData }: BlogEditorProps) {
   const [title, setTitle] = useState(initialData?.frontmatter?.title || '');
   const [slug, setSlug] = useState(initialSlug || '');
@@ -62,6 +126,9 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
   const [importUrl, setImportUrl] = useState('');
   const [importing, setImporting] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewBranch, setPreviewBranch] = useState<string | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const autoSlugRef = useRef(mode === 'new');
 
@@ -76,6 +143,11 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
       Image,
       Placeholder.configure({ placeholder: 'Start writing your post...' }),
       Underline,
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableCell,
+      TableHeader,
+      Iframe,
     ],
     content: initialData?.content ? markdownToHtml(initialData.content) : '',
     editorProps: {
@@ -87,7 +159,36 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
 
   function markdownToHtml(md: string): string {
     // Simple markdown to HTML conversion for the editor
-    let html = md
+    // First, extract raw HTML blocks (like iframes) to preserve them
+    const htmlBlocks: string[] = [];
+    let processed = md.replace(/^(<(?:iframe|div|table|video|audio|figure)[^]*?(?:<\/(?:iframe|div|table|video|audio|figure)>|\/>))/gm, (match) => {
+      htmlBlocks.push(match);
+      return `%%HTML_BLOCK_${htmlBlocks.length - 1}%%`;
+    });
+
+    // Handle code blocks first (before other transformations)
+    processed = processed.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
+
+    // Convert markdown tables to HTML tables
+    processed = processed.replace(
+      /(?:^|\n)((?:\|.+\|(?:\n|$))+)/g,
+      (_match, tableBlock: string) => {
+        const rows = tableBlock.trim().split('\n').filter((r: string) => r.trim());
+        if (rows.length < 2) return _match;
+        // Check if second row is a separator (|---|---|)
+        if (!/^\|[\s-:|]+\|$/.test(rows[1])) return _match;
+        const headerCells = rows[0].split('|').filter((c: string) => c.trim() !== '').map((c: string) => c.trim());
+        const thead = `<thead><tr>${headerCells.map((c: string) => `<th>${c}</th>`).join('')}</tr></thead>`;
+        const bodyRows = rows.slice(2);
+        const tbody = `<tbody>${bodyRows.map((row: string) => {
+          const cells = row.split('|').filter((c: string) => c.trim() !== '').map((c: string) => c.trim());
+          return `<tr>${cells.map((c: string) => `<td>${c}</td>`).join('')}</tr>`;
+        }).join('')}</tbody>`;
+        return `\n<table>${thead}${tbody}</table>\n`;
+      }
+    );
+
+    let html = processed
       .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
       .replace(/^## (.+)$/gm, '<h2>$1</h2>')
@@ -98,9 +199,6 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
       .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2" />')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 
-    // Handle code blocks
-    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
-
     // Handle lists
     html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
     html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
@@ -108,9 +206,15 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
     // Handle paragraphs
     html = html.split('\n\n').map(block => {
       if (block.startsWith('<')) return block;
+      if (block.startsWith('%%HTML_BLOCK_')) return block;
       if (block.trim() === '') return '';
       return `<p>${block.replace(/\n/g, '<br/>')}</p>`;
     }).join('\n');
+
+    // Restore raw HTML blocks
+    htmlBlocks.forEach((block, i) => {
+      html = html.replace(`%%HTML_BLOCK_${i}%%`, block);
+    });
 
     return html;
   }
@@ -167,6 +271,23 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
     setEditorMode('rich');
   }, [editor, markdownContent]);
 
+  const cleanupPreview = useCallback(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+    if (previewBranch) {
+      fetch('/api/admin/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cleanup', branchName: previewBranch }),
+      }).catch(() => {});
+    }
+    setPreviewUrl(null);
+    setPreviewBranch(null);
+    setPreviewing(false);
+  }, [previewBranch]);
+
   const handleSave = useCallback(async (asDraft?: boolean) => {
     if (!title || !slug) {
       (window as any).showToast('Title and slug are required', 'error');
@@ -198,9 +319,10 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
       if (res.ok) {
         setSha(data.sha);
         (window as any).showToast(mode === 'new' ? 'Post created!' : 'Post updated!', 'success');
-        if (mode === 'new') {
-          window.history.replaceState({}, '', `/admin/blog/${slug}`);
-        }
+        if (previewBranch) cleanupPreview();
+        setTimeout(() => {
+          window.location.href = '/admin/blog';
+        }, 1000);
       } else {
         (window as any).showToast(data.error || 'Save failed', 'error');
       }
@@ -208,7 +330,7 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
       (window as any).showToast('Save failed', 'error');
     }
     setSaving(false);
-  }, [title, slug, date, summary, images, canonicalUrl, draft, tags, sha, mode, getContent]);
+  }, [title, slug, date, summary, images, canonicalUrl, draft, tags, sha, mode, getContent, previewBranch, cleanupPreview]);
 
   const handleImportUrl = useCallback(async () => {
     if (!importUrl) return;
@@ -280,12 +402,58 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
     if (fileInputRef.current) fileInputRef.current.value = '';
   }, [editor, handleTitleChange]);
 
+  // Clean up polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
+
+  // Sweep any stale preview branches + deployments on mount
+  useEffect(() => {
+    fetch('/api/admin/preview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'cleanup-all' }),
+    }).catch(() => {});
+  }, []);
+
+  const startPollingPreview = useCallback((branchName: string) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    let attempts = 0;
+    pollRef.current = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await fetch('/api/admin/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'status', branchName }),
+        });
+        const data = await res.json();
+        if (data.previewUrl) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = null;
+          setPreviewUrl(data.previewUrl);
+          setPreviewing(false);
+          (window as any).showToast('Preview deployment ready!', 'success');
+        }
+      } catch { /* keep polling */ }
+      if (attempts >= 24) { // ~2 minutes
+        if (pollRef.current) clearInterval(pollRef.current);
+        pollRef.current = null;
+        setPreviewing(false);
+        (window as any).showToast('Preview is taking longer than expected. Check Vercel dashboard.', 'info');
+      }
+    }, 5000);
+  }, []);
+
   const handlePreview = useCallback(async () => {
     if (!title || !slug) {
       (window as any).showToast('Title and slug are required for preview', 'error');
       return;
     }
     setPreviewing(true);
+    setPreviewUrl(null);
     try {
       const content = getContent();
       const res = await fetch('/api/admin/preview', {
@@ -308,20 +476,17 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
       });
       const data = await res.json();
       if (res.ok) {
-        if (data.previewUrl) {
-          window.open(data.previewUrl, '_blank');
-          (window as any).showToast('Preview deployment ready!', 'success');
-        } else {
-          (window as any).showToast(data.message || 'Preview branch created. Check Vercel for the deployment URL.', 'info');
-        }
+        setPreviewBranch(data.branchName);
+        startPollingPreview(data.branchName);
       } else {
         (window as any).showToast(data.error || 'Preview failed', 'error');
+        setPreviewing(false);
       }
     } catch {
       (window as any).showToast('Preview failed', 'error');
+      setPreviewing(false);
     }
-    setPreviewing(false);
-  }, [title, slug, date, summary, images, canonicalUrl, tags, getContent]);
+  }, [title, slug, date, summary, images, canonicalUrl, tags, getContent, startPollingPreview]);
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
@@ -668,51 +833,112 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
 
       {/* Actions */}
       <div style={{
-        display: 'flex',
-        gap: 8,
-        justifyContent: 'flex-end',
         marginTop: 16,
         paddingTop: 16,
         borderTop: '1px solid var(--cms-border)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
       }}>
-        <button
-          className="cms-btn cms-btn-secondary"
-          onClick={handlePreview}
-          disabled={previewing}
-          type="button"
-        >
-          {previewing ? (
-            <><span className="cms-spinner" style={{ width: 14, height: 14 }}></span> Deploying preview...</>
-          ) : (
-            <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              Preview
-            </>
-          )}
-        </button>
-        <button
-          className="cms-btn cms-btn-secondary"
-          onClick={() => handleSave(true)}
-          disabled={saving}
-          type="button"
-        >
-          Save as Draft
-        </button>
-        <button
-          className="cms-btn cms-btn-primary"
-          onClick={() => handleSave(false)}
-          disabled={saving}
-          type="button"
-        >
-          {saving ? (
-            <><span className="cms-spinner" style={{ width: 14, height: 14, borderTopColor: 'white' }}></span> Saving...</>
-          ) : (
-            <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              {mode === 'new' ? 'Publish' : 'Update'}
-            </>
-          )}
-        </button>
+        {/* Preview status banner */}
+        {(previewing || previewUrl) && (
+          <div style={{
+            padding: '12px 16px',
+            background: previewUrl
+              ? 'var(--cms-primary-muted, rgba(99, 102, 241, 0.1))'
+              : 'var(--cms-surface, rgba(255,255,255,0.03))',
+            border: `1px solid ${previewUrl ? 'var(--cms-primary, #6366f1)' : 'var(--cms-border)'}`,
+            borderRadius: 8,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+          }}>
+            {previewUrl ? (
+              <>
+                <span style={{ fontSize: 14, color: 'var(--cms-text)' }}>
+                  Preview is ready
+                </span>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <a
+                    href={previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cms-btn cms-btn-primary"
+                    style={{ textDecoration: 'none', fontSize: 13 }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Open Preview
+                  </a>
+                  <button
+                    type="button"
+                    onClick={cleanupPreview}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--cms-text-muted)',
+                      cursor: 'pointer',
+                      padding: 4,
+                      fontSize: 16,
+                      lineHeight: 1,
+                    }}
+                    title="Dismiss"
+                  >&times;</button>
+                </div>
+              </>
+            ) : (
+              <span style={{ fontSize: 14, color: 'var(--cms-text-muted)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span className="cms-spinner" style={{ width: 14, height: 14 }}></span>
+                Building preview deployment...
+              </span>
+            )}
+          </div>
+        )}
+
+        <div style={{
+          display: 'flex',
+          gap: 8,
+          justifyContent: 'flex-end',
+        }}>
+          <button
+            className="cms-btn cms-btn-secondary"
+            onClick={handlePreview}
+            disabled={previewing}
+            type="button"
+          >
+            {previewing ? (
+              <><span className="cms-spinner" style={{ width: 14, height: 14 }}></span> Deploying...</>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Preview
+              </>
+            )}
+          </button>
+          <button
+            className="cms-btn cms-btn-secondary"
+            onClick={() => handleSave(true)}
+            disabled={saving}
+            type="button"
+          >
+            Save as Draft
+          </button>
+          <button
+            className="cms-btn cms-btn-primary"
+            onClick={() => handleSave(false)}
+            disabled={saving}
+            type="button"
+          >
+            {saving ? (
+              <><span className="cms-spinner" style={{ width: 14, height: 14, borderTopColor: 'white' }}></span> Saving...</>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                {mode === 'new' ? 'Publish' : 'Update'}
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <style>{`
@@ -766,6 +992,37 @@ export default function BlogEditor({ mode, slug: initialSlug, initialData }: Blo
         .cms-editor-content img { max-width: 100%; border-radius: 8px; margin: 0.5em 0; }
         .cms-editor-content hr { border: none; border-top: 1px solid var(--cms-border); margin: 1.5em 0; }
         .cms-editor-content strong { font-weight: 600; color: var(--cms-text); }
+        .cms-editor-content .iframe-wrapper {
+          margin: 1em 0;
+          position: relative;
+          padding-bottom: 56.25%;
+          height: 0;
+          overflow: hidden;
+          border-radius: 8px;
+        }
+        .cms-editor-content .iframe-wrapper iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: none;
+          border-radius: 8px;
+        }
+        .cms-editor-content table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 1em 0;
+        }
+        .cms-editor-content th, .cms-editor-content td {
+          border: 1px solid var(--cms-border);
+          padding: 8px 12px;
+          text-align: left;
+        }
+        .cms-editor-content th {
+          background: rgba(255,255,255,0.06);
+          font-weight: 600;
+        }
       `}</style>
     </div>
   );
