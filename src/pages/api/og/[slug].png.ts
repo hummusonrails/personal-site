@@ -65,44 +65,150 @@ export const GET: APIRoute = async ({ props }) => {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#171717',
+          backgroundColor: '#0a0a0a',
           padding: '60px',
           fontFamily: 'Space Grotesk',
           position: 'relative',
           overflow: 'hidden',
         },
         children: [
-          // Background accent gradient
+          // === GRADIENT MESH BACKGROUND ===
+          // Large indigo/purple blob — top right
           {
             type: 'div',
             props: {
               style: {
                 position: 'absolute',
-                top: '-100px',
-                right: '-100px',
+                top: '-120px',
+                right: '-60px',
+                width: '550px',
+                height: '550px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%)',
+              },
+            },
+          },
+          // Teal/cyan blob — bottom left
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                bottom: '-100px',
+                left: '-80px',
                 width: '500px',
                 height: '500px',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(20, 184, 166, 0.2) 0%, rgba(20, 184, 166, 0.04) 50%, transparent 70%)',
               },
             },
           },
-          // Bottom accent
+          // Rose/pink blob — center right
           {
             type: 'div',
             props: {
               style: {
                 position: 'absolute',
-                bottom: '-80px',
-                left: '-80px',
+                top: '180px',
+                right: '150px',
                 width: '400px',
                 height: '400px',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.03) 50%, transparent 70%)',
               },
             },
           },
-          // Top bar with site name
+          // Warm amber glow — top left
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                top: '20px',
+                left: '200px',
+                width: '300px',
+                height: '300px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 60%)',
+              },
+            },
+          },
+          // === GEOMETRIC ACCENTS ===
+          // Thin ring — top right
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                top: '40px',
+                right: '80px',
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                border: '1px solid rgba(99, 102, 241, 0.2)',
+              },
+            },
+          },
+          // Small dot accent
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                top: '90px',
+                right: '120px',
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(99, 102, 241, 0.5)',
+              },
+            },
+          },
+          // Ring — bottom right
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                bottom: '80px',
+                right: '60px',
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                border: '1px solid rgba(20, 184, 166, 0.15)',
+              },
+            },
+          },
+          // Vertical gradient line
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                top: '0px',
+                right: '350px',
+                width: '1px',
+                height: '100%',
+                background: 'linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.1) 40%, rgba(244, 63, 94, 0.08) 60%, transparent)',
+              },
+            },
+          },
+          // === BOTTOM GRADIENT ACCENT BAR ===
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                bottom: '0',
+                left: '0',
+                width: '100%',
+                height: '4px',
+                background: 'linear-gradient(to right, #6366f1, #ec4899, #14b8a6, #6366f1)',
+              },
+            },
+          },
+          // === CONTENT ===
+          // Top bar with site name and date
           {
             type: 'div',
             props: {
@@ -137,10 +243,10 @@ export const GET: APIRoute = async ({ props }) => {
                         type: 'span',
                         props: {
                           style: {
-                            color: '#8e8e8e',
+                            color: '#9ca3af',
                             fontSize: '22px',
                             fontWeight: 400,
-                            letterSpacing: '0.05em',
+                            letterSpacing: '0.08em',
                           },
                           children: 'bengreenberg.dev',
                         },
@@ -176,9 +282,9 @@ export const GET: APIRoute = async ({ props }) => {
                   type: 'h1',
                   props: {
                     style: {
-                      color: '#ececec',
+                      color: '#f5f5f5',
                       fontSize: title.length > 60 ? '48px' : title.length > 40 ? '56px' : '64px',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       lineHeight: 1.2,
                       margin: 0,
                       maxWidth: '900px',
@@ -198,7 +304,7 @@ export const GET: APIRoute = async ({ props }) => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 marginTop: '40px',
-                borderTop: '1px solid #3a3a3a',
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                 paddingTop: '24px',
               },
               children: [
@@ -214,12 +320,13 @@ export const GET: APIRoute = async ({ props }) => {
                       type: 'span',
                       props: {
                         style: {
-                          color: '#b4b4b4',
+                          color: '#c4b5fd',
                           fontSize: '18px',
-                          backgroundColor: '#2f2f2f',
+                          backgroundColor: 'rgba(99, 102, 241, 0.12)',
                           padding: '6px 16px',
                           borderRadius: '20px',
                           fontWeight: 400,
+                          border: '1px solid rgba(99, 102, 241, 0.2)',
                         },
                         children: `#${tag}`,
                       },
@@ -261,7 +368,7 @@ export const GET: APIRoute = async ({ props }) => {
       height: 630,
       fonts: [
         { name: 'Space Grotesk', data: fontRegular, weight: 400, style: 'normal' as const },
-        { name: 'Space Grotesk', data: fontBold, weight: 600, style: 'normal' as const },
+        { name: 'Space Grotesk', data: fontBold, weight: 700, style: 'normal' as const },
       ],
     }
   );
