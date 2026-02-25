@@ -55,8 +55,42 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         </div>
 
         <div class="cms-form-group">
-          <label class="cms-label" for="image">Conference Image Path (optional)</label>
-          <input class="cms-input" type="text" id="image" placeholder="static/images/presentations/conf.png" />
+          <label class="cms-label">Conference Image (optional)</label>
+          <input type="hidden" id="image" />
+
+          <div id="image-picker" class="image-picker">
+            <div class="image-picker-preview" id="image-preview" style="display:none;">
+              <img id="image-preview-img" alt="Selected" />
+              <button type="button" class="image-picker-clear" onclick="clearImage()" title="Remove">&times;</button>
+              <div class="image-picker-path" id="image-preview-path"></div>
+            </div>
+
+            <div class="image-picker-tabs" id="image-picker-tabs">
+              <button type="button" class="image-picker-tab active" data-tab="existing" onclick="switchTab('existing')">Choose Existing</button>
+              <button type="button" class="image-picker-tab" data-tab="url" onclick="switchTab('url')">Fetch from URL</button>
+            </div>
+
+            <div id="tab-existing" class="image-picker-panel">
+              <div class="image-picker-search">
+                <input class="cms-input" type="text" id="image-search" placeholder="Search images..." oninput="filterImages()" />
+              </div>
+              <div class="image-picker-grid" id="image-grid">
+                <div class="cms-loading-overlay" style="padding:24px;">
+                  <div class="cms-spinner"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-url" class="image-picker-panel" style="display:none;">
+              <div class="image-picker-url-form">
+                <input class="cms-input" type="url" id="image-url-input" placeholder="https://example.com/conference-logo.png" />
+                <button type="button" class="cms-btn cms-btn-primary cms-btn-sm" id="fetch-image-btn" onclick="fetchRemoteImage()">
+                  Fetch
+                </button>
+              </div>
+              <p class="image-picker-hint">Paste an image URL. It will be downloaded and saved to your site.</p>
+            </div>
+          </div>
         </div>
 
         <div class="cms-form-actions">
@@ -74,7 +108,38 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     </form>
   </div>
 
+  <style is:inline>
+    .image-picker { border: 1px solid var(--cms-border); border-radius: 10px; overflow: hidden; background: var(--cms-surface); }
+    .image-picker-preview { position: relative; padding: 12px; display: flex; align-items: center; gap: 12px; background: var(--cms-card); border-bottom: 1px solid var(--cms-border); }
+    .image-picker-preview img { width: 48px; height: 48px; object-fit: contain; border-radius: 6px; background: #fff; padding: 4px; }
+    .image-picker-preview .image-picker-path { font-size: 13px; color: var(--cms-muted); font-family: 'Sohne Mono', monospace; word-break: break-all; }
+    .image-picker-clear { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--cms-danger); color: #fff; border: none; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+    .image-picker-clear:hover { opacity: 0.85; }
+    .image-picker-tabs { display: flex; border-bottom: 1px solid var(--cms-border); }
+    .image-picker-tab { flex: 1; padding: 10px; background: none; border: none; color: var(--cms-muted); font-size: 13px; font-family: 'Sohne', sans-serif; cursor: pointer; transition: all 0.15s; border-bottom: 2px solid transparent; }
+    .image-picker-tab:hover { color: var(--cms-text); background: rgba(255,255,255,0.02); }
+    .image-picker-tab.active { color: var(--cms-primary); border-bottom-color: var(--cms-primary); }
+    .image-picker-panel { padding: 12px; }
+    .image-picker-search { margin-bottom: 10px; }
+    .image-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; max-height: 260px; overflow-y: auto; padding: 2px; }
+    .image-picker-grid::-webkit-scrollbar { width: 6px; }
+    .image-picker-grid::-webkit-scrollbar-track { background: transparent; }
+    .image-picker-grid::-webkit-scrollbar-thumb { background: var(--cms-border); border-radius: 3px; }
+    .image-picker-item { position: relative; aspect-ratio: 1; border: 2px solid var(--cms-border); border-radius: 8px; cursor: pointer; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .image-picker-item:hover { border-color: var(--cms-primary); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(99,102,241,0.2); }
+    .image-picker-item.selected { border-color: var(--cms-primary); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+    .image-picker-item img { max-width: 90%; max-height: 90%; object-fit: contain; }
+    .image-picker-item-name { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.75); color: #fff; font-size: 9px; padding: 3px 4px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; opacity: 0; transition: opacity 0.15s; }
+    .image-picker-item:hover .image-picker-item-name { opacity: 1; }
+    .image-picker-url-form { display: flex; gap: 8px; }
+    .image-picker-url-form .cms-input { flex: 1; }
+    .image-picker-hint { font-size: 12px; color: var(--cms-muted); margin-top: 8px; }
+    .image-picker-empty { text-align: center; padding: 24px; color: var(--cms-muted); font-size: 13px; }
+  </style>
+
   <script is:inline>
+    let allImages = [];
+
     function generateSlug(text) {
       return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
     }
@@ -90,6 +155,98 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       };
     }
 
+    // Image picker functions
+    async function loadImages() {
+      try {
+        const res = await fetch('/api/admin/conference-images');
+        allImages = await res.json();
+        renderImageGrid(allImages);
+      } catch {
+        document.getElementById('image-grid').innerHTML = '<div class="image-picker-empty">Failed to load images</div>';
+      }
+    }
+
+    function renderImageGrid(images) {
+      const grid = document.getElementById('image-grid');
+      const selected = document.getElementById('image').value;
+
+      if (images.length === 0) {
+        grid.innerHTML = '<div class="image-picker-empty">No matching images</div>';
+        return;
+      }
+
+      grid.innerHTML = images.map(img => `
+        <div class="image-picker-item ${img.path === selected ? 'selected' : ''}"
+             onclick="selectImage('${img.path}', '${img.url}')" title="${img.name}">
+          <img src="${img.url}" alt="${img.name}" loading="lazy" />
+          <div class="image-picker-item-name">${img.name}</div>
+        </div>
+      `).join('');
+    }
+
+    function filterImages() {
+      const query = document.getElementById('image-search').value.toLowerCase();
+      const filtered = allImages.filter(img => img.name.toLowerCase().includes(query));
+      renderImageGrid(filtered);
+    }
+
+    function selectImage(path, url) {
+      document.getElementById('image').value = path;
+      const preview = document.getElementById('image-preview');
+      preview.style.display = 'flex';
+      document.getElementById('image-preview-img').src = url;
+      document.getElementById('image-preview-path').textContent = path;
+      // Re-render grid to update selection
+      filterImages();
+    }
+
+    function clearImage() {
+      document.getElementById('image').value = '';
+      document.getElementById('image-preview').style.display = 'none';
+      filterImages();
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.image-picker-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+      document.getElementById('tab-existing').style.display = tab === 'existing' ? 'block' : 'none';
+      document.getElementById('tab-url').style.display = tab === 'url' ? 'block' : 'none';
+    }
+
+    async function fetchRemoteImage() {
+      const input = document.getElementById('image-url-input');
+      const btn = document.getElementById('fetch-image-btn');
+      const url = input.value.trim();
+      if (!url) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Fetching...';
+
+      try {
+        const res = await fetch('/api/admin/conference-images', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          window.showToast(`Image saved as ${data.name}`, 'success');
+          input.value = '';
+          // Add to list and select it
+          allImages.push(data);
+          selectImage(data.path, data.url);
+          switchTab('existing');
+        } else {
+          window.showToast(data.error || 'Failed to fetch image', 'error');
+        }
+      } catch {
+        window.showToast('Failed to fetch image', 'error');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Fetch';
+    }
+
+    // Form handlers
     document.getElementById('talk-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('save-btn');
@@ -144,5 +301,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       btn.disabled = false;
       btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Preview';
     });
+
+    loadImages();
   </script>
 </AdminLayout>
