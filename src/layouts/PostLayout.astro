@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import SectionContainer from "../components/SectionContainer.astro";
 import PageTitle from "../components/PageTitle.astro";
+import MagneticScript from "../components/MagneticScript.astro";
 import Link from "../components/Link.astro";
 import RootLayout from "./RootLayout.astro";
 import FormattedDate from "../components/FormattedDate.astro";
@@ -49,9 +50,10 @@ export const prerender = true;
               <FormattedDate date={post.date} />
             </time>
           </div>
-          <h1 class="text-3xl md:text-4xl font-bold mb-5">
+          <h1 class="text-3xl md:text-4xl font-bold mb-5" data-magnetic>
             {post.title}
           </h1>
+          <MagneticScript />
           
           <!-- Authors -->
           <div class="flex flex-wrap gap-4 items-center">

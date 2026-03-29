@@ -1,0 +1,99 @@
+---
+interface Props {
+  greetings: string[];
+  suggestedPrompts: string[];
+}
+
+const { greetings, suggestedPrompts } = Astro.props;
+const defaultGreeting = "What can I help with?";
+---
+
+<div class="chat-empty" id="chat-empty">
+  <!-- Canvas editorial hero (desktop) -->
+  <div class="pretext-hero-wrap" id="pretext-hero-wrap">
+    <canvas id="pretext-hero-canvas" aria-hidden="true"></canvas>
+    <p class="sr-only" id="pretext-hero-sr">{defaultGreeting}</p>
+  </div>
+
+  <!-- Static fallback (mobile / no-JS) -->
+  <noscript>
+    <p class="chat-empty-title">{defaultGreeting}</p>
+    <p class="chat-empty-subtitle">Ask about Ben's work, writing, or speaking.</p>
+  </noscript>
+
+  <div class="chat-suggestions" style="justify-content: center;">
+    {suggestedPrompts.map((prompt) => (
+      <button class="chat-suggestion" type="button" data-prompt={prompt}>
+        {prompt}
+      </button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .pretext-hero-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 340px;
+  }
+
+  #pretext-hero-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Mobile fallback — show static text, hide canvas */
+  @media (hover: none) {
+    .pretext-hero-wrap {
+      display: none;
+    }
+  }
+
+  @media (hover: none) {
+    .chat-empty :global(.chat-empty-title),
+    .chat-empty :global(.chat-empty-subtitle) {
+      display: block;
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ greetings }}>
+  function bootPretextHero() {
+    const canvas = document.getElementById('pretext-hero-canvas');
+    const wrap = document.getElementById('pretext-hero-wrap');
+    if (!canvas || !wrap) return;
+
+    // Skip on touch-only devices
+    if (!window.matchMedia('(hover: hover)').matches) {
+      wrap.style.display = 'none';
+      return;
+    }
+
+    // Pick a random greeting
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+    // Update screen reader text
+    const srEl = document.getElementById('pretext-hero-sr');
+    if (srEl) srEl.textContent = greeting;
+
+    // Also update the chat-greeting if it exists (for when chat empty is shown)
+    const chatGreeting = document.getElementById('chat-greeting');
+    if (chatGreeting) chatGreeting.textContent = greeting;
+
+    // Dynamic import to avoid blocking
+    import('/src/lib/pretext-hero.ts').then(({ initPretextHero }) => {
+      initPretextHero(canvas, greeting);
+    }).catch((err) => {
+      console.warn('Pretext hero failed to load, showing fallback', err);
+      wrap.style.display = 'none';
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', bootPretextHero);
+  } else {
+    bootPretextHero();
+  }
+  document.addEventListener('astro:page-load', bootPretextHero);
+</script>

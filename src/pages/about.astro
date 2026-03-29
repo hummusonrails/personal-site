@@ -1,6 +1,7 @@
 ---
 import {getEntry} from "astro:content"
 import RootLayout from "@/layouts/RootLayout.astro";
+import MagneticScript from "@/components/MagneticScript.astro";
 import {SITE_METADATA} from '@/consts';
 import AuthorLayout from "@/layouts/AuthorLayout.astro";
 import { ViewTransitions } from "astro:transitions";
@@ -12,9 +13,10 @@ import { ViewTransitions } from "astro:transitions";
         <div class="max-w-6xl mx-auto">
             <div class="mb-8">
                 <p class="section-title">About Me</p>
-                <h1 class="text-3xl md:text-4xl font-bold">
+                <h1 class="text-3xl md:text-4xl font-bold" data-magnetic>
                     Building Communities, Enabling Developers
                 </h1>
+                <MagneticScript />
             </div>
 
             <!-- Image Section -->

@@ -1,5 +1,6 @@
 ---
 import RootLayout from "@/layouts/RootLayout.astro";
+import MagneticScript from "@/components/MagneticScript.astro";
 import {SITE_METADATA} from '@/consts';
 ---
 
@@ -9,9 +10,10 @@ import {SITE_METADATA} from '@/consts';
             <!-- Hero Section -->
             <div class="mb-16">
                 <p class="section-title">New Book</p>
-                <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6" data-magnetic>
                     Vector Search with JavaScript
                 </h1>
+                <MagneticScript />
                 <p class="text-xl text-dark-text-secondary max-w-3xl">
                     Build intelligent search systems with AI. Published by The Pragmatic Bookshelf.
                 </p>

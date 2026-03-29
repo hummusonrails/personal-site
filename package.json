@@ -23,6 +23,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vercel": "^9.0.4",
+    "@chenglou/pretext": "^0.0.3",
     "@mozilla/readability": "^0.6.0",
     "@tiptap/core": "^3.20.0",
     "@tiptap/extension-image": "^3.20.0",

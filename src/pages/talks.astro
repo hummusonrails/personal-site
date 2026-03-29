@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import RootLayout from "@/layouts/RootLayout.astro";
+import MagneticScript from "@/components/MagneticScript.astro";
 import { SITE_METADATA } from '@/consts';
 
 const talks = await getCollection("talks");
@@ -42,9 +43,10 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
         <div class="max-w-7xl mx-auto">
             <div class="mb-10">
                 <p class="section-title">Speaking</p>
-                <h1 class="text-3xl md:text-4xl font-bold mb-4">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4" data-magnetic>
                     Conference Talks
                 </h1>
+                <MagneticScript />
                 <p class="text-lg text-dark-text-secondary max-w-2xl">
                     Click any talk to watch it on the big screen
                 </p>
