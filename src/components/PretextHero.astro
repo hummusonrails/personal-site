@@ -10,7 +10,7 @@ const defaultGreeting = "What can I help with?";
 
 <div class="chat-empty" id="chat-empty">
   <!-- Canvas editorial hero (desktop) -->
-  <div class="pretext-hero-wrap" id="pretext-hero-wrap">
+  <div class="pretext-hero-wrap" id="pretext-hero-wrap" data-greetings={JSON.stringify(greetings)}>
     <canvas id="pretext-hero-canvas" aria-hidden="true"></canvas>
     <p class="sr-only" id="pretext-hero-sr">{defaultGreeting}</p>
   </div>
@@ -58,10 +58,12 @@ const defaultGreeting = "What can I help with?";
   }
 </style>
 
-<script is:inline define:vars={{ greetings }}>
+<script>
+  import { initPretextHero } from '../lib/pretext-hero';
+
   function bootPretextHero() {
-    const canvas = document.getElementById('pretext-hero-canvas');
     const wrap = document.getElementById('pretext-hero-wrap');
+    const canvas = document.getElementById('pretext-hero-canvas') as HTMLCanvasElement | null;
     if (!canvas || !wrap) return;
 
     // Skip on touch-only devices
@@ -70,24 +72,20 @@ const defaultGreeting = "What can I help with?";
       return;
     }
 
-    // Pick a random greeting
+    // Read greetings from data attribute
+    const greetingsJson = wrap.dataset.greetings;
+    const greetings: string[] = greetingsJson ? JSON.parse(greetingsJson) : ['What can I help with?'];
     const greeting = greetings[Math.floor(Math.random() * greetings.length)];
 
     // Update screen reader text
     const srEl = document.getElementById('pretext-hero-sr');
     if (srEl) srEl.textContent = greeting;
 
-    // Also update the chat-greeting if it exists (for when chat empty is shown)
+    // Also update the chat-greeting if it exists
     const chatGreeting = document.getElementById('chat-greeting');
     if (chatGreeting) chatGreeting.textContent = greeting;
 
-    // Dynamic import to avoid blocking
-    import('/src/lib/pretext-hero.ts').then(({ initPretextHero }) => {
-      initPretextHero(canvas, greeting);
-    }).catch((err) => {
-      console.warn('Pretext hero failed to load, showing fallback', err);
-      wrap.style.display = 'none';
-    });
+    initPretextHero(canvas, greeting);
   }
 
   if (document.readyState === 'loading') {
