@@ -28,7 +28,7 @@ const ORB_RADIUS = 45;
 const ORB_INFLUENCE_RADIUS = ORB_RADIUS + 20;
 
 const BODY_TEXT =
-  "Developer Relations Lead at Arbitrum, Docker Captain, and former Ruby Central board member. " +
+  "Developer Relations Lead at Arbitrum, Docker Captain, Agentic AI Foundation Ambassador, and former Ruby Central board member. " +
   "Building developer experiences across four continents through conference talks, hands-on workshops, " +
   "and open source contributions. Author of Vector Search with JavaScript, published by The Pragmatic Bookshelf. " +
   "Focused on developer experience, community building, and AI-powered developer tools. " +
