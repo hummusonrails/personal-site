@@ -8,7 +8,7 @@ export async function GET() {
     .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
     .map((post) => ({
       title: post.data.title,
-      slug: post.slug,
+      slug: post.id,
     }));
 
   return new Response(JSON.stringify(sorted), {

@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getCollection, getEntry, render } from "astro:content";
 import PostLayout from "@/layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
@@ -7,7 +7,7 @@ export async function getStaticPaths() {
   const filteredPosts = posts.filter((post) => !post.data.draft);
 
   return filteredPosts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
   }));
 }
 
@@ -19,7 +19,7 @@ if (!entry) {
 }
 
 // Extract frontmatter and render content
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 
 const ogImage = entry.data.images || `/api/og/${slug}.png`;
 

@@ -1,0 +1,5 @@
+{"type":"server-started","port":59582,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:59582","screen_dir":"/Users/bengreenberg/Dev/personal/personal-site/.superpowers/brainstorm/54370-1774809759/content","state_dir":"/Users/bengreenberg/Dev/personal/personal-site/.superpowers/brainstorm/54370-1774809759/state"}
+{"type":"screen-added","file":"/Users/bengreenberg/Dev/personal/personal-site/.superpowers/brainstorm/54370-1774809759/content/full-design-v2.html"}
+{"type":"screen-added","file":"/Users/bengreenberg/Dev/personal/personal-site/.superpowers/brainstorm/54370-1774809759/content/ambitious-design.html"}
+{"type":"screen-added","file":"/Users/bengreenberg/Dev/personal/personal-site/.superpowers/brainstorm/54370-1774809759/content/waiting.html"}
+{"type":"server-stopped","reason":"owner process exited"}

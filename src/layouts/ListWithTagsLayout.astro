@@ -45,12 +45,12 @@ for (const post of filteredPosts) {
     const tagSlug =
       typeof tag === "string"
         ? tag.toLowerCase()
-        : tag && typeof tag === "object" && "slug" in tag
-        ? tag.slug.toLowerCase()
+        : tag && typeof tag === "object"
+        ? (tag.slug ?? tag.id)?.toLowerCase() ?? null
         : null;
 
     if (!tagSlug) {
-      console.warn("⚠️ Invalid tag in post:", post.slug, "→", tag);
+      console.warn("⚠️ Invalid tag in post:", post.id, "→", tag);
       continue;
     }
 
@@ -97,7 +97,7 @@ const tagsCollection = await getCollection("tags");
             </h3>
 
             <div class="space-y-1">
-              {tagsCollection.map(({ slug, data }) => {
+              {tagsCollection.map(({ id: slug, data }) => {
                 const count = tagCounts[slug.toLowerCase()] || 0;
                 return (
                   <div key={slug}>
@@ -147,7 +147,7 @@ const tagsCollection = await getCollection("tags");
                           {post.tags
                             .map((tag) => {
                               if (typeof tag === "string") return tag;
-                              if (tag && typeof tag === "object" && "slug" in tag) return tag.slug;
+                              if (tag && typeof tag === "object") return tag.slug ?? tag.id ?? null;
                               console.warn("⚠️ Tag not found or slug missing:", tag);
                               return null;
                             })

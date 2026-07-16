@@ -10,7 +10,7 @@ export async function getStaticPaths({ paginate }) {
     .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
   const entries = filteredPosts.map((post) => ({
-    slug: post.slug,
+    slug: post.id,
     data: post.data,
   }));
 

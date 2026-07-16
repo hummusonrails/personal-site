@@ -1,0 +1,103 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "Ben Greenberg home" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "BG" [ref=e6]
+        - link "+ New chat" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e8]: +
+          - text: New chat
+        - generic [ref=e9]:
+          - paragraph [ref=e10]: Pinned chats
+          - link "* About Ben" [ref=e11] [cursor=pointer]:
+            - /url: /?prompt=Tell%20me%20about%20Ben%27s%20background
+            - generic [ref=e12]: "*"
+            - text: About Ben
+          - 'link "* Book: Vector Search" [ref=e13] [cursor=pointer]':
+            - /url: /?prompt=What%20is%20the%20book%20about%3F
+            - generic [ref=e14]: "*"
+            - text: "Book: Vector Search"
+          - link "* Workshops" [ref=e15] [cursor=pointer]:
+            - /url: /?prompt=Show%20me%20the%20workshops
+            - generic [ref=e16]: "*"
+            - text: Workshops
+          - link "* Speaking" [ref=e17] [cursor=pointer]:
+            - /url: /?prompt=List%20recent%20talks
+            - generic [ref=e18]: "*"
+            - text: Speaking
+          - link "* Blog highlights" [ref=e19] [cursor=pointer]:
+            - /url: /?prompt=What%20should%20I%20read%20next%3F
+            - generic [ref=e20]: "*"
+            - text: Blog highlights
+        - generic [ref=e21]:
+          - paragraph [ref=e22]: Browse pages
+          - link "- About" [ref=e23] [cursor=pointer]:
+            - /url: /about
+            - generic [ref=e24]: "-"
+            - text: About
+          - link "- Blog" [ref=e25] [cursor=pointer]:
+            - /url: /blog
+            - generic [ref=e26]: "-"
+            - text: Blog
+          - link "- Talks" [ref=e27] [cursor=pointer]:
+            - /url: /talks
+            - generic [ref=e28]: "-"
+            - text: Talks
+          - link "- Workshops" [ref=e29] [cursor=pointer]:
+            - /url: /projects
+            - generic [ref=e30]: "-"
+            - text: Workshops
+          - link "- Book" [ref=e31] [cursor=pointer]:
+            - /url: /book
+            - generic [ref=e32]: "-"
+            - text: Book
+        - generic [ref=e33]:
+          - link "Email" [ref=e34] [cursor=pointer]:
+            - /url: mailto:ben@yalladevrel.com
+          - link "GitHub" [ref=e35] [cursor=pointer]:
+            - /url: https://github.com/hummusonrails
+          - link "LinkedIn" [ref=e36] [cursor=pointer]:
+            - /url: https://www.linkedin.com/in/hummusonrails/
+    - generic [ref=e37]:
+      - button "Toggle light and dark mode" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: GM
+        - generic [ref=e42]: GN
+      - main [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e46]:
+            - paragraph [ref=e49]: Happy to help. What's up?
+            - generic [ref=e50]:
+              - button "Give me a quick bio" [ref=e51] [cursor=pointer]
+              - button "Show recent blog posts" [ref=e52] [cursor=pointer]
+              - button "List the workshops" [ref=e53] [cursor=pointer]
+              - button "Share recent talks" [ref=e54] [cursor=pointer]
+              - button "How can I contact Ben?" [ref=e55] [cursor=pointer]
+          - generic [ref=e56]:
+            - generic [ref=e57]:
+              - generic [ref=e58]: Ask about Ben's work
+              - textbox "Ask about Ben's work" [active] [ref=e59]:
+                - /placeholder: Ask anything
+              - button "Voice input" [ref=e60] [cursor=pointer]:
+                - img [ref=e61]
+              - button "Send message" [ref=e63] [cursor=pointer]:
+                - img [ref=e64]
+            - paragraph [ref=e66]: Responses are curated from Ben's public portfolio content.
+  - generic [ref=e69]:
+    - button "Menu" [ref=e70]:
+      - img [ref=e72]
+      - generic: Menu
+    - button "Inspect" [ref=e76]:
+      - img [ref=e78]
+      - generic: Inspect
+    - button "Audit" [ref=e80]:
+      - img [ref=e82]
+      - generic: Audit
+    - button "Settings" [ref=e85]:
+      - img [ref=e87]
+      - generic: Settings
+```

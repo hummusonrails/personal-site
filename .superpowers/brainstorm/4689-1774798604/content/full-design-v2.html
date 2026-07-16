@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pretext Integration Design v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a1a; color: #ececec; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+  .design-header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    border-bottom: 1px solid #333;
+  }
+  .design-header h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+  .design-header p { color: #8e8e8e; font-size: 14px; }
+
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #10a37f;
+    margin-bottom: 12px;
+  }
+  .section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .section p {
+    color: #b4b4b4;
+    line-height: 1.7;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  /* Hero mockup */
+  .hero-mockup {
+    background: #212121;
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+  .hero-mockup-bar {
+    background: #2f2f2f;
+    padding: 8px 16px;
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid #3a3a3a;
+  }
+  .hero-mockup-bar span {
+    width: 10px; height: 10px; border-radius: 50%; background: #3a3a3a;
+  }
+  .hero-mockup-body {
+    padding: 40px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .canvas-sim {
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.4;
+    text-align: center;
+    max-width: 600px;
+    position: relative;
+    margin-bottom: 32px;
+    color: #ececec;
+  }
+  .canvas-sim .void {
+    display: inline-block;
+    width: 80px;
+    height: 1.4em;
+    vertical-align: top;
+    position: relative;
+  }
+  .canvas-sim .void::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16,163,127,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cursor-dot {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(16,163,127,0.6);
+    border-radius: 50%;
+    top: 38%;
+    left: 55%;
+    pointer-events: none;
+  }
+
+  .suggestions-sim {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .suggestions-sim span {
+    padding: 8px 16px;
+    border: 1px solid #3a3a3a;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #b4b4b4;
+  }
+  .input-sim {
+    margin-top: 24px;
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 16px;
+    background: #2f2f2f;
+    border: 1px solid #3a3a3a;
+    border-radius: 24px;
+    color: #8e8e8e;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* Page heading mockup */
+  .page-mockup {
+    background: #212121;
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+  .page-mockup-bar {
+    background: #2f2f2f;
+    padding: 8px 16px;
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid #3a3a3a;
+  }
+  .page-mockup-bar span {
+    width: 10px; height: 10px; border-radius: 50%; background: #3a3a3a;
+  }
+  .page-body {
+    padding: 40px;
+  }
+  .page-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8e8e8e;
+    margin-bottom: 8px;
+  }
+  .page-heading {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 24px;
+  }
+  .page-heading .glitch-char {
+    display: inline-block;
+    transition: transform 0.08s ease;
+  }
+  .page-heading .g1 {
+    color: #10a37f;
+    transform: translate(4px, -5px) rotate(6deg);
+    opacity: 0.85;
+  }
+  .page-heading .g2 {
+    color: #ff6b6b;
+    transform: translate(-3px, 4px) rotate(-4deg);
+    opacity: 0.75;
+  }
+  .page-heading .g3 {
+    transform: translate(2px, -3px) rotate(3deg);
+    opacity: 0.9;
+  }
+  .page-heading .g4 {
+    color: #10a37f;
+    transform: translate(-2px, -3px) rotate(-2deg);
+    opacity: 0.8;
+  }
+  .cursor-indicator {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(16,163,127,0.5);
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 1px;
+  }
+
+  .content-placeholder {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .content-card {
+    background: #2f2f2f;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .content-card .date { font-family: monospace; font-size: 11px; color: #8e8e8e; }
+  .content-card h4 { font-size: 14px; margin: 8px 0 4px; }
+  .content-card p { font-size: 12px; color: #8e8e8e; margin: 0; }
+
+  .photo-placeholder {
+    width: 100%;
+    height: 180px;
+    background: #2f2f2f;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  /* Tech spec */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .tech-card {
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .tech-card h4 {
+    font-size: 13px;
+    color: #10a37f;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .tech-card p {
+    font-size: 13px;
+    color: #8e8e8e;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .tech-card code {
+    font-size: 12px;
+    background: #333;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #ececec;
+  }
+
+  .approve-section {
+    text-align: center;
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .approve-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: #10a37f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .approve-btn:hover { background: #0e8c6b; }
+</style>
+</head>
+<body>
+
+<div class="design-header">
+  <h1>Pretext Integration Design</h1>
+  <p>Two features: Interactive Hero Greeting + Glitch Page Headings</p>
+</div>
+
+<!-- FEATURE 1: HERO -->
+<div class="section">
+  <div class="section-label">Feature 1</div>
+  <h2>Interactive Hero Greeting</h2>
+  <p>The randomized greeting ("What can I help with?", "Fire away.", etc.) renders on a <code>&lt;canvas&gt;</code> via Pretext. The cursor acts as a circular obstacle — text reflows around it in real time at 60fps. Subtitle also reflows. Suggestion buttons and chat input stay as DOM below.</p>
+
+  <div class="hero-mockup">
+    <div class="hero-mockup-bar"><span></span><span></span><span></span></div>
+    <div class="hero-mockup-body">
+      <div class="canvas-sim">
+        <div>What can I</div>
+        <div>help <span class="void"></span> with</div>
+        <div>today<span class="void"></span>?</div>
+        <div style="font-size:16px; color:#8e8e8e; margin-top:8px;">
+          Ask about <span class="void" style="width:50px;"></span> Ben's work,
+        </div>
+        <div style="font-size:16px; color:#8e8e8e;">writing, or speaking.</div>
+        <div class="cursor-dot"></div>
+      </div>
+      <div class="suggestions-sim">
+        <span>Give me a quick bio</span>
+        <span>Show recent blog posts</span>
+        <span>List the workshops</span>
+      </div>
+      <div class="input-sim">Ask anything</div>
+    </div>
+  </div>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <h4>Rendering</h4>
+      <p>Canvas 2D with <code>prepareWithSegments()</code> + <code>layoutNextLine()</code>. Cursor defines a circular exclusion zone. Each line's width reduced where circle intersects.</p>
+    </div>
+    <div class="tech-card">
+      <h4>Performance</h4>
+      <p><code>prepare()</code> once on load. Layout runs per mousemove frame — ~0.07ms, well under 16ms budget. <code>requestAnimationFrame</code> throttled.</p>
+    </div>
+    <div class="tech-card">
+      <h4>Font</h4>
+      <p>Sohne Light (300) at ~32px for greeting, ~16px for subtitle. Matches your current design. Falls back to system font stack.</p>
+    </div>
+    <div class="tech-card">
+      <h4>Accessibility</h4>
+      <p>Hidden <code>&lt;p&gt;</code> with <code>sr-only</code> for screen readers. Canvas gets <code>aria-hidden="true"</code>. Mobile falls back to static DOM text.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE 2: GLITCH HEADINGS -->
+<div class="section">
+  <div class="section-label">Feature 2</div>
+  <h2>Glitch Page Headings</h2>
+  <p>Page headings across the site gain a mouse-reactive glitch effect. Characters near the cursor get random CSS transforms — translate, rotate, and color shifts to green or red. Effect is subtle and characters snap back smoothly when cursor leaves.</p>
+
+  <!-- About page example -->
+  <div class="page-mockup">
+    <div class="page-mockup-bar"><span></span><span></span><span></span></div>
+    <div class="page-body">
+      <div class="page-section-title">About Me</div>
+      <div class="page-heading">
+        <span class="glitch-char">B</span><span class="glitch-char">u</span><span class="glitch-char">i</span><span class="glitch-char g3">l</span><span class="glitch-char g1">d</span><span class="glitch-char g2">i</span><span class="glitch-char g4">n</span><span class="glitch-char g3">g</span><span class="glitch-char"> </span><span class="cursor-indicator"></span><span class="glitch-char g1">C</span><span class="glitch-char g2">o</span><span class="glitch-char g4">m</span><span class="glitch-char g3">m</span><span class="glitch-char">u</span><span class="glitch-char">n</span><span class="glitch-char">i</span><span class="glitch-char">t</span><span class="glitch-char">i</span><span class="glitch-char">e</span><span class="glitch-char">s</span><span class="glitch-char">,</span><br>
+        <span class="glitch-char">E</span><span class="glitch-char">n</span><span class="glitch-char">a</span><span class="glitch-char">b</span><span class="glitch-char">l</span><span class="glitch-char">i</span><span class="glitch-char">n</span><span class="glitch-char">g</span><span class="glitch-char"> </span><span class="glitch-char">D</span><span class="glitch-char">e</span><span class="glitch-char">v</span><span class="glitch-char">e</span><span class="glitch-char">l</span><span class="glitch-char">o</span><span class="glitch-char">p</span><span class="glitch-char">e</span><span class="glitch-char">r</span><span class="glitch-char">s</span>
+      </div>
+      <div class="photo-placeholder">[ hero image ]</div>
+      <div style="color:#8e8e8e; font-size:14px; line-height:1.7;">Based between Tel Aviv and Miami, I'm the Developer Relations Lead at Arbitrum...</div>
+    </div>
+  </div>
+
+  <!-- Blog list example -->
+  <div class="page-mockup" style="margin-top:16px;">
+    <div class="page-mockup-bar"><span></span><span></span><span></span></div>
+    <div class="page-body">
+      <div class="page-heading" style="font-size:28px;">
+        <span class="glitch-char">B</span><span class="glitch-char g4">l</span><span class="glitch-char g1">o</span><span class="glitch-char g2">g</span><span class="glitch-char"> </span><span class="cursor-indicator"></span>
+      </div>
+      <div class="content-placeholder">
+        <div class="content-card">
+          <div class="date">2026-03-15</div>
+          <h4>Building AI Search Systems</h4>
+          <p>A deep dive into vector search...</p>
+        </div>
+        <div class="content-card">
+          <div class="date">2026-03-08</div>
+          <h4>Developer Experience Matters</h4>
+          <p>Why DX is the new UX...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <h4>Implementation</h4>
+      <p>Pure DOM. Client-side JS splits heading text into per-character <code>&lt;span&gt;</code> elements. Mousemove listener calculates distance to each character.</p>
+    </div>
+    <div class="tech-card">
+      <h4>Glitch Effect</h4>
+      <p>Within radius: <code>translate(Xpx, Ypx)</code> random jitter, <code>rotate(Ndeg)</code>, random color from <code>[#10a37f, #ff6b6b, original]</code>. Intensity scales with proximity.</p>
+    </div>
+    <div class="tech-card">
+      <h4>Transitions</h4>
+      <p>Fast in (80ms ease), smooth out (200ms ease). No cumulative drift. Characters always return to exact original position.</p>
+    </div>
+    <div class="tech-card">
+      <h4>Targeting</h4>
+      <p>Applied to <code>h1</code> elements with a <code>data-glitch</code> attribute. Added to about, blog, talks, projects, and book page headings. Disabled on mobile/touch.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FILES -->
+<div class="section">
+  <div class="section-label">Implementation</div>
+  <h2>Files & Changes</h2>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <h4>src/components/PretextHero.astro</h4>
+      <p>New component. Canvas-based hero greeting, replaces <code>.chat-empty</code> greeting section in index.astro. Contains canvas + client script.</p>
+    </div>
+    <div class="tech-card">
+      <h4>src/lib/pretext-hero.ts</h4>
+      <p>New module. Pretext canvas rendering loop, cursor tracking, exclusion zone math, font loading.</p>
+    </div>
+    <div class="tech-card">
+      <h4>src/lib/glitch-title.ts</h4>
+      <p>New module. Splits headings into character spans, mousemove listener, applies/removes glitch transforms.</p>
+    </div>
+    <div class="tech-card">
+      <h4>Modified pages</h4>
+      <p>index.astro (swap greeting), about.astro, talks.astro, projects.astro, book.astro, blog/[...page].astro — add <code>data-glitch</code> + import glitch script.</p>
+    </div>
+  </div>
+</div>
+
+<div class="approve-section">
+  <p style="color:#8e8e8e; margin-bottom:16px;">Updated to reflect your actual page headings (not terminal style). Approve to start implementation.</p>
+  <button class="approve-btn" onclick="toggleSelect(this)" data-choice="approved">Approve — Build It</button>
+</div>
+
+</body>
+</html>

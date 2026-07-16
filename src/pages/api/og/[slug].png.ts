@@ -26,7 +26,7 @@ export async function getStaticPaths() {
   return posts
     .filter((post) => !post.data.draft)
     .map((post) => ({
-      params: { slug: post.slug },
+      params: { slug: post.id },
       props: {
         title: post.data.title,
         date: post.data.date,
@@ -52,7 +52,7 @@ export const GET: APIRoute = async ({ props }) => {
   });
 
   const tagList = (tags || [])
-    .map((t) => (typeof t === 'object' ? t.slug : t))
+    .map((t) => (typeof t === 'object' ? t.slug ?? t.id : t))
     .filter((t) => t !== 'posts')
     .slice(0, 3);
 
