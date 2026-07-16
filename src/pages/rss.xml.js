@@ -14,9 +14,11 @@ export async function GET(context) {
     site: context.site,
     items: filteredPosts.map(post => ({
       title: post.title,
-      categories: post.tags,
+      categories: (post.tags ?? []).map(tag =>
+        typeof tag === 'string' ? tag : tag?.slug
+      ).filter(Boolean),
       pubDate: new Date(post.date),
-      description: post.summary,
+      description: post.summary || undefined,
       link: `/blog/${post.id}/`,
     })),
   });
