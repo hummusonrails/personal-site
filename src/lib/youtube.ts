@@ -34,15 +34,20 @@ const FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL.
 
 // The feed can briefly keep listing deleted or privated videos; oEmbed
 // answers 200 only for videos that are still publicly watchable.
+// Fail open: only definitive "gone" statuses drop a video, so transient
+// rate limits or outages never wipe live videos from the section.
+const GONE_STATUSES = new Set([400, 401, 403, 404]);
+
 async function isAvailable(id: string): Promise<boolean> {
   try {
+    const watchUrl = encodeURIComponent(`https://www.youtube.com/watch?v=${id}`);
     const res = await fetch(
-      `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`,
+      `https://www.youtube.com/oembed?url=${watchUrl}&format=json`,
       { signal: AbortSignal.timeout(8000) }
     );
-    return res.ok;
+    return res.ok || !GONE_STATUSES.has(res.status);
   } catch {
-    return false;
+    return true;
   }
 }
 
