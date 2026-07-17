@@ -5,6 +5,7 @@ import FormattedDate from "@/components/FormattedDate.astro";
 import { SITE_METADATA } from '@/consts';
 import { WORKSHOPS } from "@/data/workshops";
 import { getCollection } from 'astro:content';
+import { CHANNEL, fetchChannelVideos } from '@/lib/youtube';
 
 export const prerender = true;
 
@@ -16,6 +17,8 @@ const latestPosts = posts.slice(0, 3);
 const talks = (await getCollection('talks'))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const regions = [...new Set(talks.map((t) => t.data.region).filter(Boolean))];
+
+const { videos, shorts } = await fetchChannelVideos();
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
@@ -99,12 +102,50 @@ const regions = [...new Set(talks.map((t) => t.data.region).filter(Boolean))];
     <div class="tile t-social">
       <span class="tile-eyebrow">Elsewhere</span>
       <ul class="tile-list">
+        <li><a href={CHANNEL.url} target="_blank" rel="noopener noreferrer">YouTube</a></li>
         <li><a href={SITE_METADATA.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>
         <li><a href={SITE_METADATA.twitter} target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
         <li><a href={SITE_METADATA.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
         <li><a href="https://dev.to/bengreenberg" target="_blank" rel="noopener noreferrer">dev.to</a></li>
       </ul>
     </div>
+  </section>
+
+  <section class="yt" aria-label="Learn with Ben on YouTube">
+    <div class="yt-head">
+      <div>
+        <p class="page-eyebrow">On air</p>
+        <h2 class="yt-title">Learn with Ben</h2>
+        <p class="yt-lede">Videos and shorts on AI, developer tools, and building in public.</p>
+      </div>
+      <a class="cta cta-primary" href={CHANNEL.url} target="_blank" rel="noopener noreferrer">Subscribe on YouTube</a>
+    </div>
+
+    {videos.length > 0 && (
+      <div class="yt-videos">
+        {videos.map((video) => (
+          <a class="yt-card" href={video.url} target="_blank" rel="noopener noreferrer">
+            <span class="yt-thumb"><img src={video.thumbnail} alt="" loading="lazy" /><span class="yt-play" aria-hidden="true">▶</span></span>
+            <span class="yt-card-title">{video.title}</span>
+            <span class="yt-card-date"><FormattedDate date={new Date(video.published)} /></span>
+          </a>
+        ))}
+      </div>
+    )}
+
+    {shorts.length > 0 && (
+      <div class="yt-shorts-wrap">
+        <p class="yt-shorts-label">Recent shorts</p>
+        <div class="yt-shorts">
+          {shorts.map((short) => (
+            <a class="yt-short" href={short.url} target="_blank" rel="noopener noreferrer">
+              <img src={short.thumbnail} alt="" loading="lazy" />
+              <span class="yt-short-title">{short.title.replace(/#\S+/g, '').trim()}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
   </section>
 
   <ChatWidget />
