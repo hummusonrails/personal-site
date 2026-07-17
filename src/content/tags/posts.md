@@ -1,4 +1,4 @@
 ---
-name: "Posts"
+name: "General"
 description: "General posts and articles."
 ---

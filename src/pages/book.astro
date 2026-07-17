@@ -1,247 +1,201 @@
 ---
 import RootLayout from "@/layouts/RootLayout.astro";
-import MagneticScript from "@/components/MagneticScript.astro";
-import {SITE_METADATA} from '@/consts';
+
+const BOOK_URL = "https://pragprog.com/titles/bgvector/vector-search-with-javascript/";
+
+const facts = [
+  { label: "Published", value: "September 2025" },
+  { label: "Pages", value: "128" },
+  { label: "Publisher", value: "Pragmatic Bookshelf" },
+  { label: "ISBN", value: "9798888651735" },
+];
+
+const praise = [
+  {
+    name: "Angie Jones",
+    role: "VP Engineering, AI Tools & Enablement, Block",
+    avatar: "https://i0.wp.com/angiejones.tech/wp-content/uploads/2024/09/headshot-angie-jones-scaled.jpg?resize=800%2C778&ssl=1",
+    quote: "Vector Search with JavaScript is the book I wish I had when I first started working in this space.",
+  },
+  {
+    name: "Laurent Doguin",
+    role: "Director of Developer Relations, Couchbase",
+    avatar: "https://s3.eu-west-1.amazonaws.com/redsys-prod/authors/6322f9746c5dff001ebf3022/images/avatarSquareSmall_xxx_1663335313011_doguin_laurent_wp.jpg",
+    quote: "Ben's book offers the approachable explanations and examples of vector search I wish I had when I was learning the field. It's a must-read for anyone joining my team.",
+  },
+  {
+    name: "Liran Tal",
+    role: "Director of Developer Relations, Snyk",
+    avatar: "https://cdn.thenewstack.io/media/2020/03/5162e10b-liran-tal.jpeg",
+    quote: "The book does a great job at offering practical hands-on experience building applications powered by vector search.",
+  },
+  {
+    name: "Santosh Yadav",
+    role: "GitHub Star, Microsoft MVP, Angular GDE",
+    avatar: "https://github.com/santoshyadavdev.png",
+    quote: "Vector Search with JavaScript is for everyone who wants to explore the world of vector search. This could easily be the best book on crafting an API using Node.js.",
+  },
+];
+
+const toc = [
+  {
+    part: "Part I: Foundations of vector search",
+    chapters: ["Getting Started with Vector Search", "Understanding Vector Search", "Generating Vector Embeddings"],
+  },
+  {
+    part: "Part II: Building a vector search service",
+    chapters: [
+      "Building the Foundation for Vector Search",
+      "Structuring the Back End for Vector Search",
+      "Building the Vector Embedding Generation Service",
+      "Creating a Vector Search Service",
+      "Creating a Vector Search Index",
+      "Incorporating Vector Search Functionality",
+      "Optimizing Search Results",
+    ],
+  },
+  {
+    part: "Part III: Practical applications and next steps",
+    chapters: ["Exploring Upcoming New Developments", "Taking a Look at Real-World Use Cases"],
+  },
+];
 ---
 
-<RootLayout title="Vector Search with JavaScript - Book by Ben Greenberg" description="Learn to build AI-powered vector search applications with JavaScript. Published by The Pragmatic Bookshelf.">
-    <div class="section-container animate-fade-in">
-        <div class="max-w-6xl mx-auto">
-            <!-- Hero Section -->
-            <div class="mb-16">
-                <p class="section-title">New Book</p>
-                <h1 class="text-4xl md:text-5xl font-bold mb-6" data-magnetic>
-                    Vector Search with JavaScript
-                </h1>
-                <MagneticScript />
-                <p class="text-xl text-dark-text-secondary max-w-3xl">
-                    Build intelligent search systems with AI. Published by The Pragmatic Bookshelf.
-                </p>
+<RootLayout title="Vector Search with JavaScript - Book by Ben Greenberg" description="Build AI-powered search systems with JavaScript. Published by The Pragmatic Bookshelf.">
+  <div class="page-frame">
+    <p class="page-eyebrow">The book</p>
+    <h1 class="page-title-display">Vector Search with JavaScript</h1>
+    <p class="page-lede">Build AI-powered search systems with JavaScript. Published by The Pragmatic Bookshelf.</p>
+
+    <div class="bk-grid">
+      <div class="bk-side">
+        <img class="bk-cover" src="/static/images/book_cover.png" alt="Vector Search with JavaScript book cover" />
+        <a href={BOOK_URL} target="_blank" rel="noopener noreferrer" class="cta cta-primary bk-buy">Get the book</a>
+        <dl class="bk-facts">
+          {facts.map((f) => (
+            <div><dt>{f.label}</dt><dd>{f.value}</dd></div>
+          ))}
+        </dl>
+        <p class="bk-formats">Available as PDF, EPUB, MOBI, and paperback.</p>
+      </div>
+
+      <div class="bk-main">
+        <section>
+          <h2 class="bk-heading">About the book</h2>
+          <div class="bk-prose">
+            <p>
+              I wrote this book for working JavaScript developers who keep hearing about vector search and want to
+              build with it, not just read definitions of it. It walks through what embeddings are, how similarity
+              search works, and then spends most of its pages building a real search service in Node.js.
+            </p>
+            <p>
+              You don't need a math background. By the end you will have generated embeddings, built and tuned a
+              vector index, and shipped search that understands meaning instead of matching keywords.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="bk-heading">In the book</h2>
+          <ul class="bk-learn">
+            <li>Generate embeddings and construct efficient vector indexes</li>
+            <li>Build recommendation systems and personalized search</li>
+            <li>Power content discovery with semantic search</li>
+            <li>Integrate vector search into JavaScript applications</li>
+            <li>Build scalable, high-performance search systems</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="bk-heading">Table of contents</h2>
+          {toc.map((part) => (
+            <div class="bk-toc-part">
+              <h3>{part.part}</h3>
+              <ul>
+                {part.chapters.map((ch) => <li>{ch}</li>)}
+              </ul>
             </div>
-
-            <!-- Book Overview -->
-            <div class="grid lg:grid-cols-2 gap-12 mb-16">
-                <div>
-                    <div class="card overflow-hidden bg-dark-surface">
-                        <img 
-                            class="w-full h-auto object-contain" 
-                            src="static/images/book_cover.png" 
-                            alt="Vector Search with JavaScript book cover"
-                        />
-                    </div>
-                    <div class="mt-6 space-y-4">
-                        <a href="https://pragprog.com/titles/bgvector/vector-search-with-javascript/" 
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           class="modern-button-primary modern-button w-full text-center block">
-                            Get Your Copy
-                        </a>
-                        <div class="grid grid-cols-2 gap-4 text-sm text-dark-text-secondary">
-                            <div class="card">
-                                <p class="font-semibold text-white mb-1">Pages</p>
-                                <p>128</p>
-                            </div>
-                            <div class="card">
-                                <p class="font-semibold text-white mb-1">Published</p>
-                                <p>September 2025</p>
-                            </div>
-                            <div class="card">
-                                <p class="font-semibold text-white mb-1">ISBN</p>
-                                <p>9798888651735</p>
-                            </div>
-                            <div class="card">
-                                <p class="font-semibold text-white mb-1">Publisher</p>
-                                <p>Pragmatic Bookshelf</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-8">
-                    <div>
-                        <h2 class="text-2xl font-bold mb-4">About the Book</h2>
-                        <div class="space-y-4 text-dark-text-secondary">
-                            <p>
-                                Stop relying on outdated search methods. Deploy vector search and deliver smarter, more intuitive search experiences that keep users engaged.
-                            </p>
-                            <p>
-                                This comprehensive guide takes a deep dive into the world of vector search, offering a hands-on approach for developers looking to bring AI-powered utility and precision into their projects. This book demystifies the core concepts of vector search, making them accessible and practical, and you don't need a background in math to learn vector search techniques!
-                            </p>
-                            <p>
-                                Revolutionize search with AI-powered techniques that go beyond simple keyword matching. Implement vector search to build applications that understand intent, meaning, and similarity.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-xl font-semibold mb-4">What You'll Learn</h3>
-                        <ul class="space-y-3 text-dark-text-secondary">
-                            <li class="flex gap-3">
-                                <span class="text-[var(--text-primary)] flex-shrink-0">✓</span>
-                                <span>Generate embeddings and construct efficient vector indexes</span>
-                            </li>
-                            <li class="flex gap-3">
-                                <span class="text-[var(--text-primary)] flex-shrink-0">✓</span>
-                                <span>Build recommendation systems and personalized search</span>
-                            </li>
-                            <li class="flex gap-3">
-                                <span class="text-[var(--text-primary)] flex-shrink-0">✓</span>
-                                <span>Power content discovery tools with semantic search</span>
-                            </li>
-                            <li class="flex gap-3">
-                                <span class="text-[var(--text-primary)] flex-shrink-0">✓</span>
-                                <span>Integrate vector search into JavaScript applications</span>
-                            </li>
-                            <li class="flex gap-3">
-                                <span class="text-[var(--text-primary)] flex-shrink-0">✓</span>
-                                <span>Build scalable, high-performance search systems</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 class="text-xl font-semibold mb-4">Available Formats</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="tag">PDF</span>
-                            <span class="tag">EPUB</span>
-                            <span class="tag">MOBI</span>
-                            <span class="tag">Paperback</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Praise Section -->
-            <div class="mb-16">
-                <h2 class="text-3xl font-bold mb-8 text-center">What People Are Saying</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Angie Jones Testimonial -->
-                    <div class="card">
-                        <div class="flex items-start gap-4 mb-4">
-                            <img 
-                                src="https://i0.wp.com/angiejones.tech/wp-content/uploads/2024/09/headshot-angie-jones-scaled.jpg?resize=800%2C778&ssl=1" 
-                                alt="Angie Jones"
-                                class="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                            />
-                            <div>
-                                <h3 class="font-semibold text-lg">Angie Jones</h3>
-                                <p class="text-sm text-dark-text-secondary">VP Engineering, AI Tools & Enablement</p>
-                                <p class="text-sm text-dark-text-muted">Block, Inc.</p>
-                            </div>
-                        </div>
-                        <blockquote class="text-dark-text-secondary italic border-l-4 border-[var(--text-muted)] pl-4">
-                            "Vector Search with JavaScript is the book I wish I had when I first started working in this space."
-                        </blockquote>
-                    </div>
-
-                    <!-- Laurent Doguin Testimonial -->
-                    <div class="card">
-                        <div class="flex items-start gap-4 mb-4">
-                            <img 
-                                src="https://s3.eu-west-1.amazonaws.com/redsys-prod/authors/6322f9746c5dff001ebf3022/images/avatarSquareSmall_xxx_1663335313011_doguin_laurent_wp.jpg" 
-                                alt="Laurent Doguin"
-                                class="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                            />
-                            <div>
-                                <h3 class="font-semibold text-lg">Laurent Doguin</h3>
-                                <p class="text-sm text-dark-text-secondary">Director of Developer Relations</p>
-                                <p class="text-sm text-dark-text-muted">Couchbase</p>
-                            </div>
-                        </div>
-                        <blockquote class="text-dark-text-secondary italic border-l-4 border-[var(--text-muted)] pl-4">
-                            "Ben's book offers the approachable explanations and examples of vector search I wish I had when I was learning the field. It's a must-read for anyone joining my team."
-                        </blockquote>
-                    </div>
-
-                    <!-- Liran Tal Testimonial -->
-                    <div class="card">
-                        <div class="flex items-start gap-4 mb-4">
-                            <img 
-                                src="https://cdn.thenewstack.io/media/2020/03/5162e10b-liran-tal.jpeg" 
-                                alt="Liran Tal"
-                                class="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                            />
-                            <div>
-                                <h3 class="font-semibold text-lg">Liran Tal</h3>
-                                <p class="text-sm text-dark-text-secondary">Director of Developer Relations</p>
-                                <p class="text-sm text-dark-text-muted">Snyk</p>
-                            </div>
-                        </div>
-                        <blockquote class="text-dark-text-secondary italic border-l-4 border-[var(--text-muted)] pl-4">
-                            "The book does a great job at offering practical hands-on experience building applications powered by vector search."
-                        </blockquote>
-                    </div>
-
-                    <!-- Santosh Yadav Testimonial -->
-                    <div class="card">
-                        <div class="flex items-start gap-4 mb-4">
-                            <img 
-                                src="https://github.com/santoshyadavdev.png" 
-                                alt="Santosh Yadav"
-                                class="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                            />
-                            <div>
-                                <h3 class="font-semibold text-lg">Santosh Yadav</h3>
-                                <p class="text-sm text-dark-text-secondary">GitHub Star, Microsoft MVP, Angular GDE</p>
-                                <p class="text-sm text-dark-text-muted">Senior Software Engineer at Celonis</p>
-                            </div>
-                        </div>
-                        <blockquote class="text-dark-text-secondary italic border-l-4 border-[var(--text-muted)] pl-4">
-                            "Vector Search with JavaScript is for everyone who wants to explore the world of vector search. This could easily be the best book on crafting an API using Node.js."
-                        </blockquote>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table of Contents -->
-            <div class="mb-16">
-                <h2 class="text-3xl font-bold mb-8">Table of Contents</h2>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="card">
-                        <h3 class="text-lg font-semibold mb-4 text-[var(--text-primary)]">Part I: Foundations of Vector Search</h3>
-                        <ul class="space-y-2 text-dark-text-secondary">
-                            <li>• Getting Started with Vector Search</li>
-                            <li>• Understanding Vector Search</li>
-                            <li>• Generating Vector Embeddings</li>
-                        </ul>
-                    </div>
-
-                    <div class="card">
-                        <h3 class="text-lg font-semibold mb-4 text-[var(--text-primary)]">Part II: Building a Vector Search Service</h3>
-                        <ul class="space-y-2 text-dark-text-secondary">
-                            <li>• Building the Foundation for Vector Search</li>
-                            <li>• Structuring the Back End for Vector Search</li>
-                            <li>• Building the Vector Embedding Generation Service</li>
-                            <li>• Creating a Vector Search Service</li>
-                            <li>• Creating a Vector Search Index</li>
-                            <li>• Incorporating Vector Search Functionality</li>
-                            <li>• Optimizing Search Results</li>
-                        </ul>
-                    </div>
-
-                    <div class="card md:col-span-2">
-                        <h3 class="text-lg font-semibold mb-4 text-[var(--text-primary)]">Part III: Practical Applications and Next Steps</h3>
-                        <ul class="space-y-2 text-dark-text-secondary">
-                            <li>• Exploring Upcoming New Developments</li>
-                            <li>• Taking a Look at Real-World Use Cases</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CTA -->
-            <div class="text-center card border-[var(--dark-border)]">
-                <h2 class="text-3xl font-bold mb-4">Ready to Master Vector Search?</h2>
-                <p class="text-dark-text-secondary mb-8 max-w-2xl mx-auto">
-                    Cut through the complexity and apply AI-driven search strategies to create better user experiences.
-                </p>
-                <a href="https://pragprog.com/titles/bgvector/vector-search-with-javascript/" 
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="modern-button-primary modern-button">
-                    Get the Book Now
-                </a>
-            </div>
-        </div>
+          ))}
+        </section>
+      </div>
     </div>
+
+    <section class="bk-praise">
+      <h2 class="bk-heading">Praise</h2>
+      <div class="bk-praise-grid">
+        {praise.map((p) => (
+          <figure class="bk-quote">
+            <blockquote>"{p.quote}"</blockquote>
+            <figcaption>
+              <img src={p.avatar} alt="" loading="lazy" />
+              <span><b>{p.name}</b><br />{p.role}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  </div>
 </RootLayout>
+
+<style>
+  .bk-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    margin-top: 2.5rem;
+  }
+  .bk-cover {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--dark-border);
+  }
+  .bk-buy { display: flex; justify-content: center; margin-top: 1rem; }
+  .bk-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+    margin: 1.4rem 0 0;
+  }
+  .bk-facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .bk-facts dd { margin: 0.15rem 0 0; color: var(--text-primary); font-weight: 500; }
+  .bk-formats { color: var(--text-secondary); font-size: 0.9rem; margin-top: 1.2rem; }
+  .bk-main { display: grid; gap: 2.2rem; align-content: start; }
+  .bk-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0 0 0.9rem;
+  }
+  .bk-prose p { color: var(--text-secondary); line-height: 1.65; margin: 0 0 1rem; }
+  .bk-learn { margin: 0; padding-left: 1.1rem; color: var(--text-secondary); display: grid; gap: 0.5rem; }
+  .bk-toc-part { margin-bottom: 1.2rem; }
+  .bk-toc-part h3 { color: var(--text-primary); font-weight: 600; font-size: 1rem; margin: 0 0 0.4rem; }
+  .bk-toc-part ul { margin: 0; padding-left: 1.1rem; color: var(--text-secondary); display: grid; gap: 0.3rem; }
+  .bk-praise { margin-top: 3rem; }
+  .bk-praise-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .bk-quote {
+    margin: 0;
+    border: 1px solid var(--dark-border);
+    border-radius: 0.9rem;
+    padding: 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .bk-quote blockquote { margin: 0; color: var(--text-primary); line-height: 1.55; }
+  .bk-quote figcaption { display: flex; align-items: center; gap: 0.7rem; color: var(--text-secondary); font-size: 0.88rem; }
+  .bk-quote img { width: 2.6rem; height: 2.6rem; border-radius: 50%; object-fit: cover; }
+  .bk-quote b { color: var(--text-primary); }
+  @media (max-width: 780px) {
+    .bk-grid { grid-template-columns: 1fr; }
+  }
+</style>

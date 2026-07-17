@@ -14,8 +14,6 @@ authors:
   - default
 ---
   
-  ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--4TX6BqOY--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yxmqutwtkobvji8wa8bd.png)
-
 
 It has now been several years since I began working for fully remote-first teams in software. My journey in a completely distributed team began before the pandemic arrived, and before countless numbers of people were thrust into this area unprepared.
 

@@ -17,7 +17,6 @@ authors:
   - default
 ---
   
-  ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--MIeEuUP3--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/1200w/public/2022-01/image5.png)
 
 The first major release of the Rails framework in more than two years brings an entirely new approach to full-stack web development. [Rails 7](https://rubyonrails.org/) now includes methods to incorporate Node packages without installing Node, real-time interactivity in the browser with Hotwire, and numerous other features. 
 
@@ -128,8 +127,6 @@ databases:
 
     user: nr-rails-7
 
-
-
 services:
 
   - type: web
@@ -167,8 +164,6 @@ To add a new file in the `bin/` folder called `render-build.sh`, run this comman
 # exit on error
 
 set -o errexit
-
-
 
 bundle install
 

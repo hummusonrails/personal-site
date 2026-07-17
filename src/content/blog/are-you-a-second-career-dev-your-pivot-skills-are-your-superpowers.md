@@ -14,7 +14,6 @@ authors:
   - default
 ---
   
-  ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--71z0bodu--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dg7cvizczuobas8r7i31.png)
 
 We are living in the midst of the [great resignation](https://hbr.org/2021/09/who-is-driving-the-great-resignation). More people are actively transitioning out of careers and into new fields now than perhaps at any other time in recent memory.
 

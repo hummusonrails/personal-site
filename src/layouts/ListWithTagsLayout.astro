@@ -97,8 +97,8 @@ const tagsCollection = await getCollection("tags");
             </h3>
 
             <div class="space-y-1">
-              {tagsCollection.map(({ id: slug, data }) => {
-                const count = tagCounts[slug.toLowerCase()] || 0;
+              {tagsCollection.filter(({ id }) => (tagCounts[id.toLowerCase()] || 0) >= 2).map(({ id: slug, data }) => {
+                const count = tagCounts[slug.toLowerCase()];
                 return (
                   <div key={slug}>
                     {isSamePath(`/tags/${slug}`) ? (

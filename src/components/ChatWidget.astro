@@ -45,109 +45,7 @@ const suggestedPrompts = [
   "How can I contact Ben?",
 ];
 
-const greetings = [
-  "What can I help with?",
-  "What are you curious about?",
-  "Go ahead, ask me anything.",
-  "What would you like to know?",
-  "Ready when you are.",
-  "What's on your mind?",
-  "How can I help today?",
-  "Ask away.",
-  "What brings you here?",
-  "Let's dive in.",
-  "What would you like to explore?",
-  "Looking for something specific?",
-  "What are we building today?",
-  "Welcome. Ask me anything.",
-  "I'm all ears. Well, all text.",
-  "What can I tell you about Ben?",
-  "Need a hand finding something?",
-  "Let's get started.",
-  "Curious about something?",
-  "What's the query?",
-  "How can I assist?",
-  "What do you want to dig into?",
-  "Pull up a chair. What's up?",
-  "Glad you're here. What's up?",
-  "Let's figure it out together.",
-  "Anything I can help with?",
-  "What would be useful right now?",
-  "Where should we start?",
-  "What can I look up for you?",
-  "Fire away.",
-  "What do you need?",
-  "What's the plan?",
-  "Hello, world. What's up?",
-  "Standing by. What do you need?",
-  "What are you looking for?",
-  "I've got answers. You've got questions.",
-  "Let's talk.",
-  "What should we chat about?",
-  "Happy to help. What's up?",
-  "Waiting for your input...",
-  "What piques your interest?",
-  "Prompt me.",
-  "Here to help. What do you need?",
-  "Tell me what you need.",
-  "At your service.",
-  "Awaiting instructions.",
-  "What's on the agenda?",
-  "What's the question?",
-  "I'm listening.",
-  "Ben's portfolio, your questions.",
-  "Ready to assist.",
-  "Ask something interesting.",
-  "What should I pull up?",
-  "Hit me with a question.",
-  "Want to know something?",
-  "Start typing. I'll start helping.",
-  "What are we exploring today?",
-  "Everything's searchable. Try me.",
-  "What's the topic?",
-  "Zero latency. Ask me.",
-  "Running at full context. Go ahead.",
-  "Initialized and ready.",
-  "What can I fetch for you?",
-  "Query anything about Ben.",
-  "Loaded and listening.",
-  "What do you want to know?",
-  "Talk to me.",
-  "Here. What do you need?",
-  "I know a few things. Try me.",
-  "Got a question? I probably have an answer.",
-  "Your turn.",
-  "Okay, what do you want to find?",
-  "Need a tour? Just ask.",
-  "Awaiting your query.",
-  "No rate limits here. Ask away.",
-  "Everything Ben, all in one place.",
-  "Fully loaded. What's your question?",
-  "Let me know what you're after.",
-  "Context window: wide open.",
-  "Go ahead, I'm right here.",
-  "What catches your eye?",
-  "New chat. New possibilities.",
-  "Thoughts, questions, curiosities?",
-  "Anything you'd like to explore?",
-  "I've been expecting you.",
-  "Let's chat. What's the topic?",
-  "What's the first thing you'd like to know?",
-  "Ask and you shall receive.",
-  "What sounds interesting?",
-  "Hello! What can I find for you?",
-  "What topic should we start with?",
-  "Where do you want to begin?",
-  "What's your first question?",
-  "What are you interested in?",
-  "Try asking me something.",
-  "Ready for your prompt.",
-  "All systems go. What do you need?",
-  "What should we look into?",
-  "So, what'll it be?",
-  "Good to see you. What's up?",
-  "Another day, another query.",
-];
+const greetings = ['Looking for a talk, post, or workshop? Ask away.'];
 
 const initialPrompt = Astro.url.searchParams.get('prompt');
 
@@ -301,18 +199,18 @@ const buildInitialResponse = (prompt) => {
 
 const initialResponse = buildInitialResponse(initialPrompt);
 
-const widgetGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+const widgetGreeting = greetings[0];
 const startOpen = Boolean(initialPrompt);
 ---
 
 <div class="cw-root" id="chat-widget" data-open={startOpen ? 'true' : 'false'}>
   <button class="cw-pill" id="chat-widget-toggle" type="button" aria-expanded={startOpen ? 'true' : 'false'} aria-controls="chat-widget-panel">
     <span class="cw-pill-dot" aria-hidden="true"></span>
-    Ask me anything
+    Looking for something?
   </button>
-  <section class="cw-panel" id="chat-widget-panel" aria-label="Ask about Ben's work">
+  <section class="cw-panel" id="chat-widget-panel" aria-label="Find content on this site">
     <header class="cw-head">
-      <p class="cw-title">Ask me anything</p>
+      <p class="cw-title">Site guide</p>
       <button class="cw-close" id="chat-widget-close" type="button" aria-label="Close chat">&times;</button>
     </header>
     <div class="chat-thread" id="chat-thread" data-initial={initialPrompt ? 'true' : 'false'}>
@@ -755,40 +653,6 @@ const startOpen = Boolean(initialPrompt);
       };
       };
 
-      const showTypingIndicator = () => {
-        if (emptyState) {
-          emptyState.style.display = 'none';
-        }
-        const indicator = document.createElement('div');
-        indicator.className = 'chat-message chat-message-assistant chat-typing';
-      indicator.dataset.typing = 'true';
-
-      const avatar = document.createElement('div');
-      avatar.className = 'chat-avatar chat-avatar-assistant';
-      avatar.textContent = 'BG';
-
-      const content = document.createElement('div');
-      content.className = 'chat-message-content';
-
-      const dots = document.createElement('div');
-      dots.className = 'chat-typing-dots';
-      dots.innerHTML = '<span></span><span></span><span></span>';
-
-      content.appendChild(dots);
-      indicator.appendChild(avatar);
-      indicator.appendChild(content);
-      thread.appendChild(indicator);
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
-      return indicator;
-      };
-
-      const removeTypingIndicator = (indicator) => {
-      if (indicator && indicator.parentNode) {
-        indicator.parentNode.removeChild(indicator);
-      }
-      };
 
       const ensurePosts = async () => {
         if (state.posts.length) return;
@@ -842,8 +706,7 @@ const startOpen = Boolean(initialPrompt);
         addMessage('user', userNode);
         input.value = '';
 
-        const typingIndicator = showTypingIndicator();
-        window.setTimeout(async () => {
+        (async () => {
           const normalized = prompt.toLowerCase();
           const intent = detectIntent(normalized);
           if (intent === 'talks') {
@@ -852,10 +715,9 @@ const startOpen = Boolean(initialPrompt);
           if (intent === 'posts') {
             await ensurePosts();
           }
-          removeTypingIndicator(typingIndicator);
           const response = buildResponse(prompt);
           renderAssistantResponse(response);
-        }, 200);
+        })();
       };
 
       form.addEventListener('submit', (event) => {
