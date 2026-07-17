@@ -3,9 +3,9 @@ import RootLayout from "@/layouts/RootLayout.astro";
 import ChatWidget from "@/components/ChatWidget.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { SITE_METADATA } from '@/consts';
-import { WORKSHOPS } from "@/data/workshops";
 import { getCollection } from 'astro:content';
 import { CHANNEL, fetchChannelVideos } from '@/lib/youtube';
+import { NEWSLETTER, fetchLatestPosts } from '@/lib/substack';
 
 export const prerender = true;
 
@@ -15,25 +15,63 @@ const posts = (await getCollection('blog'))
 const latestPosts = posts.slice(0, 3);
 
 const { videos, shorts } = await fetchChannelVideos();
+const essays = await fetchLatestPosts(3);
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
-  <section class="hero">
-    <div>
-      <h1 class="hero-title">I build developer <em>communities</em> on four continents.</h1>
-      <p class="hero-sub">
-        I lead developer relations, wrote <a href="/book" class="modern-link">Vector Search with JavaScript</a> for
-        The Pragmatic Bookshelf, and teach hands-on workshops. Based between Tel Aviv and Miami.
-      </p>
-      <div class="hero-ctas">
+  <section class="id-hero" aria-label="Ben Greenberg">
+    <img class="id-hero-bg" src="/static/images/ben.jpeg" alt="" width="1422" height="944" loading="eager" />
+    <div class="id-hero-inner">
+      <h1 class="id-name">Ben Greenberg</h1>
+      <p class="id-tagline">builds developer communities on four continents</p>
+      <div class="id-ctas">
         <a class="cta cta-primary" href="/blog">Read the blog</a>
-        <a class="cta" href={`mailto:${SITE_METADATA.email}?subject=Speaking%20invitation`}>Book Ben to speak</a>
+        <a class="cta cta-onphoto" href={`mailto:${SITE_METADATA.email}?subject=Speaking%20invitation`}>Book Ben to speak</a>
       </div>
     </div>
-    <figure class="hero-photo">
-      <img src="/static/images/ben.jpeg" alt="Ben Greenberg giving a conference talk on stage" width="1422" height="944" loading="eager" />
-      <figcaption>Live from the keynote stage</figcaption>
+    <p class="id-hero-credit">Live from the keynote stage</p>
+  </section>
+
+  <section class="bio" aria-label="About Ben">
+    <figure class="bio-photo">
+      <img src="/static/images/new_home_picture.png" alt="Ben Greenberg mentoring developers at an event" loading="lazy" />
     </figure>
+    <div class="bio-text">
+      <h2 class="sr-only">About Ben</h2>
+      <fieldset class="bio-length">
+        <legend>About Ben. How long do you have?</legend>
+        <label>
+          Lightning talk
+          <input type="radio" name="bio-length" value="1" />
+        </label>
+        <label>
+          Coffee chat
+          <input type="radio" name="bio-length" value="2" />
+        </label>
+        <label>
+          Conference talk
+          <input type="radio" name="bio-length" value="3" checked />
+        </label>
+        <label>
+          Workshop
+          <input type="radio" name="bio-length" value="4" />
+        </label>
+        <label>
+          Keynote
+          <input type="radio" name="bio-length" value="5" />
+        </label>
+      </fieldset>
+      <div class="bio-copy" aria-live="polite">
+        <p>
+          <span data-length="1">Ben Greenberg leads developer relations at Arbitrum and builds developer communities on four continents.</span>
+          <span data-length="2"> He wrote <a href="/book">Vector Search with JavaScript</a> for The Pragmatic Bookshelf and splits his time between Tel Aviv and Miami.</span>
+          <span data-length="3"> Code is his second career. He spent a decade in adult education, community organizing, and non-profit management before shipping his first production code, and he brought all of it with him: communities work the same way whether they gather in a classroom or a terminal.</span>
+          <span data-length="4"> These days that mix looks like hands-on workshops on search engines, AI agents, and payment rails, plus <a href={NEWSLETTER.url} target="_blank" rel="noopener noreferrer">Code and Conduct</a>, a newsletter about what building software does to the people who build it. Along the way he picked up a Docker Captain badge, an Agentic AI Foundation ambassadorship, and a term on the Ruby Central board.</span>
+          <span data-length="5"> The through line is a belief that developer tools succeed when the people using them feel like they belong somewhere. So he keeps showing up in Nairobi, Denver, and Tel Aviv to teach the workshop and then stay for the hallway track.</span>
+        </p>
+      </div>
+      <p class="bio-more"><a href="/about">More about Ben &rarr;</a></p>
+    </div>
   </section>
 
   <section class="bento" aria-label="Explore the site">
@@ -44,7 +82,7 @@ const { videos, shorts } = await fetchChannelVideos();
       <p class="tile-body">Build AI-powered search systems with JavaScript. Published by The Pragmatic Bookshelf.</p>
     </a>
 
-    <div class="tile tile-plain t-writing">
+    <div class="tile t-writing">
       <span class="tile-eyebrow">Latest writing</span>
       <ul class="tile-list">
         {latestPosts.map((post) => (
@@ -57,20 +95,20 @@ const { videos, shorts } = await fetchChannelVideos();
       <a class="tile-cta" href="/blog">All posts</a>
     </div>
 
-    <a class="tile tile-plain t-talks" href="/talks">
+    <a class="tile t-talks" href="/talks">
       <span class="tile-eyebrow">On stage</span>
       <h2 class="tile-title">Conference talks</h2>
       <p class="tile-body">Talks from ETHDenver to PyCon Kenya, recorded and ready to watch.</p>
     </a>
 
-    <a class="tile tile-plain t-workshops" href="/projects">
+    <a class="tile t-workshops" href="/projects">
       <span class="tile-eyebrow">Hands-on</span>
       <h2 class="tile-title">Workshops</h2>
       <p class="tile-body">Build-along sessions on search engines, AI agents, and payment rails. Bring a laptop.</p>
     </a>
 
     <a class="tile t-about" href="/about">
-      <div class="tile-photo"><img src="/static/images/new_home_picture.png" alt="Ben Greenberg mentoring developers at an event" loading="lazy" /></div>
+      <div class="tile-photo"><img src="/static/images/with_group.jpeg" alt="Ben Greenberg with a developer community group" loading="lazy" /></div>
       <span class="tile-eyebrow">About</span>
       <h2 class="tile-title">Meet Ben</h2>
     </a>
@@ -82,6 +120,33 @@ const { videos, shorts } = await fetchChannelVideos();
       </div>
       <p class="tile-body">Photos, bios, and speaking details for events.</p>
     </a>
+  </section>
+
+  <section class="cc" aria-label="Code and Conduct newsletter">
+    <div class="cc-head">
+      <div>
+        <p class="page-eyebrow">The newsletter</p>
+        <h2 class="cc-title">Code and Conduct</h2>
+        <p class="cc-lede">Essays on technology, ethics, and the people caught between them. New writing lands on Substack first.</p>
+      </div>
+      <a class="cta cta-primary" href={NEWSLETTER.subscribeUrl} target="_blank" rel="noopener noreferrer">Subscribe free</a>
+    </div>
+
+    {essays.length > 0 && (
+      <div class="cc-posts">
+        {essays.map((post, i) => (
+          <a class="cc-card" href={post.url} target="_blank" rel="noopener noreferrer">
+            {post.cover && <span class="cc-cover"><img src={post.cover} alt="" loading="lazy" /></span>}
+            <span class="cc-card-body">
+              {i === 0 && <span class="cc-kicker">Latest essay</span>}
+              <span class="cc-card-title">{post.title}</span>
+              {post.subtitle && <span class="cc-card-sub">{post.subtitle}</span>}
+              <span class="cc-card-date"><FormattedDate date={new Date(post.published)} /></span>
+            </span>
+          </a>
+        ))}
+      </div>
+    )}
   </section>
 
   <section class="yt" aria-label="Learn with Ben on YouTube">
@@ -124,4 +189,3 @@ const { videos, shorts } = await fetchChannelVideos();
   <ChatWidget />
 
 </RootLayout>
-
