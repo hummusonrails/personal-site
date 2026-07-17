@@ -16,7 +16,6 @@ authors:
   - default
 ---
   
-  ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--wyk6-g8d--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://newrelic.com/sites/default/files/styles/16x9_600w/public/2021-07/photo-1564865878688-9a244444042a.jpeg)
 
 Since the Elixir language was introduced in 2011, it has exploded in growth and popularity. Elixir has [been ranked as one of the most loved languages by developers](https://insights.stackoverflow.com/survey/2019#most-loved-dreaded-and-wanted), and many popular applications and sites are built with Elixir’s Phoenix web framework, including Discord, the Financial Times, and others.
 

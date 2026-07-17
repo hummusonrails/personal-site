@@ -13,7 +13,6 @@ authors:
   - default
 ---
   
-  ![header image](https://res.cloudinary.com/practicaldev/image/fetch/s--uQPm8vCF--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/aguuykcq634wqlhvmr6i.png)
 
 At the last RubyConf in Denver [I delivered a talk on supporting older career changers into software](https://www.youtube.com/watch?v=_YhBMu43Lm4). It's a topic that I have invested a lot of time and thought into as someone who made the transition into tech myself as a second career.
 

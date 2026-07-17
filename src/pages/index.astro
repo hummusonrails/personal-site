@@ -14,22 +14,16 @@ const posts = (await getCollection('blog'))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const latestPosts = posts.slice(0, 3);
 
-const talks = (await getCollection('talks'))
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const regions = [...new Set(talks.map((t) => t.data.region).filter(Boolean))];
-
 const { videos, shorts } = await fetchChannelVideos();
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
   <section class="hero">
     <div>
-      <p class="hero-eyebrow">Ben Greenberg · Developer Relations · Author · Teacher</p>
-      <h1 class="hero-title">Builds developer <em>communities</em> on four continents.</h1>
+      <h1 class="hero-title">I build developer <em>communities</em> on four continents.</h1>
       <p class="hero-sub">
         I lead developer relations, wrote <a href="/book" class="modern-link">Vector Search with JavaScript</a> for
-        The Pragmatic Bookshelf, and teach workshops that turn curious developers into shipping ones.
-        Based between Tel Aviv and Miami, usually somewhere in between.
+        The Pragmatic Bookshelf, and teach hands-on workshops. Based between Tel Aviv and Miami.
       </p>
       <div class="hero-ctas">
         <a class="cta cta-primary" href="/blog">Read the blog</a>
@@ -47,11 +41,10 @@ const { videos, shorts } = await fetchChannelVideos();
       <span class="tile-eyebrow">The book</span>
       <div class="tile-cover"><img src="/static/images/book_cover.png" alt="Vector Search with JavaScript book cover" loading="lazy" /></div>
       <h2 class="tile-title">Vector Search with JavaScript</h2>
-      <p class="tile-body">Build AI-powered search that actually finds things. Published by The Pragmatic Bookshelf.</p>
-      <span class="tile-cta">About the book →</span>
+      <p class="tile-body">Build AI-powered search systems with JavaScript. Published by The Pragmatic Bookshelf.</p>
     </a>
 
-    <div class="tile t-writing">
+    <div class="tile tile-plain t-writing">
       <span class="tile-eyebrow">Latest writing</span>
       <ul class="tile-list">
         {latestPosts.map((post) => (
@@ -61,54 +54,34 @@ const { videos, shorts } = await fetchChannelVideos();
           </li>
         ))}
       </ul>
-      <a class="tile-cta" href="/blog">All posts →</a>
+      <a class="tile-cta" href="/blog">All posts</a>
     </div>
 
-    <a class="tile t-talks" href="/talks">
+    <a class="tile tile-plain t-talks" href="/talks">
       <span class="tile-eyebrow">On stage</span>
       <h2 class="tile-title">Conference talks</h2>
-      <p class="tile-body">{talks.length} talks across {regions.length} regions, from vector search deep dives to community keynotes. Watch them on the big screen.</p>
-      <span class="tile-cta">Take a seat →</span>
+      <p class="tile-body">Talks from ETHDenver to PyCon Kenya, recorded and ready to watch.</p>
     </a>
 
-    <a class="tile t-workshops" href="/projects">
+    <a class="tile tile-plain t-workshops" href="/projects">
       <span class="tile-eyebrow">Hands-on</span>
       <h2 class="tile-title">Workshops</h2>
-      <p class="tile-body">{WORKSHOPS.length} build-along workshops: search engines, AI agents, payment rails, and more. Bring a laptop.</p>
-      <span class="tile-cta">Start building →</span>
+      <p class="tile-body">Build-along sessions on search engines, AI agents, and payment rails. Bring a laptop.</p>
     </a>
 
     <a class="tile t-about" href="/about">
       <div class="tile-photo"><img src="/static/images/new_home_picture.png" alt="Ben Greenberg mentoring developers at an event" loading="lazy" /></div>
-      <span class="tile-eyebrow">The human</span>
-      <h2 class="tile-title">About Ben</h2>
-      <span class="tile-cta">Say hi →</span>
+      <span class="tile-eyebrow">About</span>
+      <h2 class="tile-title">Meet Ben</h2>
     </a>
 
     <a class="tile t-media" href="/media">
-      <span class="tile-eyebrow">Press &amp; organizers</span>
-      <h2 class="tile-title">Media kit</h2>
-      <p class="tile-body">Photos, three bio lengths, and everything an event organizer needs. Ready to copy.</p>
-      <span class="tile-cta">Grab the assets →</span>
+      <div>
+        <span class="tile-eyebrow">Press and organizers</span>
+        <h2 class="tile-title">Media kit</h2>
+      </div>
+      <p class="tile-body">Photos, bios, and speaking details for events.</p>
     </a>
-
-    <div class="tile t-ask">
-      <span class="tile-eyebrow">Curated answers</span>
-      <h2 class="tile-title">Ask me anything</h2>
-      <p class="tile-body">A little assistant that knows this site inside out. No rate limits, no hallucinated hummus recipes.</p>
-      <button class="tile-cta tile-ask-open" type="button" data-open-chat>Open the chat →</button>
-    </div>
-
-    <div class="tile t-social">
-      <span class="tile-eyebrow">Elsewhere</span>
-      <ul class="tile-list">
-        <li><a href={CHANNEL.url} target="_blank" rel="noopener noreferrer">YouTube</a></li>
-        <li><a href={SITE_METADATA.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>
-        <li><a href={SITE_METADATA.twitter} target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
-        <li><a href={SITE_METADATA.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-        <li><a href="https://dev.to/bengreenberg" target="_blank" rel="noopener noreferrer">dev.to</a></li>
-      </ul>
-    </div>
   </section>
 
   <section class="yt" aria-label="Learn with Ben on YouTube">
@@ -150,31 +123,5 @@ const { videos, shorts } = await fetchChannelVideos();
 
   <ChatWidget />
 
-  <script is:inline>
-    (() => {
-      const setup = () => {
-        document.querySelectorAll('[data-open-chat]').forEach((btn) => {
-          if (btn.dataset.bound === 'true') return;
-          btn.dataset.bound = 'true';
-          btn.addEventListener('click', () => {
-            const toggle = document.getElementById('chat-widget-toggle');
-            const root = document.getElementById('chat-widget');
-            if (root && root.dataset.open !== 'true' && toggle) toggle.click();
-          });
-        });
-      };
-      window.addEventListener('DOMContentLoaded', setup);
-      document.addEventListener('astro:page-load', setup);
-    })();
-  </script>
 </RootLayout>
 
-<style>
-  .tile-ask-open {
-    background: none;
-    border: none;
-    padding: 0;
-    text-align: left;
-    cursor: pointer;
-  }
-</style>

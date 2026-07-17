@@ -18,17 +18,17 @@ const bios = [
   {
     label: 'Long',
     hint: 'Event sites and speaker pages',
-    text: "Ben Greenberg is a developer relations lead, author, and teacher who builds developer communities on four continents. He currently leads developer relations at Arbitrum and wrote Vector Search with JavaScript, published by The Pragmatic Bookshelf. Over the past decade Ben has helped developers ship real things through conference talks, hands-on workshops, open source contributions, and a steady stream of writing on AI, developer experience, and community building. He is a Docker Captain, an Agentic AI Foundation Ambassador, and a former Ruby Central board member. A second-career developer, he brings a people-first perspective to developer tooling. He splits his time between Tel Aviv and Miami, and is usually somewhere in between.",
+    text: "Ben Greenberg is a developer relations lead, author, and teacher who builds developer communities on four continents. He currently leads developer relations at Arbitrum and wrote Vector Search with JavaScript, published by The Pragmatic Bookshelf. Over the past decade Ben has helped developers ship real things through conference talks, hands-on workshops, open source contributions, and a steady stream of writing on AI, developer experience, and community building. He is a Docker Captain, an Agentic AI Foundation Ambassador, and a former Ruby Central board member. A second-career developer, he brings a people-first perspective to developer tooling. He splits his time between Tel Aviv and Miami.",
   },
 ];
 
 const photos = [
-  { src: '/static/images/headshot_studio.jpeg', alt: 'Ben Greenberg studio headshot', caption: 'Headshot · studio · portrait' },
-  { src: '/static/images/headshot_outdoor.jpeg', alt: 'Ben Greenberg outdoor headshot', caption: 'Headshot · outdoor · square' },
-  { src: '/static/images/ben.jpeg', alt: 'Ben Greenberg speaking on a keynote stage', caption: 'On stage · landscape' },
-  { src: '/static/images/new_home_picture.png', alt: 'Ben Greenberg mentoring developers at an event', caption: 'Mentoring · square' },
-  { src: '/static/images/with_group.jpeg', alt: 'Ben Greenberg talking with developers at a community event', caption: 'Community · landscape' },
-  { src: '/static/images/ben_and_matz.jpeg', alt: 'Ben Greenberg with Yukihiro Matsumoto', caption: 'With Matz · candid' },
+  { src: '/static/images/headshot_studio.jpeg', alt: 'Ben Greenberg studio headshot', caption: 'Studio headshot, portrait' },
+  { src: '/static/images/headshot_outdoor.jpeg', alt: 'Ben Greenberg outdoor headshot', caption: 'Outdoor headshot, square' },
+  { src: '/static/images/ben.jpeg', alt: 'Ben Greenberg speaking on a keynote stage', caption: 'Speaking on stage, landscape' },
+  { src: '/static/images/new_home_picture.png', alt: 'Ben Greenberg mentoring developers at an event', caption: 'Mentoring at an event, square' },
+  { src: '/static/images/with_group.jpeg', alt: 'Ben Greenberg talking with developers at a community event', caption: 'With the community, landscape' },
+  { src: '/static/images/ben_and_matz.jpeg', alt: 'Ben Greenberg with Yukihiro Matsumoto', caption: 'With Matz, candid' },
   { src: '/static/images/about_image.png', alt: 'Ben Greenberg portrait', caption: 'Portrait' },
 ];
 ---
@@ -38,9 +38,9 @@ const photos = [
     <p class="page-eyebrow">Press &amp; organizers</p>
     <h1 class="page-title-display">Media kit</h1>
     <p class="page-lede">
-      Everything you need to put Ben on a stage, a program, or a podcast.
-      Photos may be used for event promotion with credit where noted.
-      Need something specific? <a class="modern-link" href={`mailto:${SITE_METADATA.email}?subject=Media%20request`}>Just ask</a>.
+      Bios and photos for event organizers and press. Photos may be used for
+      event promotion with credit where noted. For anything else,
+      <a class="modern-link" href={`mailto:${SITE_METADATA.email}?subject=Media%20request`}>email Ben</a>.
     </p>
 
     <section class="mk-section" aria-labelledby="mk-bios">
@@ -65,19 +65,19 @@ const photos = [
         {photos.map((photo) => (
           <a class="mk-photo" href={photo.src} download>
             <img src={photo.src} alt={photo.alt} loading="lazy" />
-            <span class="mk-photo-caption">{photo.caption} · Download ↓</span>
+            <span class="mk-photo-caption">{photo.caption}. Download</span>
           </a>
         ))}
       </div>
     </section>
 
     <section class="mk-section" aria-labelledby="mk-facts">
-      <h2 id="mk-facts" class="mk-heading">Fast facts</h2>
+      <h2 id="mk-facts" class="mk-heading">Details</h2>
       <ul class="mk-facts">
         <li><b>Name</b> Ben Greenberg, @hummusonrails almost everywhere</li>
         <li><b>Talks</b> Vector search, AI-assisted development, developer experience, community building</li>
         <li><b>Formats</b> Keynotes, technical deep dives, hands-on workshops, panels</li>
-        <li><b>Book</b> Vector Search with JavaScript · The Pragmatic Bookshelf</li>
+        <li><b>Book</b> Vector Search with JavaScript, The Pragmatic Bookshelf</li>
         <li><b>Base</b> Tel Aviv &amp; Miami, travels from either</li>
         <li><b>Contact</b> <a class="modern-link" href={`mailto:${SITE_METADATA.email}`}>{SITE_METADATA.email}</a></li>
       </ul>
@@ -128,17 +128,17 @@ const photos = [
     color: var(--accent-text);
     background: none;
     border: 1px solid var(--dark-border);
-    border-radius: 999px;
+    border-radius: 0.4rem;
     padding: 0.3rem 0.75rem;
     cursor: pointer;
   }
   .mk-copy:hover { border-color: var(--accent); }
-  .mk-hint { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--text-muted); text-transform: uppercase; margin: 0; }
+  .mk-hint { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
   .mk-photos { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
   .mk-photo { display: block; border: 1px solid var(--dark-border); border-radius: 0.8rem; overflow: hidden; text-decoration: none; }
   .mk-photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
   .mk-photo:hover { border-color: var(--accent); }
-  .mk-photo-caption { display: block; padding: 0.6rem 0.8rem; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); }
+  .mk-photo-caption { display: block; padding: 0.6rem 0.8rem; font-size: 0.82rem; color: var(--text-secondary); }
   .mk-facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.7rem; max-width: 44rem; }
   .mk-facts li { color: var(--text-secondary); line-height: 1.5; }
   .mk-facts b { color: var(--text-primary); font-weight: 600; display: inline-block; min-width: 6.5rem; }
