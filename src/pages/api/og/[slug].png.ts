@@ -73,7 +73,7 @@ export const GET: APIRoute = async ({ props }) => {
         },
         children: [
           // === GRADIENT MESH BACKGROUND ===
-          // Large indigo/purple blob — top right
+          // Large indigo/purple blob, top right
           {
             type: 'div',
             props: {
@@ -88,7 +88,7 @@ export const GET: APIRoute = async ({ props }) => {
               },
             },
           },
-          // Teal/cyan blob — bottom left
+          // Teal/cyan blob, bottom left
           {
             type: 'div',
             props: {
@@ -103,7 +103,7 @@ export const GET: APIRoute = async ({ props }) => {
               },
             },
           },
-          // Rose/pink blob — center right
+          // Rose/pink blob, center right
           {
             type: 'div',
             props: {
@@ -118,7 +118,7 @@ export const GET: APIRoute = async ({ props }) => {
               },
             },
           },
-          // Warm amber glow — top left
+          // Warm amber glow, top left
           {
             type: 'div',
             props: {
@@ -134,7 +134,7 @@ export const GET: APIRoute = async ({ props }) => {
             },
           },
           // === GEOMETRIC ACCENTS ===
-          // Thin ring — top right
+          // Thin ring, top right
           {
             type: 'div',
             props: {
@@ -164,7 +164,7 @@ export const GET: APIRoute = async ({ props }) => {
               },
             },
           },
-          // Ring — bottom right
+          // Ring, bottom right
           {
             type: 'div',
             props: {
