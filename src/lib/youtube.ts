@@ -32,6 +32,25 @@ interface ChannelVideos {
 
 const FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL.id}`;
 
+// The feed can briefly keep listing deleted or privated videos; oEmbed
+// answers 200 only for videos that are still publicly watchable.
+// Fail open: only definitive "gone" statuses drop a video, so transient
+// rate limits or outages never wipe live videos from the section.
+const GONE_STATUSES = new Set([400, 401, 403, 404]);
+
+async function isAvailable(id: string): Promise<boolean> {
+  try {
+    const watchUrl = encodeURIComponent(`https://www.youtube.com/watch?v=${id}`);
+    const res = await fetch(
+      `https://www.youtube.com/oembed?url=${watchUrl}&format=json`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    return res.ok || !GONE_STATUSES.has(res.status);
+  } catch {
+    return true;
+  }
+}
+
 async function isShort(id: string): Promise<boolean> {
   try {
     const res = await fetch(`https://www.youtube.com/shorts/${id}`, {
@@ -66,9 +85,12 @@ export async function fetchChannelVideos(): Promise<ChannelVideos> {
       }];
     });
 
-    const flags = await Promise.all(all.map((v) => isShort(v.id)));
-    const videos = all.filter((_, i) => !flags[i]).slice(0, 3);
-    const shorts = all
+    const availability = await Promise.all(all.map((v) => isAvailable(v.id)));
+    const live = all.filter((_, i) => availability[i]);
+
+    const flags = await Promise.all(live.map((v) => isShort(v.id)));
+    const videos = live.filter((_, i) => !flags[i]).slice(0, 3);
+    const shorts = live
       .filter((_, i) => flags[i])
       .slice(0, 6)
       .map((v) => ({ ...v, url: `https://www.youtube.com/shorts/${v.id}` }));
