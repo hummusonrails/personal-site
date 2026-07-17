@@ -15,7 +15,7 @@ export async function GET(context) {
     items: filteredPosts.map(post => ({
       title: post.title,
       categories: (post.tags ?? []).map(tag =>
-        typeof tag === 'string' ? tag : tag?.slug
+        typeof tag === 'string' ? tag : tag?.slug ?? tag?.id
       ).filter(Boolean),
       pubDate: new Date(post.date),
       description: post.summary || undefined,

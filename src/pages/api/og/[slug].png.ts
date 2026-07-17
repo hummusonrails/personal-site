@@ -39,7 +39,7 @@ export const GET: APIRoute = async ({ props }) => {
   const { title, date, tags } = props as {
     title: string;
     date: Date | string;
-    tags?: Array<{ slug: string } | string>;
+    tags?: Array<{ slug?: string; id?: string } | string>;
   };
 
   const fontRegular = loadFont('SpaceGrotesk-Regular.ttf');

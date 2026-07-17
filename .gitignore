@@ -22,3 +22,6 @@ pnpm-debug.log*
 .idea
 .vercel
 .env*.local
+
+# local agent tool state
+.superpowers/
