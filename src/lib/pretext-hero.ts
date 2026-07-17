@@ -1,5 +1,5 @@
 /**
- * Editorial Engine Hero — Pretext-powered canvas layout
+ * Editorial Engine Hero, Pretext-powered canvas layout
  *
  * Renders a magazine-style editorial layout with:
  * - Large serif headline (the randomized greeting)
@@ -486,7 +486,7 @@ function renderColumn(
     const line = layoutNextLine(state.preparedBody!, cursor, lineWidth);
     if (!line) {
       if (!inSecondColumn) {
-        // Text exhausted before second column — done
+        // Text exhausted before second column, done
         break;
       }
       break;
