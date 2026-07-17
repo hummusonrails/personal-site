@@ -32,6 +32,20 @@ interface ChannelVideos {
 
 const FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL.id}`;
 
+// The feed can briefly keep listing deleted or privated videos; oEmbed
+// answers 200 only for videos that are still publicly watchable.
+async function isAvailable(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function isShort(id: string): Promise<boolean> {
   try {
     const res = await fetch(`https://www.youtube.com/shorts/${id}`, {
@@ -66,9 +80,12 @@ export async function fetchChannelVideos(): Promise<ChannelVideos> {
       }];
     });
 
-    const flags = await Promise.all(all.map((v) => isShort(v.id)));
-    const videos = all.filter((_, i) => !flags[i]).slice(0, 3);
-    const shorts = all
+    const availability = await Promise.all(all.map((v) => isAvailable(v.id)));
+    const live = all.filter((_, i) => availability[i]);
+
+    const flags = await Promise.all(live.map((v) => isShort(v.id)));
+    const videos = live.filter((_, i) => !flags[i]).slice(0, 3);
+    const shorts = live
       .filter((_, i) => flags[i])
       .slice(0, 6)
       .map((v) => ({ ...v, url: `https://www.youtube.com/shorts/${v.id}` }));
