@@ -8,22 +8,15 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "build:functions": "webpack --config webpack.config.cjs",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug",
-    "test:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
-    "test:report": "playwright show-report"
+    "build:functions": "webpack --config webpack.config.cjs"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.13",
-    "@astrojs/react": "^4.4.2",
-    "@astrojs/rss": "^4.0.15",
-    "@astrojs/sitemap": "^3.7.0",
-    "@astrojs/tailwind": "^6.0.2",
-    "@astrojs/vercel": "^9.0.4",
-    "@chenglou/pretext": "^0.0.3",
+    "@astrojs/mdx": "^7.0.3",
+    "@astrojs/react": "^6.0.1",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/vercel": "^11.0.3",
+    "@chenglou/pretext": "^0.0.8",
     "@mozilla/readability": "^0.6.0",
     "@tiptap/core": "^3.20.0",
     "@tiptap/extension-image": "^3.20.0",
@@ -34,7 +27,7 @@
     "@tiptap/pm": "^3.20.0",
     "@tiptap/react": "^3.20.0",
     "@tiptap/starter-kit": "^3.20.0",
-    "astro": "^5.17.3",
+    "astro": "^7.1.0",
     "dotenv": "^16.4.5",
     "fs-extra": "^11.3.0",
     "gray-matter": "^4.0.3",
@@ -55,15 +48,18 @@
     "path-to-regexp": "6.3.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
     "@tailwindcss/forms": "^0.5.6",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^22.9.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/turndown": "^5.0.6",
+    "autoprefixer": "^10.5.4",
     "typescript": "^5.6.3",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

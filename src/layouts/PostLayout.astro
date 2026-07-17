@@ -93,7 +93,7 @@ export const prerender = true;
               <h2 class="text-sm font-medium text-dark-text-muted mb-2">Tags</h2>
               <div class="flex flex-wrap gap-1.5">
                 {tags.map((tag) => (
-                  <Tag slug={tag.slug} />
+                  <Tag slug={tag.slug ?? tag.id} />
                 ))}
               </div>
             </div>

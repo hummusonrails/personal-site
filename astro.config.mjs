@@ -4,15 +4,14 @@ import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 
-import tailwind from "@astrojs/tailwind";
-
 import {SITE_METADATA} from "./src/consts.js";
 
 // https://astro.build/config
 export default defineConfig({
     site: SITE_METADATA.siteUrl,
-    integrations: [mdx(), sitemap(), tailwind(), react()],
+    integrations: [mdx(), sitemap(), react()],
     output: 'server',
+    compressHTML: true,
     adapter: vercel({
         maxDuration: 60,
       })
