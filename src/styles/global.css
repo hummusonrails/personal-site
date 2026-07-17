@@ -89,6 +89,27 @@ html[data-theme="light"] .border-dark-border {
   border-color: var(--chat-border);
 }
 
+/* Tailwind Typography: PostLayout uses `prose prose-invert` (dark palette).
+   Remap the prose palette to the site vars when the light theme is active,
+   otherwise headings/bold/code render white-on-white. Code blocks keep a
+   dark background in both themes. */
+html[data-theme="light"] .prose-invert {
+  --tw-prose-body: var(--text-primary);
+  --tw-prose-headings: var(--text-primary);
+  --tw-prose-lead: var(--text-secondary);
+  --tw-prose-links: var(--text-primary);
+  --tw-prose-bold: var(--text-primary);
+  --tw-prose-counters: var(--text-muted);
+  --tw-prose-bullets: var(--text-muted);
+  --tw-prose-hr: var(--chat-border);
+  --tw-prose-quotes: var(--text-primary);
+  --tw-prose-quote-borders: var(--chat-border);
+  --tw-prose-captions: var(--text-muted);
+  --tw-prose-code: var(--text-primary);
+  --tw-prose-th-borders: var(--chat-border);
+  --tw-prose-td-borders: var(--chat-border);
+}
+
 body {
   background-color: var(--dark-bg);
   color: var(--text-primary);
