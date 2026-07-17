@@ -1,6 +1,7 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import ChatSidebar from '../components/ChatSidebar.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 
 import {SITE_METADATA} from "../consts";
 
@@ -15,33 +16,14 @@ const {title, description, canonicalUrl, image} = Astro.props;
 ---
 
 <html lang={SITE_METADATA.language} class="scroll-smooth">
-    <BaseHead title={title} description='Actualizing Developer Happiness' canonicalUrl={canonicalUrl} image={image} />
-    <body class="chat-body">
-        <div class="chat-shell">
-            <input id="chat-sidebar-toggle" class="chat-sidebar-toggle" type="checkbox" aria-label="Toggle sidebar" />
-            <ChatSidebar />
-            <label class="chat-sidebar-overlay" for="chat-sidebar-toggle" aria-hidden="true"></label>
-            <div class="chat-main">
-                <div class="chat-mobile-bar">
-                    <label class="chat-menu-button" for="chat-sidebar-toggle" aria-label="Open menu">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </label>
-                    <a class="chat-mobile-title" href="/">{SITE_METADATA.headerTitle}</a>
-                </div>
-                <div class="chat-topbar">
-                    <div class="chat-topbar-right">
-                        <button id="theme-toggle" class="chat-theme-toggle" type="button" aria-label="Toggle light and dark mode">
-                            <span class="chat-theme-icon chat-theme-sun">GM</span>
-                            <span class="chat-theme-icon chat-theme-moon">GN</span>
-                        </button>
-                    </div>
-                </div>
-                <main class="chat-main-slot">
-                    <slot/>
-                </main>
-            </div>
+    <BaseHead title={title} description={description ?? SITE_METADATA.description} canonicalUrl={canonicalUrl} image={image} />
+    <body>
+        <div class="site-shell">
+            <SiteNav />
+            <main class="site-main">
+                <slot/>
+            </main>
+            <SiteFooter />
         </div>
         <script is:inline>
             const setupThemeToggle = () => {

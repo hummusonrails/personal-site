@@ -1,0 +1,143 @@
+---
+import RootLayout from "@/layouts/RootLayout.astro";
+import { SITE_METADATA } from '@/consts';
+
+export const prerender = true;
+
+const bios = [
+  {
+    label: 'Short',
+    hint: 'Session listings and social cards',
+    text: 'Ben Greenberg builds developer communities on four continents. He leads developer relations, wrote Vector Search with JavaScript (The Pragmatic Bookshelf), and teaches hands-on workshops.',
+  },
+  {
+    label: 'Medium',
+    hint: 'Conference programs and podcast intros',
+    text: 'Ben Greenberg is a developer relations lead, author, and teacher who builds developer communities on four continents. He wrote Vector Search with JavaScript for The Pragmatic Bookshelf and has delivered talks and workshops across North America, Europe, Africa, and Asia — from vector search deep dives to community keynotes. He is a Docker Captain, an Agentic AI Foundation Ambassador, and a former Ruby Central board member, based between Tel Aviv and Miami.',
+  },
+  {
+    label: 'Long',
+    hint: 'Event sites and speaker pages',
+    text: "Ben Greenberg is a developer relations lead, author, and teacher who builds developer communities on four continents. He currently leads developer relations at Arbitrum and wrote Vector Search with JavaScript, published by The Pragmatic Bookshelf. Over the past decade Ben has helped developers ship real things through conference talks, hands-on workshops, open source contributions, and a steady stream of writing on AI, developer experience, and community building. He is a Docker Captain, an Agentic AI Foundation Ambassador, and a former Ruby Central board member. A second-career developer, he brings a people-first perspective to developer tooling. He splits his time between Tel Aviv and Miami — and is usually somewhere in between.",
+  },
+];
+
+const photos = [
+  { src: '/static/images/ben.jpeg', alt: 'Ben Greenberg speaking on a keynote stage', caption: 'On stage · landscape' },
+  { src: '/static/images/new_home_picture.png', alt: 'Ben Greenberg mentoring developers at an event', caption: 'Mentoring · square' },
+  { src: '/static/images/with_group.jpeg', alt: 'Ben Greenberg talking with developers at a community event', caption: 'Community · landscape' },
+  { src: '/static/images/ben_and_matz.jpeg', alt: 'Ben Greenberg with Yukihiro Matsumoto', caption: 'With Matz · candid' },
+  { src: '/static/images/about_image.png', alt: 'Ben Greenberg portrait', caption: 'Portrait' },
+];
+---
+
+<RootLayout title="Media Kit | Ben Greenberg" description="Photos, bios, and speaking assets for event organizers and press.">
+  <div class="page-frame">
+    <p class="page-eyebrow">Press &amp; organizers</p>
+    <h1 class="page-title-display">Media kit</h1>
+    <p class="page-lede">
+      Everything you need to put Ben on a stage, a program, or a podcast.
+      Photos may be used for event promotion with credit where noted.
+      Need something specific? <a class="modern-link" href={`mailto:${SITE_METADATA.email}?subject=Media%20request`}>Just ask</a>.
+    </p>
+
+    <section class="mk-section" aria-labelledby="mk-bios">
+      <h2 id="mk-bios" class="mk-heading">Bios</h2>
+      <div class="mk-bios">
+        {bios.map((bio) => (
+          <article class="mk-bio tile">
+            <div class="mk-bio-head">
+              <span class="tile-eyebrow">{bio.label}</span>
+              <button class="mk-copy" type="button" data-copy={bio.text}>Copy</button>
+            </div>
+            <p class="tile-body">{bio.text}</p>
+            <p class="mk-hint">{bio.hint}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mk-section" aria-labelledby="mk-photos">
+      <h2 id="mk-photos" class="mk-heading">Photos</h2>
+      <div class="mk-photos">
+        {photos.map((photo) => (
+          <a class="mk-photo" href={photo.src} download>
+            <img src={photo.src} alt={photo.alt} loading="lazy" />
+            <span class="mk-photo-caption">{photo.caption} · Download ↓</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mk-section" aria-labelledby="mk-facts">
+      <h2 id="mk-facts" class="mk-heading">Fast facts</h2>
+      <ul class="mk-facts">
+        <li><b>Name</b> Ben Greenberg — @hummusonrails almost everywhere</li>
+        <li><b>Talks</b> Vector search, AI-assisted development, developer experience, community building</li>
+        <li><b>Formats</b> Keynotes, technical deep dives, hands-on workshops, panels</li>
+        <li><b>Book</b> Vector Search with JavaScript · The Pragmatic Bookshelf</li>
+        <li><b>Base</b> Tel Aviv &amp; Miami — travels from either</li>
+        <li><b>Contact</b> <a class="modern-link" href={`mailto:${SITE_METADATA.email}`}>{SITE_METADATA.email}</a></li>
+      </ul>
+    </section>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const setup = () => {
+        document.querySelectorAll('.mk-copy').forEach((btn) => {
+          if (btn.dataset.bound === 'true') return;
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(btn.dataset.copy || '');
+              btn.textContent = 'Copied';
+              setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+            } catch {
+              btn.textContent = 'Select & copy';
+            }
+          });
+        });
+      };
+      window.addEventListener('DOMContentLoaded', setup);
+      document.addEventListener('astro:page-load', setup);
+    })();
+  </script>
+</RootLayout>
+
+<style>
+  .mk-section { margin-top: 3rem; }
+  .mk-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    margin-bottom: 1.2rem;
+  }
+  .mk-bios { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .mk-bio-head { display: flex; align-items: center; justify-content: space-between; }
+  .mk-copy {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    background: none;
+    border: 1px solid var(--dark-border);
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    cursor: pointer;
+  }
+  .mk-copy:hover { border-color: var(--accent); }
+  .mk-hint { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--text-muted); text-transform: uppercase; margin: 0; }
+  .mk-photos { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .mk-photo { display: block; border: 1px solid var(--dark-border); border-radius: 0.8rem; overflow: hidden; text-decoration: none; }
+  .mk-photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .mk-photo:hover { border-color: var(--accent); }
+  .mk-photo-caption { display: block; padding: 0.6rem 0.8rem; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); }
+  .mk-facts { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.7rem; max-width: 44rem; }
+  .mk-facts li { color: var(--text-secondary); line-height: 1.5; }
+  .mk-facts b { color: var(--text-primary); font-weight: 600; display: inline-block; min-width: 6.5rem; }
+</style>
