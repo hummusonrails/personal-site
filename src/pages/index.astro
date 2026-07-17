@@ -16,11 +16,6 @@ const latestPosts = posts.slice(0, 3);
 const talks = (await getCollection('talks'))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const regions = [...new Set(talks.map((t) => t.data.region).filter(Boolean))];
-const stops = talks.map((t) => ({
-  conference: t.data.conference,
-  region: t.data.region,
-  year: new Date(t.data.date).getFullYear(),
-}));
 ---
 
 <RootLayout title={SITE_METADATA.title} description={SITE_METADATA.description}>
@@ -43,14 +38,6 @@ const stops = talks.map((t) => ({
       <figcaption>Live from the keynote stage</figcaption>
     </figure>
   </section>
-
-  <div class="departures" aria-label="Conferences Ben has spoken at">
-    <div class="departures-track">
-      {[...stops, ...stops].map((stop) => (
-        <span class="departures-stop"><b>{stop.conference}</b> · {stop.region} · {stop.year}</span>
-      ))}
-    </div>
-  </div>
 
   <section class="bento" aria-label="Explore the site">
     <a class="tile t-book" href="/book">

@@ -1136,37 +1136,6 @@ html[data-theme="light"] .chat-avatar-user {
   border-radius: 0.4rem;
 }
 
-/* --- Departures board --- */
-.departures {
-  border-top: 1px solid var(--dark-border);
-  border-bottom: 1px solid var(--dark-border);
-  background: var(--dark-surface);
-  overflow: hidden;
-  padding: 0.7rem 0;
-}
-.departures-track {
-  display: flex;
-  gap: 2.75rem;
-  width: max-content;
-  animation: departures-scroll 55s linear infinite;
-}
-.departures-stop {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-.departures-stop b { color: var(--accent-text); font-weight: 400; }
-@keyframes departures-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .departures-track { animation: none; flex-wrap: wrap; width: auto; padding: 0 1rem; }
-}
-
 /* --- Bento --- */
 .bento {
   display: grid;
