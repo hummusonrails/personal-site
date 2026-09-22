@@ -8,8 +8,8 @@ tags:
     collection: tags
 authors:
   - default
-canonicalUrl: 'https://dev.to/bengreenberg/jev-vs-claude-who-wins-4mln'
-images: 'https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Fks97t21dtlzy5offfyaw.png'
+canonicalUrl: 'https://x.com/hummusonrails/article/2100917283350868230'
+images: 'https://pbs.twimg.com/media/HSf1HL4aEAA5wmO.jpg'
 ---
 
 I did not need Jev to beat Claude or Kimi on a benchmark. I needed to know whether I could trust it with a decision I actually make regularly, where a false pass matters and uncertainty cannot just be hidden behind confident prose.
@@ -50,7 +50,8 @@ Each system received the same JSON evidence packet and the same four-step writte
 
 There was no Jev specific simplification of the policy and no additional context given to Sonnet. Both systems had to answer the same question from the same evidence.
 
-![A controlled decision test](https://raw.githubusercontent.com/hummusonrails/devto-blog-assets/main/d8885df0478c4d2f9afebd1ba34e6ed0-diagram-1.png)
+![](https://pbs.twimg.com/media/HSf1HXCaQAAtKbY.jpg)
+*A flowchart illustrating the decision process for evaluating different systems.*
 
 **The narrowness of the test is important here because it relates exactly to what TypeSafe claims Jev is all about.**
 
@@ -76,7 +77,7 @@ On the headline metric, that is effectively the same accuracy band: 100.0% versu
 
 **Then the economics diverge sharply.**
 
-![Same accuracy band, different operating model](https://raw.githubusercontent.com/hummusonrails/devto-blog-assets/main/d8885df0478c4d2f9afebd1ba34e6ed0-diagram-2.png)
+![](https://pbs.twimg.com/media/HSf1HhIbYAAaRx6.jpg)
 
 Jev's median latency was 378 milliseconds.
 
@@ -88,7 +89,8 @@ At the measured usage and pricing, 10,000 evaluations would cost approximately $
 
 That is roughly a 57x difference.
 
-![Jev vs Sonnet high](https://raw.githubusercontent.com/hummusonrails/devto-blog-assets/main/d8885df0478c4d2f9afebd1ba34e6ed0-diagram-3.png)
+![](https://pbs.twimg.com/media/HSf1HqwbMAASlGO.png)
+*A graph comparing latency and cost between Jev and Sonnet High.*
 
 This is where the experiment stops being an interesting model comparison and starts becoming a systems-design question.
 
@@ -116,7 +118,8 @@ Jev's Expected Calibration Error was 0.037. Sonnet high's was 0.058.
 
 Those numbers matter, but the workflow implication matters more.
 
-![Confidence changes the workflow](https://raw.githubusercontent.com/hummusonrails/devto-blog-assets/main/d8885df0478c4d2f9afebd1ba34e6ed0-diagram-4.png)
+![](https://pbs.twimg.com/media/HSf1HzPbMAAzZCC.jpg)
+*A workflow diagram outlining confidence thresholds and decision automation.*
 
 At a Jev confidence threshold of 0.5, I could have automated 98% of the decisions in this dataset while retaining 100% accuracy among the automated decisions.
 
@@ -159,7 +162,7 @@ My instinct was to take those four individual judgments and implement the final 
 
 It sounded safer. It was actually significantly worse.
 
-![Whole-policy judgment beats reconstruction](https://raw.githubusercontent.com/hummusonrails/devto-blog-assets/main/d8885df0478c4d2f9afebd1ba34e6ed0-diagram-5.png)
+![](https://pbs.twimg.com/media/HSf1IBVawAAyF24.jpg)
 
 Jev Choice alone reached 99.3%.
 
@@ -167,7 +170,8 @@ Choice plus the four diagnostic Nouls reached 100.0%.
 
 **My hand-coded composite of those same four Nouls fell to 94.1% and produced six false passes.**
 
-![How the evaluation method changed accuracy](https://raw.githubusercontent.com/hummusonrails/devto-blog-assets/main/d8885df0478c4d2f9afebd1ba34e6ed0-diagram-6.png)
+![](https://pbs.twimg.com/media/HSf1IMXbwAAUx8e.png)
+*A graph showing accuracy across different evaluation methods.*
 
 That is beyond a rounding error, it is the worst failure mode for this gate.
 
@@ -185,7 +189,8 @@ It accepts text rather than repositories. Its current context constraints make i
 
 The result is not "Jev replaces Claude." It is that in this very real workflow where there is a consistent bounded decision gate, a general LLM may not be the right tool anymore.
 
-![Different jobs, different models](https://raw.githubusercontent.com/hummusonrails/devto-blog-assets/main/d8885df0478c4d2f9afebd1ba34e6ed0-diagram-7.png)
+![](https://pbs.twimg.com/media/HSf1IUcbwAAMK6J.jpg)
+*A comparison chart of different models used in various jobs.*
 
 Once I separated those two things in what is needed for a generative LLM model and a System One model, the economics changed by roughly 57x, the latency changed by nearly an order of magnitude, and the confidence signal gave me a credible way to automate almost the entire workload while escalating the uncertain edge cases.
 
