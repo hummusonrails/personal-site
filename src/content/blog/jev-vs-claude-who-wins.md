@@ -2,7 +2,7 @@
 title: "Jev vs Claude: Who Wins?"
 date: '2026-09-18'
 summary: >-
-  I did not need Jev to beat Claude or Kimi on a benchmark. I needed to know whether I could trust it with a decision I actually make regularly, where a false pass matters and uncertainty cannot just be
+  I did not need Jev to beat Claude or Kimi on a benchmark. I needed to know whether I could trust it...
 tags:
   - slug: ai
     collection: tags
@@ -159,6 +159,7 @@ My instinct was to take those four individual judgments and implement the final 
 - Get four probabilities.
 - Write the conditionals.
 - Remove as much model judgment from the final step as possible.
+
 It sounded safer. It was actually significantly worse.
 
 ![](https://pbs.twimg.com/media/HSf1IBVawAAyF24.jpg)
