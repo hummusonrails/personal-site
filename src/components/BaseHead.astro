@@ -10,14 +10,16 @@ interface Props {
     description: string;
     image?: string;
     canonicalUrl?: string;
+    noindex?: boolean;
 }
 
-const {title, description, image = '/static/images/twitter-card.png', canonicalUrl} = Astro.props;
+const {title, description, image = '/static/images/twitter-card.png', canonicalUrl, noindex = false} = Astro.props;
 const canonicalURL = canonicalUrl || new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" lang={SITE_METADATA.language}/>
+{noindex && <meta name="robots" content="noindex, nofollow"/>}
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <meta name="generator" content={Astro.generator}/>
