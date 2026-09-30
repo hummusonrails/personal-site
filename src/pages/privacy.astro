@@ -1,0 +1,45 @@
+---
+// Not linked from the nav, the footer or the sitemap, and marked noindex.
+import RootLayout from "@/layouts/RootLayout.astro";
+---
+
+<RootLayout title="Privacy policy: HummusOnRails Channel Tools" description="How HummusOnRails Channel Tools uses YouTube data." noindex>
+    <div class="section-container animate-fade-in">
+        <article class="max-w-3xl mx-auto py-16 space-y-6">
+            <h1 class="text-4xl font-bold">Privacy policy: HummusOnRails Channel Tools</h1>
+            <p class="text-sm text-dark-text-muted">Last updated 30 September 2026</p>
+
+            <p>
+                HummusOnRails Channel Tools is a private tool that Ben Greenberg built and runs for his own YouTube channel,
+                @hummusonrails. It is not offered to anyone else, and only Ben's own Google account signs in to it.
+            </p>
+
+            <h2 class="text-2xl font-bold pt-4">What it accesses</h2>
+            <p>With Ben's permission, through Google's YouTube APIs, the app:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li>reads the channel's videos and their public details (titles, descriptions, view and like counts);</li>
+                <li>reads YouTube Analytics reports for the channel (views, watch time, traffic sources, audience retention, impressions);</li>
+                <li>uploads videos, thumbnails and captions that Ben has approved, and updates their details.</li>
+            </ul>
+
+            <h2 class="text-2xl font-bold pt-4">How the data is used and stored</h2>
+            <p>
+                The data is used only to show Ben how his channel is doing and to publish his own videos. It is
+                stored on Ben's own computer. It is never sold, shared with anyone, used for advertising, or used to
+                train AI models. The app does not access any other Google data.
+            </p>
+
+            <h2 class="text-2xl font-bold pt-4">Removing access</h2>
+            <p>
+                Access can be removed at any time at
+                <a class="modern-link" href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.
+                The app's use of YouTube data follows the
+                <a class="modern-link" href="https://www.youtube.com/t/terms">YouTube Terms of Service</a> and the
+                <a class="modern-link" href="https://policies.google.com/privacy">Google Privacy Policy</a>.
+            </p>
+
+            <h2 class="text-2xl font-bold pt-4">Contact</h2>
+            <p>Questions: <a class="modern-link" href="mailto:ben@yalladevrel.com">ben@yalladevrel.com</a>.</p>
+        </article>
+    </div>
+</RootLayout>

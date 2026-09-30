@@ -9,7 +9,7 @@ import {SITE_METADATA} from "./src/consts.js";
 // https://astro.build/config
 export default defineConfig({
     site: SITE_METADATA.siteUrl,
-    integrations: [mdx(), sitemap(), react()],
+    integrations: [mdx(), sitemap({filter: (page) => !page.includes('/privacy')}), react()],
     output: 'server',
     compressHTML: true,
     adapter: vercel({

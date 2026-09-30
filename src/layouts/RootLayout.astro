@@ -10,13 +10,14 @@ interface Props {
     description?: string;
     canonicalUrl?: string;
     image?: string;
+    noindex?: boolean;
 }
 
-const {title, description, canonicalUrl, image} = Astro.props;
+const {title, description, canonicalUrl, image, noindex} = Astro.props;
 ---
 
 <html lang={SITE_METADATA.language} class="scroll-smooth">
-    <BaseHead title={title} description={description ?? SITE_METADATA.description} canonicalUrl={canonicalUrl} image={image} />
+    <BaseHead title={title} description={description ?? SITE_METADATA.description} canonicalUrl={canonicalUrl} image={image} noindex={noindex} />
     <body>
         <div class="site-shell">
             <SiteNav />
