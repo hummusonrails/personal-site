@@ -1,12 +1,12 @@
 /**
- * Build-time fetch of the latest essays from the Code and Conduct
+ * Request-time (CDN cached) fetch of the latest essays from the Code and Conduct
  * Substack via the public RSS feed (no API key required).
  *
  * The enclosure element usually carries the post cover image, but
  * podcast episodes ship an mp3 enclosure instead, so only image
  * enclosures are kept as covers.
  *
- * Every failure degrades to an empty list so the build never breaks
+ * Every failure degrades to an empty list so the page never breaks
  * on Substack hiccups; the homepage then renders just the subscribe
  * card.
  */

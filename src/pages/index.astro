@@ -7,7 +7,14 @@ import { getCollection } from 'astro:content';
 import { CHANNEL, fetchChannelVideos } from '@/lib/youtube';
 import { NEWSLETTER, fetchLatestPosts } from '@/lib/substack';
 
-export const prerender = true;
+// Rendered on request behind the CDN cache, not at build time: a build-time
+// homepage froze the YouTube and Substack lists at the last deploy, so new
+// uploads never appeared until something else redeployed the site.
+export const prerender = false;
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=0, s-maxage=900, stale-while-revalidate=86400'
+);
 
 const posts = (await getCollection('blog'))
   .filter((post) => !post.data.draft)

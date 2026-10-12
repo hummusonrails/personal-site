@@ -1,12 +1,12 @@
 /**
- * Build-time fetch of the latest uploads from the Learn with Ben
+ * Request-time (CDN cached) fetch of the latest uploads from the Learn with Ben
  * YouTube channel via the public RSS feed (no API key required).
  *
  * Shorts are told apart from regular videos by requesting
  * youtube.com/shorts/{id} without following redirects: shorts answer
  * 200, regular videos redirect (303) to /watch.
  *
- * Every failure degrades to empty lists so the build never breaks on
+ * Every failure degrades to empty lists so the page never breaks on
  * YouTube hiccups; the homepage then renders just the channel card.
  */
 
