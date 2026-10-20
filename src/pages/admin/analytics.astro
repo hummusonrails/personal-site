@@ -1,0 +1,190 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import '../../scripts/analytics/desk.css';
+
+export const prerender = false;
+
+// Admin only (see middleware.ts). The markup is static; scripts/analytics/
+// desk-client.ts fills every panel from /api/admin/analytics and keeps the
+// view in the URL hash. Opening it also stops this browser from counting
+// itself on the public site.
+
+const RANGES: [string, string][] = [
+  ['today', 'Today'], ['yesterday', 'Yesterday'], ['7d', '7 days'], ['30d', '30 days'],
+  ['90d', '90 days'], ['12m', '12 months'], ['all', 'All time'], ['custom', 'Custom'],
+];
+const tabs = (list: [string, string][]) => list;
+---
+
+<AdminLayout title="Site analytics" activeSection="analytics">
+  <Fragment slot="breadcrumb">
+    <a href="/admin">Dashboard</a>
+    <span class="cms-breadcrumb-sep">/</span>
+    <span class="cms-breadcrumb-current">Analytics</span>
+  </Fragment>
+
+  <div class="desk">
+    <header class="top">
+      <div class="top-inner">
+        <h1 class="brand">Site analytics <span>bengreenberg.dev</span></h1>
+        <div class="live" id="live" aria-live="polite">
+          <span class="pulse" aria-hidden="true"></span>
+          <b id="live-n">0</b> on the site now
+        </div>
+      </div>
+    </header>
+
+    <div class="controls" id="controls">
+      <div class="controls-inner">
+        <div class="ranges" role="radiogroup" aria-label="Date range" id="ranges">
+          {RANGES.map(([key, label]) => (
+            <button type="button" data-range={key} role="radio" aria-checked="false">{label}</button>
+          ))}
+        </div>
+        <div class="custom" id="custom" hidden>
+          <label>From <input type="date" id="from" /></label>
+          <label>To <input type="date" id="to" /></label>
+          <button type="button" id="apply">Apply</button>
+        </div>
+        <div class="chips" id="chips" aria-label="Active filters"></div>
+        <div class="range-label" id="range-label"></div>
+      </div>
+    </div>
+
+    <main class="board" id="board" aria-busy="true">
+      <p class="notice" id="notice" hidden></p>
+
+      <section class="tiles" id="tiles" aria-label="Summary"></section>
+
+      <section class="card span-all">
+        <div class="card-head">
+          <h2 id="trend-title">Visitors</h2>
+          <div class="seg" role="radiogroup" aria-label="Metric" id="metric">
+            <button type="button" data-metric="visitors" role="radio" aria-checked="false">Visitors</button>
+            <button type="button" data-metric="views" role="radio" aria-checked="false">Page views</button>
+          </div>
+        </div>
+        <div class="legend" id="trend-legend"></div>
+        <div class="chart" id="trend"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Week over week</h2>
+          <span class="hint">Mon to Sun, last 13 weeks</span>
+        </div>
+        <div class="chart chart-sm" id="weeks"></div>
+        <div class="table-wrap" id="weeks-table"></div>
+      </section>
+      <section class="card">
+        <div class="card-head">
+          <h2>Month over month</h2>
+          <span class="hint">last 13 months</span>
+        </div>
+        <div class="chart chart-sm" id="months"></div>
+        <div class="table-wrap" id="months-table"></div>
+      </section>
+
+      <section class="card" data-panel="sources">
+        <div class="card-head">
+          <h2>Sources</h2>
+          <div class="tabs" role="tablist">
+            {tabs([['channels', 'Channels'], ['referrers', 'Referrers'], ['referrerUrls', 'Landed on']]).map(([k, l]) => (
+              <button type="button" role="tab" data-tab={k}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div class="list" data-body></div>
+      </section>
+
+      <section class="card" data-panel="utm">
+        <div class="card-head">
+          <h2>Campaigns (UTM)</h2>
+          <div class="tabs" role="tablist">
+            {tabs([['campaigns', 'All tags'], ['source', 'Source'], ['medium', 'Medium'], ['campaign', 'Campaign'], ['content', 'Content'], ['term', 'Term']]).map(([k, l]) => (
+              <button type="button" role="tab" data-tab={k}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div class="list" data-body></div>
+      </section>
+
+      <section class="card span-all geo">
+        <div class="card-head">
+          <h2>Where visitors are</h2>
+        </div>
+        <div class="geo-grid">
+          <div class="map" id="map" role="img" aria-label="World map of visitors by country"></div>
+          <div data-panel="geo">
+            <div class="tabs" role="tablist">
+              {tabs([['countries', 'Countries'], ['regions', 'Regions'], ['cities', 'Cities']]).map(([k, l]) => (
+                <button type="button" role="tab" data-tab={k}>{l}</button>
+              ))}
+            </div>
+            <div class="list" data-body></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" data-panel="pages">
+        <div class="card-head">
+          <h2>Pages</h2>
+          <div class="tabs" role="tablist">
+            {tabs([['pages', 'Most visited'], ['entries', 'Landing pages']]).map(([k, l]) => (
+              <button type="button" role="tab" data-tab={k}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div class="list" data-body></div>
+      </section>
+
+      <section class="card" data-panel="actions">
+        <div class="card-head">
+          <h2>Outbound clicks</h2>
+          <div class="tabs" role="tablist">
+            <button type="button" role="tab" data-tab="outbound">Links followed</button>
+          </div>
+        </div>
+        <div class="list" data-body></div>
+      </section>
+
+      <section class="card" data-panel="ai">
+        <div class="card-head">
+          <h2>AI assistants</h2>
+          <div class="tabs" role="tablist">
+            <button type="button" role="tab" data-tab="aiVisits">Visits from AI</button>
+          </div>
+        </div>
+        <div class="list" data-body></div>
+        <p class="note">
+          People who clicked through from ChatGPT, Claude, Perplexity, Gemini and other assistants, with the page they
+          landed on. Assistants never share what the person asked.
+        </p>
+      </section>
+
+      <section class="card" data-panel="tech">
+        <div class="card-head">
+          <h2>Devices</h2>
+          <div class="tabs" role="tablist">
+            {tabs([['devices', 'Device'], ['browsers', 'Browser'], ['os', 'Operating system'], ['languages', 'Language']]).map(([k, l]) => (
+              <button type="button" role="tab" data-tab={k}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div class="list" data-body></div>
+      </section>
+
+      <p class="foot">
+        Visitors are counted without cookies: a visitor is one browser on one day, so a person who comes back on three
+        days counts three times across a range. Bots, crawlers, the admin area and your own browser are left out. Click
+        any row to filter the whole page by it.
+      </p>
+    </main>
+    <div class="tip" id="tip" role="tooltip" hidden></div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { start } from '../../scripts/analytics/desk-client';
+  start(document.getElementById('board')!);
+</script>

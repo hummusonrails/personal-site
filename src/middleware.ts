@@ -3,26 +3,54 @@ import { isAuthenticated } from './lib/auth';
 
 const PUBLIC_ADMIN_PATHS = ['/admin/login', '/api/admin/auth'];
 
-export const onRequest = defineMiddleware(async ({ request, url, redirect }, next) => {
+// Every admin response, the login page and redirects included: never indexed,
+// never cached by the CDN or a shared proxy.
+const PRIVATE_HEADERS: Record<string, string> = {
+  'X-Robots-Tag': 'noindex, nofollow, noarchive',
+  'Cache-Control': 'private, no-store',
+  'Referrer-Policy': 'same-origin',
+  'X-Frame-Options': 'DENY',
+};
+
+function withPrivateHeaders(response: Response): Response {
+  const res = new Response(response.body, response);
+  for (const [k, v] of Object.entries(PRIVATE_HEADERS)) res.headers.set(k, v);
+  return res;
+}
+
+function originHost(request: Request): string | null {
+  try {
+    return new URL(request.headers.get('origin') || '').host;
+  } catch {
+    return null;
+  }
+}
+
+export const onRequest = defineMiddleware(async ({ request, url }, next) => {
   const path = url.pathname;
 
   // Only protect /admin and /api/admin routes
-  const isAdminRoute = path.startsWith('/admin') || path.startsWith('/api/admin');
+  const isAdminRoute = /^\/(api\/)?admin(\/|$)/.test(path);
   if (!isAdminRoute) return next();
 
+  const isApi = path.startsWith('/api/');
+  const json = (status: number, error: string) =>
+    withPrivateHeaders(new Response(JSON.stringify({ error }), { status, headers: { 'Content-Type': 'application/json' } }));
+
+  // Writes must come from this site's own pages (browsers always send Origin
+  // on them), on top of the SameSite=Strict session cookie.
+  if (isApi && request.method !== 'GET' && request.method !== 'HEAD' && originHost(request) !== url.host) {
+    return json(403, 'Forbidden');
+  }
+
   // Allow public admin paths (login page, auth endpoint)
-  if (PUBLIC_ADMIN_PATHS.some((p) => path === p || path === p + '/')) return next();
+  if (PUBLIC_ADMIN_PATHS.some((p) => path === p || path === p + '/')) return withPrivateHeaders(await next());
 
   // Check authentication
   if (!isAuthenticated(request)) {
-    if (path.startsWith('/api/')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-    return redirect('/admin/login');
+    if (isApi) return json(401, 'Unauthorized');
+    return withPrivateHeaders(new Response(null, { status: 302, headers: { Location: '/admin/login' } }));
   }
 
-  return next();
+  return withPrivateHeaders(await next());
 });

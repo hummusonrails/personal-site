@@ -1,30 +1,32 @@
 import type { APIRoute } from 'astro';
 import { validatePassword, createSessionCookie, clearSessionCookie } from '../../../lib/auth';
+import { clientIp, loginBlocked, recordLoginFailure } from '../../../lib/login-throttle';
+
+const json = (status: number, body: unknown, headers: Record<string, string> = {}) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', ...headers } });
 
 export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json();
-  const { action, password } = body;
+  let body: { action?: unknown; password?: unknown };
+  try {
+    body = await request.json();
+  } catch {
+    return json(400, { error: 'Bad request' });
+  }
+  const { action, password } = body ?? {};
 
   if (action === 'logout') {
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Set-Cookie': clearSessionCookie(),
-      },
-    });
+    return json(200, { ok: true }, { 'Set-Cookie': clearSessionCookie() });
   }
 
-  if (!password || !validatePassword(password)) {
-    return new Response(JSON.stringify({ error: 'Invalid password' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const ip = clientIp(request);
+  if (await loginBlocked(ip)) {
+    return json(429, { error: 'Too many attempts. Try again in 15 minutes.' }, { 'Retry-After': '900' });
   }
 
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Set-Cookie': createSessionCookie(),
-    },
-  });
+  if (typeof password !== 'string' || !password || !validatePassword(password)) {
+    await recordLoginFailure(ip);
+    return json(401, { error: 'Invalid password' });
+  }
+
+  return json(200, { ok: true }, { 'Set-Cookie': createSessionCookie() });
 };

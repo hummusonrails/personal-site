@@ -248,7 +248,7 @@ if (isAuthenticated(Astro.request)) {
           if (res.ok) {
             window.location.href = '/admin';
           } else {
-            error.textContent = 'Invalid password. Please try again.';
+            error.textContent = res.status === 429 ? 'Too many attempts. Try again in 15 minutes.' : 'Invalid password. Please try again.';
             error.style.display = 'block';
             btn.disabled = false;
             btn.textContent = 'Sign in';

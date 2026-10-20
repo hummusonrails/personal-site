@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "build:functions": "webpack --config webpack.config.cjs"
+    "build:functions": "webpack --config webpack.config.cjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.3",
@@ -17,6 +18,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@astrojs/vercel": "^11.0.3",
     "@chenglou/pretext": "^0.0.8",
+    "@libsql/client": "^0.18.0",
     "@mozilla/readability": "^0.6.0",
     "@tiptap/core": "^3.20.0",
     "@tiptap/extension-image": "^3.20.0",
@@ -28,9 +30,11 @@
     "@tiptap/react": "^3.20.0",
     "@tiptap/starter-kit": "^3.20.0",
     "astro": "^7.1.0",
+    "d3-geo": "^3.1.1",
     "dotenv": "^16.4.5",
     "fs-extra": "^11.3.0",
     "gray-matter": "^4.0.3",
+    "i18n-iso-countries": "^7.14.0",
     "linkedom": "^0.18.12",
     "marked": "^13.0.2",
     "node-fetch": "^3.3.2",
@@ -41,8 +45,10 @@
     "slugify": "^1.6.6",
     "tailwindcss": "^3.3.3",
     "tiktoken": "^1.0.15",
+    "topojson-client": "^3.1.0",
     "turndown": "^7.2.2",
-    "turndown-plugin-gfm": "^1.0.2"
+    "turndown-plugin-gfm": "^1.0.2",
+    "world-atlas": "^2.0.2"
   },
   "overrides": {
     "path-to-regexp": "6.3.0"
@@ -50,12 +56,16 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.6",
     "@tailwindcss/typography": "^0.5.10",
+    "@types/d3-geo": "^3.1.1",
     "@types/node": "^22.9.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
     "@types/turndown": "^5.0.6",
     "autoprefixer": "^10.5.4",
     "typescript": "^5.6.3",
+    "vitest": "^5.0.5",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
   },

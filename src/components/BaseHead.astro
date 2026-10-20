@@ -4,6 +4,7 @@
 import '@/styles/global.css';
 import {SITE_METADATA} from "@/consts";
 import GoogleTag from './GoogleTag.astro';
+import Track from './Track.astro';
 
 interface Props {
     title: string;
@@ -51,6 +52,9 @@ const canonicalURL = canonicalUrl || new URL(Astro.url.pathname, Astro.site).toS
 
 <!-- Google Tag -->
 <GoogleTag />
+
+<!-- First-party analytics -->
+<Track />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website"/>

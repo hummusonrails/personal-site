@@ -1,7 +1,7 @@
 ---
 interface Props {
   title: string;
-  activeSection?: 'dashboard' | 'blog' | 'talks' | 'projects';
+  activeSection?: 'dashboard' | 'blog' | 'talks' | 'projects' | 'analytics';
 }
 
 const { title, activeSection = 'dashboard' } = Astro.props;
@@ -727,6 +727,15 @@ const { title, activeSection = 'dashboard' } = Astro.props;
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
           Workshops
+        </a>
+
+        <a href="/admin/analytics" class={`cms-nav-item ${activeSection === 'analytics' ? 'active' : ''}`}>
+          <svg class="cms-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Analytics
         </a>
 
         <div class="cms-sidebar-sep"></div>
