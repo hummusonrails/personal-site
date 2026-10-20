@@ -1,13 +1,13 @@
 import type { APIRoute } from 'astro';
-import { listFiles, getFile, getFiles, createOrUpdateFile, deleteFile } from '../../../lib/github';
+import { listFiles, getFile, getFiles, commitFiles } from '../../../lib/github';
+import { TALKS_DIR, talkFile, talkProblems, validSlug, ymd } from '../../../lib/cms/content';
 import matter from 'gray-matter';
-
-const TALKS_DIR = 'src/content/talks';
 
 export const GET: APIRoute = async ({ url }) => {
   const slug = url.searchParams.get('slug');
 
   if (slug) {
+    if (!validSlug(slug)) return new Response(JSON.stringify({ error: 'Bad slug' }), { status: 400 });
     const file = await getFile(`${TALKS_DIR}/${slug}.md`);
     if (!file) {
       return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
@@ -31,14 +31,14 @@ export const GET: APIRoute = async ({ url }) => {
       presentation: data.presentation,
       conference: data.conference,
       region: data.region,
-      date: data.date,
+      date: ymd(data.date),
       link: data.link,
       image: data.image || '',
       sha: fileData.sha,
     });
   }
 
-  talks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  talks.sort((a, b) => b.date.localeCompare(a.date));
 
   return new Response(JSON.stringify(talks), {
     headers: { 'Content-Type': 'application/json' },
@@ -47,45 +47,32 @@ export const GET: APIRoute = async ({ url }) => {
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
-  const { slug, frontmatter, sha } = body;
+  const { slug, frontmatter: fields } = body;
+  const sha = typeof body.sha === 'string' && body.sha ? body.sha : null;
+  const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { 'Content-Type': 'application/json' } });
 
-  if (!slug || !frontmatter) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
-  }
+  if (!validSlug(slug)) return json({ error: 'Bad slug' }, 400);
+  const problems = talkProblems(fields || {});
+  if (problems.length) return json({ error: problems.join(' ') }, 400);
 
-  const fm = {
-    presentation: frontmatter.presentation,
-    conference: frontmatter.conference,
-    region: frontmatter.region,
-    date: frontmatter.date,
-    link: frontmatter.link,
-    ...(frontmatter.image && { image: frontmatter.image }),
-  };
-
-  const fileContent = matter.stringify('', fm);
-  const filePath = `${TALKS_DIR}/${slug}.md`;
-  const message = sha
-    ? `Update talk: ${frontmatter.presentation}`
-    : `Add talk: ${frontmatter.presentation}`;
-
-  const result = await createOrUpdateFile(filePath, fileContent, message, sha);
-
-  return new Response(JSON.stringify({ ok: true, sha: result.sha }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const path = `${TALKS_DIR}/${slug}.md`;
+  const result = await commitFiles(
+    [{ path, content: talkFile(fields), expectSha: sha }],
+    sha ? `Update talk: ${fields.presentation}` : `Add talk: ${fields.presentation}`,
+  );
+  return json({ ok: true, slug, sha: result.shas[path], commit: result.commit });
 };
 
 export const DELETE: APIRoute = async ({ request }) => {
-  const body = await request.json();
-  const { slug, sha } = body;
+  const { slug, sha } = await request.json();
 
-  if (!slug || !sha) {
+  if (!validSlug(slug) || !sha) {
     return new Response(JSON.stringify({ error: 'Missing slug or sha' }), { status: 400 });
   }
 
-  await deleteFile(`${TALKS_DIR}/${slug}.md`, sha, `Delete talk: ${slug}`);
+  const result = await commitFiles([{ path: `${TALKS_DIR}/${slug}.md`, content: null, expectSha: sha }], `Delete talk: ${slug}`);
 
-  return new Response(JSON.stringify({ ok: true }), {
+  return new Response(JSON.stringify({ ok: true, commit: result.commit }), {
     headers: { 'Content-Type': 'application/json' },
   });
 };

@@ -7,108 +7,62 @@ import {
   deleteVercelDeployments,
   cleanupAllPreviews,
 } from '../../../lib/github';
-import matter from 'gray-matter';
+import { BLOG_DIR, TAGS_DIR, blogFile, tagFile, validSlug } from '../../../lib/cms/content';
+
+// Full-site previews of a blog post: the post is pushed to a throwaway
+// preview-<timestamp> branch, Vercel builds it, and the branch and its
+// deployments are deleted afterwards.
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+// Only branches this endpoint created can be inspected or deleted through it.
+const PREVIEW_BRANCH = /^preview-\d+$/;
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
-  const { action, contentType, slug, frontmatter, content } = body;
+  const { action, slug, frontmatter, content } = body;
 
-  if (action === 'cleanup') {
+  if (action === 'cleanup' || action === 'status') {
     const { branchName } = body;
-    if (branchName) {
-      try {
-        await deleteVercelDeployments(branchName);
-        await deletePreviewBranch(branchName);
-      } catch {
-        // Branch/deployment may already be deleted
-      }
+    if (typeof branchName !== 'string' || !PREVIEW_BRANCH.test(branchName)) return json({ error: 'Bad branch' }, 400);
+    if (action === 'status') {
+      const previewUrl = await getVercelPreviewUrl(branchName);
+      return json({ previewUrl, status: previewUrl ? 'ready' : 'building' });
     }
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  if (action === 'cleanup-all') {
-    const result = await cleanupAllPreviews();
-    return new Response(JSON.stringify({ ok: true, ...result }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  if (action === 'status') {
-    const { branchName } = body;
-    if (!branchName) {
-      return new Response(JSON.stringify({ error: 'Missing branchName' }), { status: 400 });
+    try {
+      await deleteVercelDeployments(branchName);
+      await deletePreviewBranch(branchName);
+    } catch {
+      // Branch/deployment may already be deleted
     }
-    const previewUrl = await getVercelPreviewUrl(branchName);
-    return new Response(
-      JSON.stringify({ previewUrl, status: previewUrl ? 'ready' : 'building' }),
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    return json({ ok: true });
   }
 
-  if (!contentType || !slug) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
-  }
+  if (action === 'cleanup-all') return json({ ok: true, ...(await cleanupAllPreviews()) });
+
+  if (!validSlug(slug) || !frontmatter?.title) return json({ error: 'Title and a valid slug are required.' }, 400);
 
   const branchName = `preview-${Date.now()}`;
-
   try {
     await createPreviewBranch(branchName);
-
-    let filePath: string;
-    let fileContent: string;
-
-    if (contentType === 'blog') {
-      filePath = `src/content/blog/${slug}.md`;
-      const tags = (frontmatter.tags || ['posts']).map((t: string) => {
-        if (typeof t === 'object') return t;
-        return { slug: t, collection: 'tags' };
-      });
-      const fm = {
-        title: frontmatter.title,
-        date: frontmatter.date || new Date().toISOString().split('T')[0],
-        tags,
-        authors: frontmatter.authors || ['default'],
-        ...(frontmatter.summary && { summary: frontmatter.summary }),
-        ...(frontmatter.images && { images: frontmatter.images }),
-        ...(frontmatter.canonicalUrl && { canonicalUrl: frontmatter.canonicalUrl }),
-        draft: false, // Show in preview
-      };
-      fileContent = matter.stringify(content || '', fm);
-    } else if (contentType === 'talk') {
-      filePath = `src/content/talks/${slug}.md`;
-      fileContent = matter.stringify('', {
-        presentation: frontmatter.presentation,
-        conference: frontmatter.conference,
-        region: frontmatter.region,
-        date: frontmatter.date,
-        link: frontmatter.link,
-        ...(frontmatter.image && { image: frontmatter.image }),
-      });
-    } else {
-      await deletePreviewBranch(branchName);
-      return new Response(JSON.stringify({ error: 'Invalid content type' }), { status: 400 });
+    // New tags must exist on the branch too, or the preview build fails.
+    for (const t of body.newTags || []) {
+      if (validSlug(t.slug) && (frontmatter.tags || []).includes(t.slug)) {
+        await pushToPreviewBranch(branchName, `${TAGS_DIR}/${t.slug}.md`, tagFile(t.name || t.slug), `Preview tag: ${t.slug}`);
+      }
     }
-
-    await pushToPreviewBranch(branchName, filePath, fileContent, `Preview: ${slug}`);
-
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        branchName,
-      }),
-      { headers: { 'Content-Type': 'application/json' } }
+    await pushToPreviewBranch(
+      branchName,
+      `${BLOG_DIR}/${slug}.md`,
+      blogFile({ ...frontmatter, draft: false }, String(content || '')),
+      `Preview: ${slug}`,
     );
+    return json({ ok: true, branchName });
   } catch (err) {
     try {
       await deletePreviewBranch(branchName);
     } catch {
       // Cleanup on error
     }
-    return new Response(
-      JSON.stringify({ error: `Preview failed: ${(err as Error).message}` }),
-      { status: 500 }
-    );
+    return json({ error: `Preview failed: ${(err as Error).message}` }, 500);
   }
 };

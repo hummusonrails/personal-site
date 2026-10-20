@@ -23,6 +23,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     </div>
   </div>
 
+  <div class="list-controls">
+    <input class="cms-input" type="search" id="q" placeholder="Search titles, summaries and slugs  ( / )" aria-label="Search posts" />
+    <div class="seg" id="status" role="radiogroup" aria-label="Status">
+      <button type="button" data-status="all" aria-checked="true" role="radio">All</button>
+      <button type="button" data-status="published" aria-checked="false" role="radio">Published</button>
+      <button type="button" data-status="draft" aria-checked="false" role="radio">Drafts</button>
+    </div>
+    <select class="cms-select" id="tag" aria-label="Tag"><option value="">All tags</option></select>
+  </div>
+
   <div id="posts-container">
     <div class="cms-loading-overlay">
       <div class="cms-spinner"></div>
@@ -30,112 +40,127 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     </div>
   </div>
 
-  <div id="delete-modal" style="display:none;"></div>
+  <style>
+    .list-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+    .list-controls .cms-input { flex: 1; min-width: 220px; }
+    .list-controls .cms-select { width: auto; min-width: 140px; }
+    .seg { display: inline-flex; gap: 2px; padding: 2px; background: var(--cms-card); border: 1px solid var(--cms-border); border-radius: 8px; }
+    .seg button { border: 0; background: none; color: var(--cms-text-secondary); font: 500 13px var(--cms-font); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    .seg button[aria-checked='true'] { background: var(--cms-border); color: var(--cms-text); }
+    :global(.post-title) { color: var(--cms-text); text-decoration: none; font-weight: 500; }
+    :global(.post-title:hover) { text-decoration: underline; }
+    :global(.post-sub) { display: block; font-size: 12.5px; color: var(--cms-text-muted); font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+    :global(.post-tags) { display: flex; gap: 4px; flex-wrap: wrap; }
+    :global(.post-tags span) { font-size: 11px; padding: 1px 7px; border-radius: 999px; background: var(--cms-border); color: var(--cms-text-secondary); }
+    :global(.cms-table td.title-cell) { max-width: 460px; white-space: normal; }
+    :global(.cms-table td.num) { font-variant-numeric: tabular-nums; }
+  </style>
 
-  <script is:inline>
-    let postsData = [];
+  <script>
+    import { api, esc, fmtDate, toast, watchDeploy } from '../../../scripts/admin/cms';
 
-    async function loadPosts() {
+    type Post = { slug: string; title: string; date: string; draft: boolean; tags: string[]; summary: string; words: number; sha: string };
+    let posts: Post[] = [];
+    const state = { q: '', status: 'all', tag: '' };
+    const container = document.getElementById('posts-container')!;
+    const pending = new Set<string>();
+
+    async function load() {
       try {
-        const res = await fetch('/api/admin/blog');
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-        postsData = data;
-        renderPosts();
+        posts = await api<Post[]>('/api/admin/blog');
+        const tags = [...new Set(posts.flatMap((p) => p.tags))].sort();
+        const sel = document.getElementById('tag') as HTMLSelectElement;
+        sel.innerHTML = '<option value="">All tags</option>' + tags.map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+        sel.value = state.tag;
+        render();
       } catch (err) {
-        document.getElementById('posts-container').innerHTML =
-          '<div class="cms-empty"><div class="cms-empty-text">Failed to load posts</div></div>';
-        const msg = document.createElement('div');
-        msg.className = 'cms-empty-text';
-        msg.textContent = err.message;
-        document.querySelector('#posts-container .cms-empty').append(msg);
+        container.innerHTML = `<div class="cms-empty"><div class="cms-empty-text">Failed to load posts</div><div class="cms-empty-text">${esc((err as Error).message)}</div></div>`;
       }
     }
 
-    function renderPosts() {
-      const container = document.getElementById('posts-container');
-      const count = document.getElementById('post-count');
-      count.textContent = `${postsData.length} post${postsData.length !== 1 ? 's' : ''}`;
+    function render() {
+      const drafts = posts.filter((p) => p.draft).length;
+      document.getElementById('post-count')!.textContent =
+        `${posts.length} posts · ${posts.length - drafts} published · ${drafts} draft${drafts === 1 ? '' : 's'}`;
+      const q = state.q.toLowerCase();
+      const shown = posts.filter((p) =>
+        (state.status === 'all' || (state.status === 'draft') === p.draft) &&
+        (!state.tag || p.tags.includes(state.tag)) &&
+        (!q || `${p.title} ${p.summary} ${p.slug}`.toLowerCase().includes(q)));
 
-      if (postsData.length === 0) {
-        container.innerHTML = `
-          <div class="cms-empty">
-            <div class="cms-empty-icon">&#9997;</div>
-            <div class="cms-empty-text">No blog posts yet. Create your first one.</div>
-            <a href="/admin/blog/new" class="cms-btn cms-btn-primary">New Post</a>
-          </div>`;
+      if (!posts.length) {
+        container.innerHTML = `<div class="cms-empty"><div class="cms-empty-text">No blog posts yet.</div><a href="/admin/blog/new" class="cms-btn cms-btn-primary">New Post</a></div>`;
         return;
       }
-
+      if (!shown.length) {
+        container.innerHTML = `<div class="cms-empty"><div class="cms-empty-text">No posts match.</div></div>`;
+        return;
+      }
       container.innerHTML = `
         <div class="cms-table-wrap">
           <table class="cms-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th style="text-align:right;">Actions</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Title</th><th>Date</th><th>Tags</th><th>Words</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
             <tbody>
-              ${postsData.map(p => `
+              ${shown.map((p) => `
                 <tr>
-                  <td><a href="/admin/blog/${p.slug}" style="color:inherit;text-decoration:none;">${p.title}</a></td>
-                  <td>${new Date(p.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                  <td class="title-cell"><a class="post-title" href="/admin/blog/${esc(p.slug)}">${esc(p.title)}</a><span class="post-sub">/blog/${esc(p.slug)}/</span></td>
+                  <td>${esc(fmtDate(p.date))}</td>
+                  <td><div class="post-tags">${p.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div></td>
+                  <td class="num">${p.words.toLocaleString()}</td>
                   <td><span class="cms-badge ${p.draft ? 'cms-badge-yellow' : 'cms-badge-green'}">${p.draft ? 'Draft' : 'Published'}</span></td>
                   <td>
                     <div class="cms-actions">
-                      <a href="/admin/blog/${p.slug}" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</a>
-                      <button onclick="confirmDelete('${p.slug}', '${p.sha}')" class="cms-btn cms-btn-danger cms-btn-sm">Delete</button>
+                      ${p.draft ? '' : `<a href="https://www.bengreenberg.dev/blog/${esc(p.slug)}/" target="_blank" rel="noopener" class="cms-btn cms-btn-ghost cms-btn-sm">View</a>`}
+                      <a href="/admin/blog/${esc(p.slug)}" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</a>
+                      <button type="button" data-delete="${esc(p.slug)}" class="cms-btn cms-btn-danger cms-btn-sm">${pending.has(p.slug) ? 'Confirm' : 'Delete'}</button>
                     </div>
                   </td>
-                </tr>
-              `).join('')}
+                </tr>`).join('')}
             </tbody>
           </table>
         </div>`;
     }
 
-    function confirmDelete(slug, sha) {
-      const modal = document.getElementById('delete-modal');
-      modal.style.display = 'block';
-      modal.innerHTML = `
-        <div class="cms-modal-backdrop" onclick="closeModal()">
-          <div class="cms-modal" onclick="event.stopPropagation()">
-            <h3 class="cms-modal-title">Delete Post</h3>
-            <p class="cms-modal-body">Are you sure you want to delete "<strong>${slug}</strong>"? This cannot be undone.</p>
-            <div class="cms-modal-actions">
-              <button class="cms-btn cms-btn-secondary" onclick="closeModal()">Cancel</button>
-              <button class="cms-btn cms-btn-danger" onclick="deletePost('${slug}', '${sha}')">Delete</button>
-            </div>
-          </div>
-        </div>`;
-    }
-
-    function closeModal() {
-      document.getElementById('delete-modal').style.display = 'none';
-    }
-
-    async function deletePost(slug, sha) {
-      try {
-        const res = await fetch('/api/admin/blog', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug, sha }),
-        });
-        if (res.ok) {
-          window.showToast('Post deleted successfully', 'success');
-          closeModal();
-          loadPosts();
-        } else {
-          window.showToast('Failed to delete post', 'error');
-        }
-      } catch {
-        window.showToast('Failed to delete post', 'error');
+    // Delete asks twice inline instead of with a dialog.
+    container.addEventListener('click', async (e) => {
+      const btn = (e.target as Element).closest<HTMLButtonElement>('[data-delete]');
+      if (!btn) return;
+      const slug = btn.dataset.delete!;
+      if (!pending.has(slug)) {
+        pending.add(slug);
+        render();
+        setTimeout(() => { pending.delete(slug); render(); }, 4000);
+        return;
       }
-    }
+      pending.delete(slug);
+      const post = posts.find((p) => p.slug === slug);
+      if (!post) return;
+      try {
+        const res = await api<{ commit: string }>('/api/admin/blog', { method: 'DELETE', json: { slug, sha: post.sha } });
+        posts = posts.filter((p) => p.slug !== slug);
+        watchDeploy(res.commit);
+        toast(`Deleted "${post.title}"`, 'success');
+        render();
+      } catch (err) {
+        toast((err as Error).message, 'error');
+      }
+    });
 
-    loadPosts();
+    const q = document.getElementById('q') as HTMLInputElement;
+    q.addEventListener('input', () => { state.q = q.value; render(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        q.focus();
+      }
+    });
+    document.querySelectorAll<HTMLButtonElement>('[data-status]').forEach((b) => b.addEventListener('click', () => {
+      state.status = b.dataset.status!;
+      document.querySelectorAll('[data-status]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+      render();
+    }));
+    document.getElementById('tag')!.addEventListener('change', (e) => { state.tag = (e.target as HTMLSelectElement).value; render(); });
+
+    load();
   </script>
 </AdminLayout>

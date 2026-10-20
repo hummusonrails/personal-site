@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
-import { getFile, createOrUpdateFile } from '../../../lib/github';
+import { getFile, commitFiles } from '../../../lib/github';
 
+// Workshops shown on /projects, kept in one JSON file in display order.
 const WORKSHOPS_PATH = 'src/data/workshops.json';
 
 interface Workshop {
@@ -9,60 +10,69 @@ interface Workshop {
   link: string;
 }
 
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+
 async function getWorkshops(): Promise<{ workshops: Workshop[]; sha: string }> {
   const file = await getFile(WORKSHOPS_PATH);
   if (!file) return { workshops: [], sha: '' };
-  const workshops = JSON.parse(file.content);
-  return { workshops, sha: file.sha };
+  return { workshops: JSON.parse(file.content), sha: file.sha };
 }
 
-export const GET: APIRoute = async () => {
-  const { workshops, sha } = await getWorkshops();
-  return new Response(JSON.stringify({ workshops, sha }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
-};
+function clean(w: Partial<Workshop> | undefined): Workshop | string {
+  const title = String(w?.title || '').trim();
+  const description = String(w?.description || '').trim();
+  const link = String(w?.link || '').trim();
+  if (!title) return 'Title is required.';
+  try {
+    if (!/^https?:$/.test(new URL(link).protocol)) throw new Error();
+  } catch {
+    return 'Link must be a full http(s) URL.';
+  }
+  return { title, description, link };
+}
+
+export const GET: APIRoute = async () => json(await getWorkshops());
 
 export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json();
-  const { action, workshop, index, sha } = body;
+  const { action, workshop, index, to, sha } = await request.json();
+  if (!sha) return json({ error: 'Missing sha' }, 400);
 
-  if (!sha) {
-    return new Response(JSON.stringify({ error: 'Missing sha' }), { status: 400 });
-  }
-
+  // The sha check in commitFiles rejects the save if the file changed since
+  // the page loaded, so an index always points at the workshop the user saw.
   const { workshops } = await getWorkshops();
+  const at = Number(index);
+  const inRange = (i: number) => Number.isInteger(i) && i >= 0 && i < workshops.length;
+  let message: string;
 
-  if (action === 'add') {
-    if (!workshop) {
-      return new Response(JSON.stringify({ error: 'Missing workshop data' }), { status: 400 });
+  if (action === 'add' || action === 'update') {
+    const w = clean(workshop);
+    if (typeof w === 'string') return json({ error: w }, 400);
+    if (action === 'add') {
+      workshops.push(w);
+      message = `Add workshop: ${w.title}`;
+    } else {
+      if (!inRange(at)) return json({ error: 'Bad index' }, 400);
+      workshops[at] = w;
+      message = `Update workshop: ${w.title}`;
     }
-    workshops.push(workshop);
-  } else if (action === 'update') {
-    if (index === undefined || !workshop) {
-      return new Response(JSON.stringify({ error: 'Missing index or workshop data' }), { status: 400 });
-    }
-    workshops[index] = workshop;
   } else if (action === 'delete') {
-    if (index === undefined) {
-      return new Response(JSON.stringify({ error: 'Missing index' }), { status: 400 });
-    }
-    workshops.splice(index, 1);
+    if (!inRange(at)) return json({ error: 'Bad index' }, 400);
+    const [gone] = workshops.splice(at, 1);
+    message = `Delete workshop: ${gone.title}`;
+  } else if (action === 'move') {
+    const dest = Number(to);
+    if (!inRange(at) || !inRange(dest)) return json({ error: 'Bad index' }, 400);
+    const [w] = workshops.splice(at, 1);
+    workshops.splice(dest, 0, w);
+    message = `Reorder workshops: ${w.title}`;
   } else {
-    return new Response(JSON.stringify({ error: 'Invalid action' }), { status: 400 });
+    return json({ error: 'Invalid action' }, 400);
   }
 
-  const content = JSON.stringify(workshops, null, 2);
-  const message =
-    action === 'add'
-      ? `Add workshop: ${workshop?.title}`
-      : action === 'update'
-        ? `Update workshop: ${workshop?.title}`
-        : `Delete workshop at index ${index}`;
-
-  const result = await createOrUpdateFile(WORKSHOPS_PATH, content, message, sha);
-
-  return new Response(JSON.stringify({ ok: true, sha: result.sha }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const result = await commitFiles(
+    [{ path: WORKSHOPS_PATH, content: `${JSON.stringify(workshops, null, 2)}\n`, expectSha: sha }],
+    message,
+  );
+  return json({ ok: true, workshops, sha: result.shas[WORKSHOPS_PATH], commit: result.commit });
 };

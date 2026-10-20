@@ -1,5 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 import { isAuthenticated } from './lib/auth';
+import { ConflictError } from './lib/github';
 
 const PUBLIC_ADMIN_PATHS = ['/admin/login', '/api/admin/auth'];
 
@@ -58,6 +59,7 @@ export const onRequest = defineMiddleware(async ({ request, url }, next) => {
     try {
       return withPrivateHeaders(await next());
     } catch (err) {
+      if (err instanceof ConflictError) return json(409, err.message);
       console.error(err);
       return json(500, err instanceof Error ? err.message : 'Server error');
     }

@@ -628,7 +628,13 @@ const { title, activeSection = 'dashboard' } = Astro.props;
 
       /* Responsive */
       @media (max-width: 768px) {
-        .cms-sidebar { display: none; }
+        .cms-shell { flex-direction: column; }
+        .cms-sidebar { width: 100%; flex-direction: row; align-items: center; padding: 8px; gap: 2px; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--cms-border); }
+        .cms-sidebar .cms-logo, .cms-sidebar .cms-sidebar-sep { display: none; }
+        .cms-sidebar .cms-sidebar-footer { flex-direction: row; margin: 0 0 0 auto; }
+        .cms-nav-item { padding: 7px 10px; font-size: 13px; white-space: nowrap; }
+        .cms-nav-item.active::before { display: none; }
+        .cms-topbar { padding: 10px 16px; }
         .cms-content { padding: 16px; }
         .cms-form-row { grid-template-columns: 1fr; }
         .cms-stats { grid-template-columns: 1fr 1fr; }
@@ -649,6 +655,34 @@ const { title, activeSection = 'dashboard' } = Astro.props;
       .cms-content::-webkit-scrollbar-track { background: transparent; }
       .cms-content::-webkit-scrollbar-thumb { background: var(--cms-border); border-radius: 3px; }
       .cms-content::-webkit-scrollbar-thumb:hover { background: var(--cms-border-hover); }
+
+      /* Deploy indicator */
+      .cms-deploy {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--cms-border);
+        background: var(--cms-card);
+        font-size: 12px;
+        color: var(--cms-text-secondary);
+        white-space: nowrap;
+        max-width: 340px;
+      }
+      .cms-deploy[hidden] { display: none; }
+      .cms-deploy a, .cms-deploy span:last-child { color: inherit; text-decoration: none; overflow: hidden; text-overflow: ellipsis; }
+      .cms-deploy a:hover { color: var(--cms-text); text-decoration: underline; }
+      .cms-deploy-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cms-text-muted); flex-shrink: 0; }
+      .cms-deploy[data-state='idle'] .cms-deploy-dot { background: var(--cms-success); }
+      .cms-deploy[data-state='ready'] { border-color: rgba(34, 197, 94, 0.4); color: var(--cms-success); }
+      .cms-deploy[data-state='ready'] .cms-deploy-dot { background: var(--cms-success); }
+      .cms-deploy[data-state='error'] { border-color: rgba(239, 68, 68, 0.4); color: var(--cms-danger); }
+      .cms-deploy[data-state='error'] .cms-deploy-dot { background: var(--cms-danger); }
+      .cms-deploy[data-state='building'] .cms-deploy-dot,
+      .cms-deploy[data-state='pending'] .cms-deploy-dot { background: var(--cms-warning); animation: cms-blink 1s ease-in-out infinite; }
+      @keyframes cms-blink { 50% { opacity: 0.3; } }
+      @media (max-width: 768px) { .cms-deploy { max-width: 180px; } }
 
       /* Tag pills in forms */
       .cms-tag-pills {
@@ -766,6 +800,7 @@ const { title, activeSection = 'dashboard' } = Astro.props;
             <slot name="breadcrumb" />
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
+            <div id="cms-deploy" class="cms-deploy" hidden aria-live="polite"></div>
             <slot name="actions" />
           </div>
         </header>
@@ -796,10 +831,11 @@ const { title, activeSection = 'dashboard' } = Astro.props;
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `cms-toast cms-toast-${type}`;
-        toast.innerHTML = `
-          <span>${type === 'success' ? '&#10003;' : type === 'error' ? '&#10005;' : '&#8505;'}</span>
-          <span>${message}</span>
-        `;
+        const icon = document.createElement('span');
+        icon.textContent = type === 'success' ? '\u2713' : type === 'error' ? '\u2715' : '\u2139';
+        const text = document.createElement('span');
+        text.textContent = message;
+        toast.append(icon, text);
         container.appendChild(toast);
         setTimeout(() => {
           toast.style.opacity = '0';
@@ -808,6 +844,11 @@ const { title, activeSection = 'dashboard' } = Astro.props;
           setTimeout(() => toast.remove(), 300);
         }, 4000);
       };
+    </script>
+    <script>
+      import { mountDeployIndicator } from '../scripts/admin/deploy-indicator';
+      const el = document.getElementById('cms-deploy');
+      if (el) mountDeployIndicator(el);
     </script>
   </body>
 </html>

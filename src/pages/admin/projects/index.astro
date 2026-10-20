@@ -10,7 +10,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   </Fragment>
 
   <Fragment slot="actions">
-    <button id="add-btn" class="cms-btn cms-btn-primary" onclick="openModal()">
+    <button type="button" id="add-btn" class="cms-btn cms-btn-primary">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       New Workshop
     </button>
@@ -19,9 +19,31 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   <div class="cms-page-header">
     <div>
       <h1 class="cms-page-title">Developer Workshops</h1>
-      <p class="cms-page-subtitle" id="project-count"></p>
+      <p class="cms-page-subtitle" id="project-count">Shown on /projects in this order. Use the arrows to reorder.</p>
     </div>
   </div>
+
+  <form id="w-form" class="cms-card w-form" hidden novalidate>
+    <h3 class="cms-modal-title" id="w-heading">New workshop</h3>
+    <div class="cms-form-row">
+      <div class="cms-form-group">
+        <label class="cms-label" for="w-title">Title</label>
+        <input class="cms-input" type="text" id="w-title" required />
+      </div>
+      <div class="cms-form-group">
+        <label class="cms-label" for="w-link">Repository or page link</label>
+        <input class="cms-input" type="url" id="w-link" required placeholder="https://github.com/..." />
+      </div>
+    </div>
+    <div class="cms-form-group">
+      <label class="cms-label" for="w-description">Description</label>
+      <input class="cms-input" type="text" id="w-description" />
+    </div>
+    <div class="cms-modal-actions">
+      <button type="button" class="cms-btn cms-btn-secondary" id="w-cancel">Cancel</button>
+      <button type="submit" class="cms-btn cms-btn-primary" id="w-save">Save</button>
+    </div>
+  </form>
 
   <div id="projects-container">
     <div class="cms-loading-overlay">
@@ -30,193 +52,130 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     </div>
   </div>
 
-  <div id="workshop-modal" style="display:none;"></div>
-  <div id="delete-modal" style="display:none;"></div>
+  <style>
+    .w-form { margin-bottom: 16px; }
+    .w-form:hover { border-color: var(--cms-border); }
+    .w-form[hidden] { display: none; }
+    :global(.w-list) { display: grid; gap: 8px; }
+    :global(.w-item) { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--cms-card); border: 1px solid var(--cms-border); border-radius: 10px; }
+    :global(.w-pos) { width: 22px; color: var(--cms-text-muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+    :global(.w-text) { flex: 1; min-width: 0; }
+    :global(.w-title) { font-weight: 500; }
+    :global(.w-desc) { font-size: 13px; color: var(--cms-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    :global(.w-link) { font-size: 12px; color: var(--cms-text-muted); text-decoration: none; }
+    :global(.w-link:hover) { color: var(--cms-primary); }
+    :global(.w-move) { display: flex; flex-direction: column; }
+    :global(.w-move button) { background: none; border: 0; color: var(--cms-text-muted); cursor: pointer; font-size: 11px; line-height: 1; padding: 2px 4px; }
+    :global(.w-move button:hover:not(:disabled)) { color: var(--cms-text); }
+    :global(.w-move button:disabled) { opacity: 0.25; cursor: default; }
+  </style>
 
-  <script is:inline>
-    let workshopsData = [];
-    let workshopSha = '';
+  <script>
+    import { api, esc, toast, watchDeploy } from '../../../scripts/admin/cms';
 
-    async function loadProjects() {
+    type Workshop = { title: string; description: string; link: string };
+    let workshops: Workshop[] = [];
+    let sha = '';
+    let editing: number | null = null;
+    let busy = false;
+    const pending = new Set<number>();
+    const container = document.getElementById('projects-container')!;
+    const form = document.getElementById('w-form') as HTMLFormElement;
+    const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+
+    async function load() {
       try {
-        const res = await fetch('/api/admin/projects');
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-        workshopsData = data.workshops || [];
-        workshopSha = data.sha || '';
-        renderProjects();
+        ({ workshops, sha } = await api<{ workshops: Workshop[]; sha: string }>('/api/admin/projects'));
+        render();
       } catch (err) {
-        document.getElementById('projects-container').innerHTML =
-          '<div class="cms-empty"><div class="cms-empty-text">Failed to load workshops</div></div>';
-        const msg = document.createElement('div');
-        msg.className = 'cms-empty-text';
-        msg.textContent = err.message;
-        document.querySelector('#projects-container .cms-empty').append(msg);
+        container.innerHTML = `<div class="cms-empty"><div class="cms-empty-text">Failed to load workshops</div><div class="cms-empty-text">${esc((err as Error).message)}</div></div>`;
       }
     }
 
-    function renderProjects() {
-      const container = document.getElementById('projects-container');
-      const count = document.getElementById('project-count');
-      count.textContent = `${workshopsData.length} workshop${workshopsData.length !== 1 ? 's' : ''}`;
-
-      if (workshopsData.length === 0) {
-        container.innerHTML = `
-          <div class="cms-empty">
-            <div class="cms-empty-icon">&#128218;</div>
-            <div class="cms-empty-text">No workshops yet.</div>
-            <button class="cms-btn cms-btn-primary" onclick="openModal()">New Workshop</button>
-          </div>`;
+    function render() {
+      if (!workshops.length) {
+        container.innerHTML = '<div class="cms-empty"><div class="cms-empty-text">No workshops yet.</div></div>';
         return;
       }
-
-      container.innerHTML = `
-        <div class="cms-table-wrap">
-          <table class="cms-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Link</th>
-                <th style="text-align:right;">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${workshopsData.map((w, i) => `
-                <tr>
-                  <td>${w.title}</td>
-                  <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${w.description}</td>
-                  <td><a href="${w.link}" target="_blank" style="color:var(--cms-primary);text-decoration:none;font-size:12px;">View</a></td>
-                  <td>
-                    <div class="cms-actions">
-                      <button onclick="openModal(${i})" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</button>
-                      <button onclick="confirmDelete(${i})" class="cms-btn cms-btn-danger cms-btn-sm">Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>`;
-    }
-
-    function openModal(editIndex) {
-      const isEdit = editIndex !== undefined;
-      const workshop = isEdit ? workshopsData[editIndex] : { title: '', description: '', link: '' };
-      const modal = document.getElementById('workshop-modal');
-      modal.style.display = 'block';
-      modal.innerHTML = `
-        <div class="cms-modal-backdrop" onclick="closeWorkshopModal()">
-          <div class="cms-modal" onclick="event.stopPropagation()" style="max-width:520px;">
-            <h3 class="cms-modal-title">${isEdit ? 'Edit' : 'New'} Workshop</h3>
-            <form id="workshop-form">
-              <div class="cms-form-group">
-                <label class="cms-label" for="w-title">Title</label>
-                <input class="cms-input" type="text" id="w-title" required value="${workshop.title}" />
-              </div>
-              <div class="cms-form-group">
-                <label class="cms-label" for="w-description">Description</label>
-                <input class="cms-input" type="text" id="w-description" required value="${workshop.description}" />
-              </div>
-              <div class="cms-form-group">
-                <label class="cms-label" for="w-link">GitHub Link</label>
-                <input class="cms-input" type="url" id="w-link" required value="${workshop.link}" placeholder="https://github.com/..." />
-              </div>
-              <div class="cms-modal-actions">
-                <button type="button" class="cms-btn cms-btn-secondary" onclick="closeWorkshopModal()">Cancel</button>
-                <button type="submit" class="cms-btn cms-btn-primary" id="w-save-btn">
-                  ${isEdit ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
+      container.innerHTML = `<div class="w-list">${workshops.map((w, i) => `
+        <div class="w-item">
+          <div class="w-move">
+            <button type="button" data-move="${i}" data-to="${i - 1}" ${i === 0 || busy ? 'disabled' : ''} aria-label="Move up">▲</button>
+            <button type="button" data-move="${i}" data-to="${i + 1}" ${i === workshops.length - 1 || busy ? 'disabled' : ''} aria-label="Move down">▼</button>
           </div>
-        </div>`;
-
-      document.getElementById('workshop-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('w-save-btn');
-        btn.disabled = true;
-
-        const workshopData = {
-          title: document.getElementById('w-title').value,
-          description: document.getElementById('w-description').value,
-          link: document.getElementById('w-link').value,
-        };
-
-        try {
-          const res = await fetch('/api/admin/projects', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: isEdit ? 'update' : 'add',
-              workshop: workshopData,
-              index: isEdit ? editIndex : undefined,
-              sha: workshopSha,
-            }),
-          });
-          if (res.ok) {
-            const result = await res.json();
-            workshopSha = result.sha;
-            window.showToast(isEdit ? 'Workshop updated!' : 'Workshop created!', 'success');
-            closeWorkshopModal();
-            loadProjects();
-          } else {
-            const err = await res.json();
-            window.showToast(err.error || 'Failed to save', 'error');
-          }
-        } catch {
-          window.showToast('Failed to save', 'error');
-        }
-        btn.disabled = false;
-      });
-    }
-
-    function closeWorkshopModal() {
-      document.getElementById('workshop-modal').style.display = 'none';
-    }
-
-    function confirmDelete(index) {
-      const w = workshopsData[index];
-      const modal = document.getElementById('delete-modal');
-      modal.style.display = 'block';
-      modal.innerHTML = `
-        <div class="cms-modal-backdrop" onclick="closeDeleteModal()">
-          <div class="cms-modal" onclick="event.stopPropagation()">
-            <h3 class="cms-modal-title">Delete Workshop</h3>
-            <p class="cms-modal-body">Delete "<strong>${w.title}</strong>"?</p>
-            <div class="cms-modal-actions">
-              <button class="cms-btn cms-btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-              <button class="cms-btn cms-btn-danger" onclick="deleteWorkshop(${index})">Delete</button>
-            </div>
+          <span class="w-pos">${i + 1}</span>
+          <div class="w-text">
+            <div class="w-title">${esc(w.title)}</div>
+            <div class="w-desc">${esc(w.description)}</div>
+            <a class="w-link" href="${esc(w.link)}" target="_blank" rel="noopener">${esc(w.link.replace(/^https?:\/\//, ''))}</a>
           </div>
-        </div>`;
+          <div class="cms-actions">
+            <button type="button" class="cms-btn cms-btn-ghost cms-btn-sm" data-edit="${i}">Edit</button>
+            <button type="button" class="cms-btn cms-btn-danger cms-btn-sm" data-delete="${i}">${pending.has(i) ? 'Confirm' : 'Delete'}</button>
+          </div>
+        </div>`).join('')}</div>`;
     }
 
-    function closeDeleteModal() {
-      document.getElementById('delete-modal').style.display = 'none';
-    }
-
-    async function deleteWorkshop(index) {
+    async function change(body: Record<string, unknown>, done: string) {
+      busy = true;
+      render();
       try {
-        const res = await fetch('/api/admin/projects', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'delete', index, sha: workshopSha }),
-        });
-        if (res.ok) {
-          const result = await res.json();
-          workshopSha = result.sha;
-          window.showToast('Workshop deleted', 'success');
-          closeDeleteModal();
-          loadProjects();
-        } else {
-          window.showToast('Failed to delete workshop', 'error');
-        }
-      } catch {
-        window.showToast('Failed to delete workshop', 'error');
+        const res = await api<{ workshops: Workshop[]; sha: string; commit: string }>('/api/admin/projects', { json: { ...body, sha } });
+        ({ workshops, sha } = res);
+        watchDeploy(res.commit, '/projects/');
+        toast(done, 'success');
+        return true;
+      } catch (err) {
+        toast((err as Error).message, 'error');
+        return false;
+      } finally {
+        busy = false;
+        render();
       }
     }
 
-    loadProjects();
+    function openForm(i: number | null) {
+      editing = i;
+      const w = i === null ? { title: '', description: '', link: '' } : workshops[i];
+      document.getElementById('w-heading')!.textContent = i === null ? 'New workshop' : 'Edit workshop';
+      $('w-title').value = w.title;
+      $('w-description').value = w.description;
+      $('w-link').value = w.link;
+      form.hidden = false;
+      $('w-title').focus();
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const workshop = { title: $('w-title').value, description: $('w-description').value, link: $('w-link').value };
+      const ok = await change(
+        { action: editing === null ? 'add' : 'update', index: editing ?? undefined, workshop },
+        editing === null ? 'Workshop added. Deploying now.' : 'Workshop updated. Deploying now.',
+      );
+      if (ok) form.hidden = true;
+    });
+    document.getElementById('w-cancel')!.addEventListener('click', () => (form.hidden = true));
+    document.getElementById('add-btn')!.addEventListener('click', () => openForm(null));
+
+    container.addEventListener('click', async (e) => {
+      const t = e.target as HTMLElement;
+      const edit = t.closest<HTMLElement>('[data-edit]');
+      if (edit) return openForm(Number(edit.dataset.edit));
+      const move = t.closest<HTMLButtonElement>('[data-move]');
+      if (move && !busy) return change({ action: 'move', index: Number(move.dataset.move), to: Number(move.dataset.to) }, 'Order saved. Deploying now.');
+      const del = t.closest<HTMLElement>('[data-delete]');
+      if (!del || busy) return;
+      const i = Number(del.dataset.delete);
+      if (!pending.has(i)) {
+        pending.add(i);
+        render();
+        setTimeout(() => { pending.delete(i); render(); }, 4000);
+        return;
+      }
+      pending.clear();
+      change({ action: 'delete', index: i }, `Deleted "${workshops[i].title}"`);
+    });
+
+    load();
   </script>
 </AdminLayout>

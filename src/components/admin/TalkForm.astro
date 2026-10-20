@@ -1,0 +1,285 @@
+---
+// Create or edit a talk (src/content/talks). Used by admin/talks/new and
+// admin/talks/[slug].
+interface Props {
+  mode: 'new' | 'edit';
+  slug?: string;
+  sha?: string;
+  talk?: { presentation?: string; conference?: string; region?: string; date?: string; link?: string; image?: string };
+}
+const { mode, slug = '', sha = '', talk = {} } = Astro.props;
+const REGIONS: [string, string][] = [
+  ['NA', 'NA (North America)'], ['EMEA', 'EMEA (Europe, Middle East, Africa)'], ['APAC', 'APAC (Asia-Pacific)'],
+  ['LATAM', 'LATAM (Latin America)'], ['Global', 'Global / Online'],
+];
+---
+
+<div class="tf" data-mode={mode} data-slug={slug} data-sha={sha}>
+  <form id="talk-form" class="cms-card tf-form" novalidate>
+    <div class="cms-form-group">
+      <label class="cms-label" for="presentation">Presentation title</label>
+      <input class="cms-input" type="text" id="presentation" required value={talk.presentation || ''} placeholder="My Amazing Talk" />
+    </div>
+    <div class="cms-form-row">
+      <div class="cms-form-group">
+        <label class="cms-label" for="conference">Conference</label>
+        <input class="cms-input" type="text" id="conference" required value={talk.conference || ''} placeholder="DevRelCon" list="conference-list" />
+        <datalist id="conference-list"></datalist>
+      </div>
+      <div class="cms-form-group">
+        <label class="cms-label" for="region">Region</label>
+        <select class="cms-select" id="region" required>
+          {REGIONS.map(([v, l]) => <option value={v} selected={talk.region === v}>{l}</option>)}
+        </select>
+      </div>
+    </div>
+    <div class="cms-form-row">
+      <div class="cms-form-group">
+        <label class="cms-label" for="date">Date</label>
+        <input class="cms-input" type="date" id="date" required value={talk.date || ''} />
+      </div>
+      <div class="cms-form-group">
+        <label class="cms-label" for="link">Video or event link</label>
+        <input class="cms-input" type="url" id="link" required value={talk.link || ''} placeholder="https://youtube.com/watch?v=..." />
+      </div>
+    </div>
+
+    <div class="cms-form-group">
+      <label class="cms-label">Conference logo (optional)</label>
+      <input type="hidden" id="image" value={talk.image || ''} />
+      <div class="ip">
+        <div class="ip-selected" id="ip-selected" hidden>
+          <img id="ip-selected-img" alt="" />
+          <code id="ip-selected-path"></code>
+          <button type="button" class="cms-btn cms-btn-ghost cms-btn-sm" id="ip-clear">Remove</button>
+        </div>
+        <div class="ip-tools">
+          <input class="cms-input" type="search" id="ip-search" placeholder="Search logos..." />
+          <button type="button" class="cms-btn cms-btn-secondary cms-btn-sm" id="ip-upload">Upload</button>
+          <input type="file" id="ip-file" accept="image/*" hidden />
+        </div>
+        <div class="ip-url">
+          <input class="cms-input" type="url" id="ip-url" placeholder="...or paste an image URL to fetch it" />
+          <button type="button" class="cms-btn cms-btn-secondary cms-btn-sm" id="ip-fetch">Fetch</button>
+        </div>
+        <div class="ip-grid" id="ip-grid"><div class="ip-empty">Loading logos...</div></div>
+      </div>
+    </div>
+
+    <div class="cms-form-actions">
+      {mode === 'edit' && <button type="button" class="cms-btn cms-btn-danger" id="delete-btn" style="margin-right:auto;">Delete talk</button>}
+      <a href="/admin/talks" class="cms-btn cms-btn-secondary">Back to talks</a>
+      <button type="submit" class="cms-btn cms-btn-primary" id="save-btn">{mode === 'new' ? 'Create talk' : 'Update talk'}</button>
+    </div>
+  </form>
+
+  <aside class="tf-side">
+    <div class="cms-label">On the talks page</div>
+    <div class="tf-card" id="tf-card">
+      <div class="tf-thumb" id="tf-thumb"></div>
+      <div class="tf-body">
+        <div class="tf-title" id="tf-title"></div>
+        <div class="tf-meta" id="tf-meta"></div>
+      </div>
+    </div>
+    <p class="tf-hint" id="tf-hint"></p>
+  </aside>
+</div>
+
+<style>
+  .tf { display: grid; grid-template-columns: minmax(0, 640px) minmax(0, 320px); gap: 20px; align-items: start; }
+  @media (max-width: 1000px) { .tf { grid-template-columns: minmax(0, 1fr); } }
+  .tf-form:hover { border-color: var(--cms-border); }
+  .tf-side { position: sticky; top: 0; }
+  .tf-card { border: 1px solid var(--cms-border); border-radius: 12px; overflow: hidden; background: var(--cms-card); }
+  .tf-thumb { aspect-ratio: 16 / 9; background: var(--cms-surface) center / cover no-repeat; display: grid; place-items: center; color: var(--cms-text-muted); font-size: 12.5px; text-align: center; padding: 12px; }
+  .tf-body { padding: 12px 14px; }
+  .tf-title { font-weight: 600; font-size: 15px; }
+  .tf-meta { font-size: 12.5px; color: var(--cms-text-secondary); margin-top: 4px; }
+  .tf-hint { font-size: 12px; color: var(--cms-text-muted); margin-top: 8px; }
+  .ip { border: 1px solid var(--cms-border); border-radius: 10px; padding: 10px; background: var(--cms-surface); display: grid; gap: 8px; }
+  .ip-selected { display: flex; align-items: center; gap: 10px; }
+  .ip-selected[hidden] { display: none; }
+  .ip-selected img { width: 44px; height: 44px; object-fit: contain; background: #fff; border-radius: 6px; padding: 3px; }
+  .ip-selected code { flex: 1; font-size: 12px; color: var(--cms-text-secondary); word-break: break-all; }
+  .ip-tools, .ip-url { display: flex; gap: 8px; }
+  .ip-tools .cms-input, .ip-url .cms-input { flex: 1; padding: 7px 10px; font-size: 13px; }
+  .ip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; max-height: 230px; overflow-y: auto; }
+  :global(.ip-item) { aspect-ratio: 1; border: 2px solid var(--cms-border); border-radius: 8px; background: #fff; display: grid; place-items: center; cursor: pointer; padding: 6px; }
+  :global(.ip-item img) { max-width: 100%; max-height: 100%; object-fit: contain; }
+  :global(.ip-item:hover), :global(.ip-item.on) { border-color: var(--cms-primary); }
+  :global(.ip-empty) { grid-column: 1 / -1; text-align: center; padding: 16px; color: var(--cms-text-muted); font-size: 13px; }
+</style>
+
+<script>
+  import { api, esc, fmtDate, toast, watchDeploy } from '../../scripts/admin/cms';
+  import { slugify } from '../../lib/cms/text';
+
+  type Img = { name: string; path: string; url: string };
+  const root = document.querySelector<HTMLElement>('.tf')!;
+  const mode = root.dataset.mode as 'new' | 'edit';
+  let slug = root.dataset.slug || '';
+  let sha = root.dataset.sha || '';
+  const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
+  let images: Img[] = [];
+  let dirty = false;
+
+  const values = () => ({
+    presentation: $('presentation').value.trim(),
+    conference: $('conference').value.trim(),
+    region: $<HTMLSelectElement>('region').value,
+    date: $('date').value,
+    link: $('link').value.trim(),
+    image: $('image').value || undefined,
+  });
+
+  // ---- live card
+  const youtubeId = (link: string) =>
+    link.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/)([^&?/]+)/)?.[1] || null;
+  function card() {
+    const v = values();
+    const id = youtubeId(v.link);
+    const thumb = $<HTMLDivElement>('tf-thumb');
+    thumb.style.backgroundImage = id ? `url(https://img.youtube.com/vi/${id}/hqdefault.jpg)` : '';
+    thumb.textContent = id ? '' : v.link ? 'Not a YouTube link: listed without a video' : 'Add a YouTube link to show the video';
+    $('tf-title').textContent = v.presentation || 'Presentation title';
+    $('tf-meta').textContent = [v.conference || 'Conference', v.region, v.date ? fmtDate(v.date) : ''].filter(Boolean).join(' • ');
+    const recent = v.date && new Date(v.date).getFullYear() >= new Date().getFullYear() - 1;
+    $('tf-hint').textContent = v.date
+      ? recent ? 'Shows under Recent talks with its video thumbnail.' : 'Shows in the Earlier talks list.'
+      : '';
+  }
+
+  // ---- logo picker
+  function selected(path: string) {
+    $('image').value = path;
+    const box = $<HTMLDivElement>('ip-selected');
+    box.hidden = !path;
+    if (path) {
+      const img = images.find((i) => i.path === path);
+      $<HTMLImageElement>('ip-selected-img').src = img?.url || `/${path}`;
+      $('ip-selected-path').textContent = path;
+    }
+    grid();
+  }
+  function grid() {
+    const q = $('ip-search').value.toLowerCase();
+    const shown = images.filter((i) => i.name.toLowerCase().includes(q));
+    const cur = $('image').value;
+    $('ip-grid').innerHTML = shown.length
+      ? shown.map((i) => `<button type="button" class="ip-item ${i.path === cur ? 'on' : ''}" data-path="${esc(i.path)}" title="${esc(i.name)}"><img src="${esc(i.url)}" data-fallback="/api/admin/assets?path=${encodeURIComponent(`public/${i.path}`)}" alt="${esc(i.name)}" loading="lazy" /></button>`).join('')
+      : `<div class="ip-empty">${images.length ? 'No matching logos' : 'No logos yet'}</div>`;
+  }
+  $('ip-grid').addEventListener('click', (e) => {
+    const b = (e.target as Element).closest<HTMLElement>('[data-path]');
+    if (b) { selected(b.dataset.path!); dirty = true; }
+  });
+  $('ip-search').addEventListener('input', grid);
+  // A logo committed but not deployed yet is not on the site: load it through the CMS.
+  $('ip-grid').addEventListener('error', (e) => {
+    const img = e.target as HTMLImageElement;
+    if (img.dataset?.fallback && img.src !== new URL(img.dataset.fallback, location.href).href) img.src = img.dataset.fallback;
+  }, true);
+  $('ip-clear').addEventListener('click', () => { selected(''); dirty = true; });
+
+  async function added(img: Img & { commit?: string }) {
+    images = [...images, img].sort((a, b) => a.name.localeCompare(b.name));
+    selected(img.path);
+    dirty = true;
+    watchDeploy(img.commit);
+    toast(`Saved ${img.name}`, 'success');
+  }
+  $('ip-upload').addEventListener('click', () => $('ip-file').click());
+  $<HTMLInputElement>('ip-file').addEventListener('change', async (e) => {
+    const f = (e.target as HTMLInputElement).files?.[0];
+    (e.target as HTMLInputElement).value = '';
+    if (!f) return;
+    const form = new FormData();
+    form.append('file', f);
+    form.append('folder', 'presentations');
+    try {
+      added(await api('/api/admin/assets', { method: 'POST', body: form }));
+    } catch (err) {
+      toast((err as Error).message, 'error');
+    }
+  });
+  $('ip-fetch').addEventListener('click', async () => {
+    const btn = $<HTMLButtonElement>('ip-fetch');
+    const url = $('ip-url').value.trim();
+    if (!url) return;
+    btn.disabled = true;
+    btn.textContent = 'Fetching...';
+    try {
+      added(await api('/api/admin/assets', { json: { url, folder: 'presentations' } }));
+      $('ip-url').value = '';
+    } catch (err) {
+      toast((err as Error).message, 'error');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Fetch';
+  });
+
+  // ---- save and delete
+  $('talk-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const v = values();
+    const missing = (['presentation', 'conference', 'date', 'link'] as const).filter((k) => !v[k]);
+    if (missing.length) return toast(`Fill in: ${missing.join(', ')}`, 'error');
+    const btn = $<HTMLButtonElement>('save-btn');
+    btn.disabled = true;
+    try {
+      const target = mode === 'edit' ? slug : slugify(`${v.presentation}-${v.conference}`);
+      const res = await api<{ sha: string; commit: string; slug: string }>('/api/admin/talks', { json: { slug: target, frontmatter: v, sha: sha || undefined } });
+      sha = res.sha;
+      dirty = false;
+      watchDeploy(res.commit, '/talks/');
+      toast(mode === 'new' ? 'Talk created. Deploying now.' : 'Talk updated. Deploying now.', 'success');
+      if (mode === 'new') setTimeout(() => (location.href = `/admin/talks/${res.slug}`), 700);
+    } catch (err) {
+      toast((err as Error).message, 'error');
+    }
+    btn.disabled = false;
+  });
+
+  let armed = false;
+  document.getElementById('delete-btn')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    if (!armed) {
+      armed = true;
+      btn.textContent = 'Click again to delete';
+      setTimeout(() => { armed = false; btn.textContent = 'Delete talk'; }, 4000);
+      return;
+    }
+    try {
+      const res = await api<{ commit: string }>('/api/admin/talks', { method: 'DELETE', json: { slug, sha } });
+      dirty = false;
+      watchDeploy(res.commit, '/talks/');
+      toast('Talk deleted', 'success');
+      setTimeout(() => (location.href = '/admin/talks'), 600);
+    } catch (err) {
+      toast((err as Error).message, 'error');
+    }
+  });
+
+  root.addEventListener('input', () => { dirty = true; card(); });
+  root.addEventListener('change', card);
+  addEventListener('beforeunload', (e) => { if (dirty) e.preventDefault(); });
+  addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      $<HTMLFormElement>('talk-form').requestSubmit();
+    }
+  });
+
+  card();
+  api<Img[]>('/api/admin/assets?folder=presentations')
+    // Logos already on the site load from it; only new uploads need the CMS proxy.
+    .then((list) => { images = list.map((i) => ({ ...i, url: (i as Img & { site: string }).site })); selected($('image').value); })
+    .catch((err) => { $('ip-grid').innerHTML = `<div class="ip-empty">${esc((err as Error).message)}</div>`; });
+  api<{ conference: string }[]>('/api/admin/talks')
+    .then((talks) => {
+      const names = [...new Set(talks.map((t) => t.conference).filter(Boolean))].sort();
+      $('conference-list').innerHTML = names.map((n) => `<option value="${esc(n)}"></option>`).join('');
+    })
+    .catch(() => {});
+</script>

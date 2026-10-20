@@ -7,95 +7,150 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     <span class="cms-breadcrumb-current">Dashboard</span>
   </Fragment>
 
+  <Fragment slot="actions">
+    <a href="/admin/blog/new" class="cms-btn cms-btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Post
+    </a>
+  </Fragment>
+
   <div class="cms-page-header">
     <div>
       <h1 class="cms-page-title">Dashboard</h1>
-      <p class="cms-page-subtitle">Manage your content at a glance</p>
+      <p class="cms-page-subtitle">bengreenberg.dev at a glance</p>
     </div>
   </div>
 
-  <div class="cms-stats" id="stats-grid">
-    <div class="cms-stat">
-      <div class="cms-stat-label">Blog Posts</div>
+  <div class="cms-stats">
+    <a class="cms-stat dash-stat" href="/admin/analytics#range=7d">
+      <div class="cms-stat-label">Visitors, last 7 days</div>
+      <div class="cms-stat-value" id="stat-visitors">--</div>
+      <div class="dash-delta" id="stat-visitors-delta"></div>
+    </a>
+    <a class="cms-stat dash-stat" href="/admin/blog">
+      <div class="cms-stat-label">Blog posts</div>
       <div class="cms-stat-value" id="stat-blog">--</div>
-    </div>
-    <div class="cms-stat">
+      <div class="dash-delta" id="stat-blog-sub"></div>
+    </a>
+    <a class="cms-stat dash-stat" href="/admin/talks">
       <div class="cms-stat-label">Talks</div>
       <div class="cms-stat-value" id="stat-talks">--</div>
-    </div>
-    <div class="cms-stat">
+      <div class="dash-delta" id="stat-talks-sub"></div>
+    </a>
+    <a class="cms-stat dash-stat" href="/admin/projects">
       <div class="cms-stat-label">Workshops</div>
       <div class="cms-stat-value" id="stat-projects">--</div>
-    </div>
+    </a>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-    <div class="cms-card">
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Recent Blog Posts</h3>
-      <div id="recent-posts" style="display:flex;flex-direction:column;gap:8px;">
-        <div class="cms-loading-overlay" style="padding:24px;">
-          <div class="cms-spinner"></div>
-        </div>
-      </div>
-    </div>
+  <div class="dash-grid">
+    <section class="cms-card dash-card">
+      <div class="dash-head"><h2>Top pages, last 7 days</h2><a href="/admin/analytics#range=7d">Analytics</a></div>
+      <div id="top-pages" class="dash-list"><div class="cms-spinner"></div></div>
+    </section>
 
-    <div class="cms-card">
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Quick Actions</h3>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <a href="/admin/blog/new" class="cms-btn cms-btn-primary" style="justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Blog Post
-        </a>
-        <a href="/admin/talks/new" class="cms-btn cms-btn-secondary" style="justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Talk
-        </a>
-        <a href="/admin/projects" class="cms-btn cms-btn-secondary" style="justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Workshop
-        </a>
-      </div>
-    </div>
+    <section class="cms-card dash-card">
+      <div class="dash-head"><h2>Drafts in progress</h2><a href="/admin/blog">All posts</a></div>
+      <div id="drafts" class="dash-list"><div class="cms-spinner"></div></div>
+    </section>
+
+    <section class="cms-card dash-card">
+      <div class="dash-head"><h2>Recent posts</h2><a href="/admin/blog/new">New post</a></div>
+      <div id="recent-posts" class="dash-list"><div class="cms-spinner"></div></div>
+    </section>
+
+    <section class="cms-card dash-card">
+      <div class="dash-head"><h2>Recent deploys</h2><a href="https://vercel.com/bencgreenbergs-projects/personal-site/deployments" target="_blank" rel="noopener">Vercel</a></div>
+      <div id="deploys" class="dash-list"><div class="cms-spinner"></div></div>
+    </section>
   </div>
 
-  <script is:inline>
-    (async () => {
-      try {
-        const [blogRes, talksRes, projectsRes] = await Promise.all([
-          fetch('/api/admin/blog'),
-          fetch('/api/admin/talks'),
-          fetch('/api/admin/projects'),
-        ]);
+  <style>
+    .dash-stat { text-decoration: none; color: inherit; transition: border-color 0.15s; }
+    .dash-stat:hover { border-color: var(--cms-border-hover); }
+    .dash-delta { font-size: 12.5px; color: var(--cms-text-muted); margin-top: 4px; }
+    :global(.dash-delta .up) { color: var(--cms-success); }
+    :global(.dash-delta .down) { color: var(--cms-danger); }
+    .dash-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 1000px) { .dash-grid { grid-template-columns: minmax(0, 1fr); } }
+    .dash-card:hover { border-color: var(--cms-border); }
+    .dash-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+    .dash-head h2 { font-size: 15px; font-weight: 600; }
+    .dash-head a { font-size: 13px; color: var(--cms-primary); text-decoration: none; }
+    .dash-head a:hover { text-decoration: underline; }
+    .dash-list { display: flex; flex-direction: column; gap: 2px; min-height: 60px; }
+    :global(.dash-row) { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 10px; border-radius: 6px; text-decoration: none; color: inherit; font-size: 14px; }
+    :global(a.dash-row:hover) { background: rgba(255, 255, 255, 0.03); }
+    :global(.dash-row .t) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    :global(.dash-row .m) { flex-shrink: 0; font-size: 12.5px; color: var(--cms-text-muted); font-variant-numeric: tabular-nums; }
+    :global(.dash-none) { font-size: 13px; color: var(--cms-text-muted); padding: 8px 10px; }
+    :global(.dot) { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; background: var(--cms-text-muted); }
+    :global(.dot.READY) { background: var(--cms-success); }
+    :global(.dot.ERROR) { background: var(--cms-danger); }
+    :global(.dot.BUILDING), :global(.dot.QUEUED), :global(.dot.INITIALIZING) { background: var(--cms-warning); }
+  </style>
 
-        const posts = await blogRes.json();
-        const talks = await talksRes.json();
-        const projects = await projectsRes.json();
-        const failed = [posts, talks, projects].find((d) => d && d.error);
-        if (failed) throw new Error(failed.error);
+  <script>
+    import { api, esc, fmtDate } from '../../scripts/admin/cms';
 
-        document.getElementById('stat-blog').textContent = Array.isArray(posts) ? posts.length : '0';
-        document.getElementById('stat-talks').textContent = Array.isArray(talks) ? talks.length : '0';
-        document.getElementById('stat-projects').textContent =
-          projects.workshops ? projects.workshops.length : '0';
+    const $ = (id: string) => document.getElementById(id)!;
+    const none = (text: string) => `<div class="dash-none">${esc(text)}</div>`;
+    const fail = (err: unknown) => none(`Could not load: ${(err as Error).message}`);
+    const nf = new Intl.NumberFormat('en-US');
+    const ago = (ms: number) => {
+      const m = Math.round((Date.now() - ms) / 60000);
+      return m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)}d ago`;
+    };
 
-        // Show recent posts
-        const recent = document.getElementById('recent-posts');
-        if (Array.isArray(posts) && posts.length > 0) {
-          recent.innerHTML = posts.slice(0, 5).map(p => `
-            <a href="/admin/blog/${p.slug}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:6px;text-decoration:none;color:inherit;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
-              <span style="font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;">${p.title}</span>
-              <span class="cms-badge ${p.draft ? 'cms-badge-yellow' : 'cms-badge-green'}">${p.draft ? 'Draft' : 'Published'}</span>
-            </a>
-          `).join('');
-        } else {
-          recent.innerHTML = '<div class="cms-empty" style="padding:24px;"><div class="cms-empty-text">No posts yet</div></div>';
-        }
-      } catch (err) {
-        console.error('Dashboard load error:', err);
-        const recent = document.getElementById('recent-posts');
-        recent.innerHTML = '<div class="cms-empty" style="padding:24px;"><div class="cms-empty-text"></div></div>';
-        recent.querySelector('.cms-empty-text').textContent = `Could not load content: ${err.message}`;
-      }
-    })();
+    type Post = { slug: string; title: string; date: string; draft: boolean; words: number };
+    api<Post[]>('/api/admin/blog').then((posts) => {
+      const drafts = posts.filter((p) => p.draft);
+      $('stat-blog').textContent = String(posts.length - drafts.length);
+      $('stat-blog-sub').textContent = `published · ${drafts.length} draft${drafts.length === 1 ? '' : 's'}`;
+      $('drafts').innerHTML = drafts.length
+        ? drafts.map((p) => `<a class="dash-row" href="/admin/blog/${esc(p.slug)}"><span class="t">${esc(p.title)}</span><span class="m">${nf.format(p.words)} words</span></a>`).join('')
+        : none('No drafts. Start one from New Post.');
+      $('recent-posts').innerHTML = posts.filter((p) => !p.draft).slice(0, 6)
+        .map((p) => `<a class="dash-row" href="/admin/blog/${esc(p.slug)}"><span class="t">${esc(p.title)}</span><span class="m">${esc(fmtDate(p.date))}</span></a>`).join('') || none('No posts yet.');
+    }).catch((err) => { $('drafts').innerHTML = fail(err); $('recent-posts').innerHTML = fail(err); });
+
+    api<{ date: string }[]>('/api/admin/talks').then((talks) => {
+      $('stat-talks').textContent = String(talks.length);
+      const year = String(new Date().getFullYear());
+      const n = talks.filter((t) => t.date.startsWith(year)).length;
+      $('stat-talks-sub').textContent = `${n} in ${year}`;
+    }).catch(() => {});
+
+    api<{ workshops: unknown[] }>('/api/admin/projects').then((p) => { $('stat-projects').textContent = String(p.workshops.length); }).catch(() => {});
+
+    // Same windows as the analytics desk's "7 days": today plus the 6 days before.
+    const day0 = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const now = new Date();
+    const from = new Date(day0(now).getTime() - 6 * 86400_000);
+    const params = new URLSearchParams({
+      from: from.toISOString(), to: now.toISOString(),
+      pfrom: new Date(from.getTime() - 7 * 86400_000).toISOString(), pto: new Date(now.getTime() - 7 * 86400_000).toISOString(),
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+    });
+    type Report = { summary: { current: { visitors: number }; previous: { visitors: number } }; pages: { key: string; title?: string; visitors: number }[] };
+    api<Report>(`/api/admin/analytics?${params}`).then((r) => {
+      const cur = r.summary.current.visitors, prev = r.summary.previous.visitors;
+      $('stat-visitors').textContent = nf.format(cur);
+      const d = prev ? Math.round(((cur - prev) / prev) * 100) : null;
+      $('stat-visitors-delta').innerHTML = d === null ? 'no data for the week before' : `<span class="${d >= 0 ? 'up' : 'down'}">${d >= 0 ? '▲' : '▼'} ${Math.abs(d)}%</span> vs the week before`;
+      $('top-pages').innerHTML = r.pages.slice(0, 6)
+        .map((p) => `<a class="dash-row" href="https://www.bengreenberg.dev${esc(p.key)}" target="_blank" rel="noopener"><span class="t" title="${esc(p.title || '')}">${esc(p.key)}</span><span class="m">${nf.format(p.visitors)} visitors</span></a>`).join('')
+        || none('No visits yet this week.');
+    }).catch((err) => { $('top-pages').innerHTML = fail(err); $('stat-visitors').textContent = '--'; });
+
+    type Deploy = { state: string; message: string | null; createdAt: number; inspectorUrl: string | null };
+    api<{ configured: boolean; deploys: Deploy[] }>('/api/admin/deploys').then((d) => {
+      if (!d.configured) { $('deploys').innerHTML = none('Set VERCEL_TOKEN to see deploys here.'); return; }
+      $('deploys').innerHTML = d.deploys.slice(0, 6).map((x) => `
+        <a class="dash-row" href="${esc(x.inspectorUrl || '#')}" target="_blank" rel="noopener">
+          <span class="t"><span class="dot ${esc(x.state)}"></span>${esc((x.message || 'Deploy').split('\n')[0])}</span>
+          <span class="m">${esc(ago(x.createdAt))}</span>
+        </a>`).join('') || none('No deploys yet.');
+    }).catch((err) => { $('deploys').innerHTML = fail(err); });
   </script>
 </AdminLayout>

@@ -1,9 +1,14 @@
+// Content storage for the CMS. With GITHUB_TOKEN set (production) every read
+// and write goes through the GitHub API, so a save is a commit to the repo and
+// Vercel deploys it. Without one (local dev) it reads and writes the working
+// tree instead.
 import { readFileSync, writeFileSync, readdirSync, unlinkSync, existsSync, mkdirSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 
-const REPO_OWNER = 'hummusonrails';
-const REPO_NAME = 'personal-site';
-const BRANCH = 'main';
+export const REPO_OWNER = 'hummusonrails';
+export const REPO_NAME = 'personal-site';
+// CMS_BRANCH points a local CMS at a scratch branch for end-to-end testing.
+const BRANCH = import.meta.env.CMS_BRANCH || process.env.CMS_BRANCH || 'main';
 
 function getToken(): string | null {
   return import.meta.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN || null;
@@ -18,9 +23,14 @@ function projectRoot(): string {
   return process.cwd();
 }
 
+const REPO_API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
+
 function apiUrl(path: string): string {
-  return `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+  return `${REPO_API}/contents/${path}`;
 }
+
+/** Thrown when a save would overwrite a change made since the editor loaded. */
+export class ConflictError extends Error {}
 
 async function api(url: string, options: RequestInit = {}): Promise<Response> {
   const token = getToken();
@@ -38,6 +48,12 @@ async function api(url: string, options: RequestInit = {}): Promise<Response> {
     throw new Error('GitHub rejected GITHUB_TOKEN (expired or revoked). Create a new token and update it in Vercel.');
   }
   return res;
+}
+
+async function apiJson<T = any>(url: string, options: RequestInit = {}): Promise<T> {
+  const res = await api(url, options);
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${await res.text()}`);
+  return res.json() as Promise<T>;
 }
 
 export interface GitHubFile {
@@ -74,11 +90,16 @@ export async function listFiles(dirPath: string): Promise<GitHubFile[]> {
 }
 
 export async function getFile(filePath: string): Promise<{ content: string; sha: string } | null> {
+  const raw = await getRawFile(filePath);
+  return raw && { content: raw.bytes.toString('utf-8'), sha: raw.sha };
+}
+
+/** A file's bytes, for images and other binary files. */
+export async function getRawFile(filePath: string): Promise<{ bytes: Buffer; sha: string } | null> {
   if (isLocal()) {
     const fullPath = resolve(projectRoot(), filePath);
     if (!existsSync(fullPath)) return null;
-    const content = readFileSync(fullPath, 'utf-8');
-    return { content, sha: 'local' };
+    return { bytes: readFileSync(fullPath), sha: 'local' };
   }
 
   const res = await api(`${apiUrl(filePath)}?ref=${BRANCH}`);
@@ -87,8 +108,9 @@ export async function getFile(filePath: string): Promise<{ content: string; sha:
     throw new Error(`GitHub API error: ${res.status} ${await res.text()}`);
   }
   const data = await res.json();
-  const content = Buffer.from(data.content, 'base64').toString('utf-8');
-  return { content, sha: data.sha };
+  // The contents API leaves out the body of files over 1 MB; the blob API has it.
+  const encoded = data.content || (await apiJson(`${REPO_API}/git/blobs/${data.sha}`)).content;
+  return { bytes: Buffer.from(encoded, 'base64'), sha: data.sha };
 }
 
 /** Reads several files a few at a time, in the order given; missing files are null. */
@@ -105,62 +127,107 @@ export async function getFiles(filePaths: string[], concurrency = 8): Promise<({
   return out;
 }
 
+export interface FileChange {
+  path: string;
+  /** New contents; null deletes the file. */
+  content: string | Buffer | null;
+  /**
+   * What the file must be before this commit: the blob sha the editor loaded,
+   * null for "must not exist yet", undefined to skip the check.
+   */
+  expectSha?: string | null;
+}
+
+/**
+ * Writes every change as one commit, so a save (a rename, a post with its new
+ * tag) deploys once and never lands half done. Throws ConflictError when a
+ * file is not what the caller expected.
+ */
+export async function commitFiles(changes: FileChange[], message: string): Promise<{ commit: string; shas: Record<string, string> }> {
+  if (isLocal()) {
+    const shas: Record<string, string> = {};
+    for (const c of changes) {
+      const full = resolve(projectRoot(), c.path);
+      if (c.expectSha === null && existsSync(full)) throw new ConflictError(`${c.path} already exists`);
+      if (c.content === null) {
+        if (existsSync(full)) unlinkSync(full);
+      } else {
+        mkdirSync(dirname(full), { recursive: true });
+        writeFileSync(full, c.content);
+        shas[c.path] = 'local';
+      }
+    }
+    return { commit: 'local', shas };
+  }
+
+  for (let attempt = 0; ; attempt++) {
+    const ref = await apiJson(`${REPO_API}/git/ref/heads/${BRANCH}`);
+    const parent: string = ref.object.sha;
+    const base = await apiJson(`${REPO_API}/git/commits/${parent}`);
+
+    for (const c of changes) {
+      if (c.expectSha === undefined) continue;
+      const res = await api(`${apiUrl(c.path)}?ref=${parent}`);
+      if (res.status !== 404 && !res.ok) throw new Error(`GitHub API error: ${res.status} ${await res.text()}`);
+      const current: string | null = res.ok ? (await res.json()).sha : null;
+      if (current !== c.expectSha) {
+        throw new ConflictError(
+          c.expectSha === null
+            ? `${c.path} already exists. Pick another slug.`
+            : current === null
+              ? `${c.path} was deleted since you opened it.`
+              : `${c.path} changed since you opened it. Reload to get the latest version before saving.`,
+        );
+      }
+    }
+
+    const tree = await Promise.all(
+      changes.map(async (c) => {
+        if (c.content === null) return { path: c.path, mode: '100644', type: 'blob', sha: null };
+        const blob = await apiJson(`${REPO_API}/git/blobs`, {
+          method: 'POST',
+          body: JSON.stringify({ content: (typeof c.content === 'string' ? Buffer.from(c.content, 'utf8') : c.content).toString('base64'), encoding: 'base64' }),
+        });
+        return { path: c.path, mode: '100644', type: 'blob', sha: blob.sha as string };
+      }),
+    );
+    const newTree = await apiJson(`${REPO_API}/git/trees`, {
+      method: 'POST',
+      body: JSON.stringify({ base_tree: base.tree.sha, tree }),
+    });
+    const commit = await apiJson(`${REPO_API}/git/commits`, {
+      method: 'POST',
+      body: JSON.stringify({ message, tree: newTree.sha, parents: [parent] }),
+    });
+    const update = await api(`${REPO_API}/git/refs/heads/${BRANCH}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ sha: commit.sha, force: false }),
+    });
+    if (update.ok) {
+      const shas: Record<string, string> = {};
+      tree.forEach((t) => { if (t.sha) shas[t.path] = t.sha; });
+      return { commit: commit.sha, shas };
+    }
+    // Someone else (a scheduled import, another tab) moved the branch first:
+    // rebuild on top of it, re-checking every expectation.
+    if (update.status !== 422 || attempt >= 2) {
+      throw new Error(`GitHub API error: ${update.status} ${await update.text()}`);
+    }
+  }
+}
+
 export async function createOrUpdateFile(
   filePath: string,
   content: string,
   message: string,
   sha?: string
-): Promise<{ sha: string; committed: boolean }> {
-  if (isLocal()) {
-    const fullPath = resolve(projectRoot(), filePath);
-    const dir = fullPath.substring(0, fullPath.lastIndexOf('/'));
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-    writeFileSync(fullPath, content, 'utf-8');
-    return { sha: 'local', committed: true };
-  }
-
-  const encoded = Buffer.from(content).toString('base64');
-  const body: Record<string, string> = {
-    message,
-    content: encoded,
-    branch: BRANCH,
-  };
-  if (sha) body.sha = sha;
-
-  const res = await api(apiUrl(filePath), {
-    method: 'PUT',
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`GitHub API error: ${res.status} ${err}`);
-  }
-
-  const data = await res.json();
-  return { sha: data.content.sha, committed: true };
+): Promise<{ sha: string; committed: boolean; commit: string }> {
+  const result = await commitFiles([{ path: filePath, content, expectSha: sha ?? null }], message);
+  return { sha: result.shas[filePath], committed: true, commit: result.commit };
 }
 
-export async function deleteFile(
-  filePath: string,
-  sha: string,
-  message: string
-): Promise<void> {
-  if (isLocal()) {
-    const fullPath = resolve(projectRoot(), filePath);
-    if (existsSync(fullPath)) unlinkSync(fullPath);
-    return;
-  }
-
-  const res = await api(apiUrl(filePath), {
-    method: 'DELETE',
-    body: JSON.stringify({ message, sha, branch: BRANCH }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`GitHub API error: ${res.status} ${err}`);
-  }
+export async function deleteFile(filePath: string, sha: string, message: string): Promise<{ commit: string }> {
+  return commitFiles([{ path: filePath, content: null, expectSha: sha }], message);
 }
 
 // Preview deployment: create a branch and push content
@@ -261,7 +328,7 @@ export async function getVercelPreviewUrl(branchName: string): Promise<string | 
   if (!creds) return null;
 
   const res = await fetch(
-    `https://api.vercel.com/v6/deployments?projectId=${creds.projectId}&limit=5&state=BUILDING,READY`,
+    `https://api.vercel.com/v6/deployments?projectId=${creds.projectId}&limit=20&state=BUILDING,READY`,
     { headers: { Authorization: `Bearer ${creds.token}` } }
   );
   if (!res.ok) return null;
@@ -314,7 +381,11 @@ export async function listPreviewBranches(): Promise<string[]> {
 }
 
 export async function cleanupAllPreviews(): Promise<{ deleted: number }> {
-  const branches = await listPreviewBranches();
+  // Only stale ones: a preview opened in another tab in the last half hour stays.
+  const branches = (await listPreviewBranches()).filter((b) => {
+    const ts = Number(b.replace(/^preview-/, ''));
+    return !Number.isFinite(ts) || Date.now() - ts > 30 * 60_000;
+  });
   let deleted = 0;
   for (const branch of branches) {
     try {

@@ -8,8 +8,10 @@ export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
   const { url } = body;
 
-  if (!url) {
-    return new Response(JSON.stringify({ error: 'Missing URL' }), { status: 400 });
+  try {
+    if (!/^https?:$/.test(new URL(String(url)).protocol)) throw new Error();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Enter a full http(s) URL.' }), { status: 400 });
   }
 
   try {
@@ -95,7 +97,7 @@ export const POST: APIRoute = async ({ request }) => {
       },
     });
 
-    const markdown = turndown.turndown(article.content);
+    const markdown = turndown.turndown(article.content || '');
 
     return new Response(
       JSON.stringify({

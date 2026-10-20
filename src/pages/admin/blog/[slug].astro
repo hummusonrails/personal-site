@@ -2,11 +2,13 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import BlogEditor from '../../../components/admin/BlogEditor';
 import { getFile } from '../../../lib/github';
+import { validSlug } from '../../../lib/cms/content';
 import matter from 'gray-matter';
 
 const { slug } = Astro.params;
 
 let initialData = null;
+if (!validSlug(slug)) return Astro.redirect('/admin/blog');
 try {
   const file = await getFile(`src/content/blog/${slug}.md`);
   if (file) {
@@ -30,13 +32,6 @@ if (!initialData) {
     <span class="cms-breadcrumb-sep">/</span>
     <span class="cms-breadcrumb-current">{initialData.frontmatter.title}</span>
   </Fragment>
-
-  <div class="cms-page-header">
-    <div>
-      <h1 class="cms-page-title">Edit Post</h1>
-      <p class="cms-page-subtitle">{initialData.frontmatter.title}</p>
-    </div>
-  </div>
 
   <BlogEditor client:load mode="edit" slug={slug} initialData={initialData} />
 </AdminLayout>

@@ -23,6 +23,14 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     </div>
   </div>
 
+  <div class="list-controls">
+    <input class="cms-input" type="search" id="q" placeholder="Search talks and conferences  ( / )" aria-label="Search talks" />
+    <select class="cms-select" id="region" aria-label="Region">
+      <option value="">All regions</option>
+      <option>NA</option><option>EMEA</option><option>APAC</option><option>LATAM</option><option>Global</option>
+    </select>
+  </div>
+
   <div id="talks-container">
     <div class="cms-loading-overlay">
       <div class="cms-spinner"></div>
@@ -30,114 +38,102 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     </div>
   </div>
 
-  <div id="delete-modal" style="display:none;"></div>
+  <style>
+    .list-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .list-controls .cms-input { flex: 1; min-width: 220px; }
+    .list-controls .cms-select { width: auto; min-width: 140px; }
+    :global(.talk-title) { color: var(--cms-text); text-decoration: none; font-weight: 500; }
+    :global(.talk-title:hover) { text-decoration: underline; }
+    :global(.cms-table td.title-cell) { max-width: 420px; white-space: normal; }
+    :global(.no-video) { font-size: 11px; color: var(--cms-warning); margin-left: 6px; }
+  </style>
 
-  <script is:inline>
-    let talksData = [];
+  <script>
+    import { api, esc, fmtDate, toast, watchDeploy } from '../../../scripts/admin/cms';
 
-    async function loadTalks() {
+    type Talk = { slug: string; presentation: string; conference: string; region: string; date: string; link: string; sha: string };
+    let talks: Talk[] = [];
+    const state = { q: '', region: '' };
+    const container = document.getElementById('talks-container')!;
+    const pending = new Set<string>();
+    const isVideo = (l: string) => /youtube\.com|youtu\.be/.test(l || '');
+
+    async function load() {
       try {
-        const res = await fetch('/api/admin/talks');
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-        talksData = data;
-        renderTalks();
+        talks = await api<Talk[]>('/api/admin/talks');
+        render();
       } catch (err) {
-        document.getElementById('talks-container').innerHTML =
-          '<div class="cms-empty"><div class="cms-empty-text">Failed to load talks</div></div>';
-        const msg = document.createElement('div');
-        msg.className = 'cms-empty-text';
-        msg.textContent = err.message;
-        document.querySelector('#talks-container .cms-empty').append(msg);
+        container.innerHTML = `<div class="cms-empty"><div class="cms-empty-text">Failed to load talks</div><div class="cms-empty-text">${esc((err as Error).message)}</div></div>`;
       }
     }
 
-    function renderTalks() {
-      const container = document.getElementById('talks-container');
-      const count = document.getElementById('talk-count');
-      count.textContent = `${talksData.length} talk${talksData.length !== 1 ? 's' : ''}`;
-
-      if (talksData.length === 0) {
-        container.innerHTML = `
-          <div class="cms-empty">
-            <div class="cms-empty-icon">&#127908;</div>
-            <div class="cms-empty-text">No talks yet. Add your first one.</div>
-            <a href="/admin/talks/new" class="cms-btn cms-btn-primary">New Talk</a>
-          </div>`;
+    function render() {
+      const years = new Set(talks.map((t) => t.date.slice(0, 4)));
+      document.getElementById('talk-count')!.textContent = `${talks.length} talks across ${years.size} years`;
+      const q = state.q.toLowerCase();
+      const shown = talks.filter((t) => (!state.region || t.region === state.region) && (!q || `${t.presentation} ${t.conference}`.toLowerCase().includes(q)));
+      if (!shown.length) {
+        container.innerHTML = `<div class="cms-empty"><div class="cms-empty-text">${talks.length ? 'No talks match.' : 'No talks yet.'}</div></div>`;
         return;
       }
-
       container.innerHTML = `
         <div class="cms-table-wrap">
           <table class="cms-table">
-            <thead>
-              <tr>
-                <th>Presentation</th>
-                <th>Conference</th>
-                <th>Region</th>
-                <th>Date</th>
-                <th style="text-align:right;">Actions</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Presentation</th><th>Conference</th><th>Region</th><th>Date</th><th style="text-align:right;">Actions</th></tr></thead>
             <tbody>
-              ${talksData.map(t => `
+              ${shown.map((t) => `
                 <tr>
-                  <td>${t.presentation}</td>
-                  <td>${t.conference}</td>
-                  <td><span class="cms-badge cms-badge-gray">${t.region}</span></td>
-                  <td>${new Date(t.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</td>
+                  <td class="title-cell"><a class="talk-title" href="/admin/talks/${esc(t.slug)}">${esc(t.presentation)}</a>${isVideo(t.link) ? '' : '<span class="no-video">no video</span>'}</td>
+                  <td>${esc(t.conference)}</td>
+                  <td><span class="cms-badge cms-badge-gray">${esc(t.region)}</span></td>
+                  <td>${esc(fmtDate(t.date))}</td>
                   <td>
                     <div class="cms-actions">
-                      <a href="/admin/talks/${t.slug}" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</a>
-                      <button onclick="confirmDelete('${t.slug}', '${t.sha}')" class="cms-btn cms-btn-danger cms-btn-sm">Delete</button>
+                      <a href="${esc(t.link)}" target="_blank" rel="noopener" class="cms-btn cms-btn-ghost cms-btn-sm">Open</a>
+                      <a href="/admin/talks/${esc(t.slug)}" class="cms-btn cms-btn-ghost cms-btn-sm">Edit</a>
+                      <button type="button" data-delete="${esc(t.slug)}" class="cms-btn cms-btn-danger cms-btn-sm">${pending.has(t.slug) ? 'Confirm' : 'Delete'}</button>
                     </div>
                   </td>
-                </tr>
-              `).join('')}
+                </tr>`).join('')}
             </tbody>
           </table>
         </div>`;
     }
 
-    function confirmDelete(slug, sha) {
-      const modal = document.getElementById('delete-modal');
-      modal.style.display = 'block';
-      modal.innerHTML = `
-        <div class="cms-modal-backdrop" onclick="closeModal()">
-          <div class="cms-modal" onclick="event.stopPropagation()">
-            <h3 class="cms-modal-title">Delete Talk</h3>
-            <p class="cms-modal-body">Are you sure you want to delete "<strong>${slug}</strong>"?</p>
-            <div class="cms-modal-actions">
-              <button class="cms-btn cms-btn-secondary" onclick="closeModal()">Cancel</button>
-              <button class="cms-btn cms-btn-danger" onclick="deleteTalk('${slug}', '${sha}')">Delete</button>
-            </div>
-          </div>
-        </div>`;
-    }
-
-    function closeModal() {
-      document.getElementById('delete-modal').style.display = 'none';
-    }
-
-    async function deleteTalk(slug, sha) {
-      try {
-        const res = await fetch('/api/admin/talks', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug, sha }),
-        });
-        if (res.ok) {
-          window.showToast('Talk deleted', 'success');
-          closeModal();
-          loadTalks();
-        } else {
-          window.showToast('Failed to delete talk', 'error');
-        }
-      } catch {
-        window.showToast('Failed to delete talk', 'error');
+    container.addEventListener('click', async (e) => {
+      const btn = (e.target as Element).closest<HTMLButtonElement>('[data-delete]');
+      if (!btn) return;
+      const slug = btn.dataset.delete!;
+      if (!pending.has(slug)) {
+        pending.add(slug);
+        render();
+        setTimeout(() => { pending.delete(slug); render(); }, 4000);
+        return;
       }
-    }
+      pending.delete(slug);
+      const talk = talks.find((t) => t.slug === slug);
+      if (!talk) return;
+      try {
+        const res = await api<{ commit: string }>('/api/admin/talks', { method: 'DELETE', json: { slug, sha: talk.sha } });
+        talks = talks.filter((t) => t.slug !== slug);
+        watchDeploy(res.commit, '/talks/');
+        toast(`Deleted "${talk.presentation}"`, 'success');
+        render();
+      } catch (err) {
+        toast((err as Error).message, 'error');
+      }
+    });
 
-    loadTalks();
+    const q = document.getElementById('q') as HTMLInputElement;
+    q.addEventListener('input', () => { state.q = q.value; render(); });
+    document.getElementById('region')!.addEventListener('change', (e) => { state.region = (e.target as HTMLSelectElement).value; render(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName || '')) {
+        e.preventDefault();
+        q.focus();
+      }
+    });
+
+    load();
   </script>
 </AdminLayout>
