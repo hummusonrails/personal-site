@@ -52,5 +52,16 @@ export const onRequest = defineMiddleware(async ({ request, url }, next) => {
     return withPrivateHeaders(new Response(null, { status: 302, headers: { Location: '/admin/login' } }));
   }
 
+  // A failing admin API call answers with its reason as JSON, so the CMS
+  // pages can show it instead of a bare 500.
+  if (isApi) {
+    try {
+      return withPrivateHeaders(await next());
+    } catch (err) {
+      console.error(err);
+      return json(500, err instanceof Error ? err.message : 'Server error');
+    }
+  }
+
   return withPrivateHeaders(await next());
 });

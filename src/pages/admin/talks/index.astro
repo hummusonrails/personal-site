@@ -38,11 +38,17 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     async function loadTalks() {
       try {
         const res = await fetch('/api/admin/talks');
-        talksData = await res.json();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        talksData = data;
         renderTalks();
       } catch (err) {
         document.getElementById('talks-container').innerHTML =
           '<div class="cms-empty"><div class="cms-empty-text">Failed to load talks</div></div>';
+        const msg = document.createElement('div');
+        msg.className = 'cms-empty-text';
+        msg.textContent = err.message;
+        document.querySelector('#talks-container .cms-empty').append(msg);
       }
     }
 

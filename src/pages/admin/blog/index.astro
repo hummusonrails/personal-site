@@ -38,11 +38,17 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     async function loadPosts() {
       try {
         const res = await fetch('/api/admin/blog');
-        postsData = await res.json();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        postsData = data;
         renderPosts();
       } catch (err) {
         document.getElementById('posts-container').innerHTML =
           '<div class="cms-empty"><div class="cms-empty-text">Failed to load posts</div></div>';
+        const msg = document.createElement('div');
+        msg.className = 'cms-empty-text';
+        msg.textContent = err.message;
+        document.querySelector('#posts-container .cms-empty').append(msg);
       }
     }
 

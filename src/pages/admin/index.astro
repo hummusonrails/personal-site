@@ -70,6 +70,8 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         const posts = await blogRes.json();
         const talks = await talksRes.json();
         const projects = await projectsRes.json();
+        const failed = [posts, talks, projects].find((d) => d && d.error);
+        if (failed) throw new Error(failed.error);
 
         document.getElementById('stat-blog').textContent = Array.isArray(posts) ? posts.length : '0';
         document.getElementById('stat-talks').textContent = Array.isArray(talks) ? talks.length : '0';
@@ -90,6 +92,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         }
       } catch (err) {
         console.error('Dashboard load error:', err);
+        const recent = document.getElementById('recent-posts');
+        recent.innerHTML = '<div class="cms-empty" style="padding:24px;"><div class="cms-empty-text"></div></div>';
+        recent.querySelector('.cms-empty-text').textContent = `Could not load content: ${err.message}`;
       }
     })();
   </script>

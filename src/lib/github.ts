@@ -25,7 +25,7 @@ function apiUrl(path: string): string {
 async function api(url: string, options: RequestInit = {}): Promise<Response> {
   const token = getToken();
   if (!token) throw new Error('GITHUB_TOKEN is not set');
-  return fetch(url, {
+  const res = await fetch(url, {
     ...options,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -34,6 +34,10 @@ async function api(url: string, options: RequestInit = {}): Promise<Response> {
       ...options.headers,
     },
   });
+  if (res.status === 401) {
+    throw new Error('GitHub rejected GITHUB_TOKEN (expired or revoked). Create a new token and update it in Vercel.');
+  }
+  return res;
 }
 
 export interface GitHubFile {
@@ -85,6 +89,20 @@ export async function getFile(filePath: string): Promise<{ content: string; sha:
   const data = await res.json();
   const content = Buffer.from(data.content, 'base64').toString('utf-8');
   return { content, sha: data.sha };
+}
+
+/** Reads several files a few at a time, in the order given; missing files are null. */
+export async function getFiles(filePaths: string[], concurrency = 8): Promise<({ content: string; sha: string } | null)[]> {
+  const out: ({ content: string; sha: string } | null)[] = new Array(filePaths.length).fill(null);
+  let next = 0;
+  const worker = async () => {
+    while (next < filePaths.length) {
+      const i = next++;
+      out[i] = await getFile(filePaths[i]);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(concurrency, filePaths.length) }, worker));
+  return out;
 }
 
 export async function createOrUpdateFile(

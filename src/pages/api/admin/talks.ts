@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { listFiles, getFile, createOrUpdateFile, deleteFile } from '../../../lib/github';
+import { listFiles, getFile, getFiles, createOrUpdateFile, deleteFile } from '../../../lib/github';
 import matter from 'gray-matter';
 
 const TALKS_DIR = 'src/content/talks';
@@ -18,12 +18,12 @@ export const GET: APIRoute = async ({ url }) => {
     });
   }
 
-  const files = await listFiles(TALKS_DIR);
+  const files = (await listFiles(TALKS_DIR)).filter((f) => f.name.endsWith('.md'));
+  const contents = await getFiles(files.map((f) => f.path));
   const talks = [];
 
-  for (const f of files) {
-    if (!f.name.endsWith('.md')) continue;
-    const fileData = await getFile(f.path);
+  for (const [i, f] of files.entries()) {
+    const fileData = contents[i];
     if (!fileData) continue;
     const { data } = matter(fileData.content);
     talks.push({

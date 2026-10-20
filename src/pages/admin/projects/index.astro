@@ -41,12 +41,17 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       try {
         const res = await fetch('/api/admin/projects');
         const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
         workshopsData = data.workshops || [];
         workshopSha = data.sha || '';
         renderProjects();
       } catch (err) {
         document.getElementById('projects-container').innerHTML =
           '<div class="cms-empty"><div class="cms-empty-text">Failed to load workshops</div></div>';
+        const msg = document.createElement('div');
+        msg.className = 'cms-empty-text';
+        msg.textContent = err.message;
+        document.querySelector('#projects-container .cms-empty').append(msg);
       }
     }
 
