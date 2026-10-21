@@ -16,6 +16,7 @@ type Report = {
   summary: { current: Summary; previous: Summary };
   series: { current: Point[]; previous: Point[] };
   growth: { weeks: Point[]; months: Point[]; weekToDate: Point; monthToDate: Point };
+  github: { firstHit: string | null; summary: { current: Point; previous: Point }; series: { current: Point[]; previous: Point[] } };
   [panel: string]: unknown;
 };
 
@@ -39,7 +40,7 @@ export function start(board: HTMLElement): () => void {
 
   // ---- state, kept in the URL hash so a reload or bookmark returns to the same view
   const state = {
-    range: '30d', from: '', to: '', metric: 'visitors' as 'visitors' | 'views',
+    range: '30d', from: '', to: '', metric: 'visitors' as 'visitors' | 'views', ghMetric: 'views' as 'visitors' | 'views',
     filters: {} as Record<string, string>,
     tabs: {} as Record<string, string>,
   };
@@ -49,6 +50,7 @@ export function start(board: HTMLElement): () => void {
     state.from = h.get('from') || '';
     state.to = h.get('to') || '';
     state.metric = h.get('metric') === 'views' ? 'views' : 'visitors';
+    state.ghMetric = h.get('gh') === 'visitors' ? 'visitors' : 'views';
     state.filters = {};
     for (const k of Object.keys(FILTER_LABEL)) { const v = h.get(`f.${k}`); if (v) state.filters[k] = v; }
   };
@@ -56,6 +58,7 @@ export function start(board: HTMLElement): () => void {
     const h = new URLSearchParams({ range: state.range });
     if (state.range === 'custom') { h.set('from', state.from); h.set('to', state.to); }
     if (state.metric !== 'visitors') h.set('metric', state.metric);
+    if (state.ghMetric !== 'views') h.set('gh', state.ghMetric);
     for (const [k, v] of Object.entries(state.filters)) h.set(`f.${k}`, v);
     history.replaceState(null, '', `#${h}`);
   };
@@ -160,50 +163,57 @@ export function start(board: HTMLElement): () => void {
     host.replaceChildren();
     const ppv = (s: Summary) => (s.visitors ? s.views / s.visitors : 0);
     const bounce = (s: Summary) => (s.visitors ? s.bounces / s.visitors : 0);
-    const defs: { label: string; value: string; delta: number | null; good: boolean; pp?: boolean }[] = [
+    const defs: TileDef[] = [
       { label: 'Visitors', value: compactOr(cur.visitors), delta: pct(cur.visitors, prev.visitors), good: true },
       { label: 'Page views', value: compactOr(cur.views), delta: pct(cur.views, prev.views), good: true },
       { label: 'Pages per visitor', value: ppv(cur).toFixed(2), delta: pct(ppv(cur), ppv(prev)), good: true },
       { label: 'Single-page visits', value: `${Math.round(bounce(cur) * 100)}%`, delta: prev.visitors ? bounce(cur) - bounce(prev) : null, good: false, pp: true },
       { label: 'Time on page', value: dur(cur.engaged_ms), delta: pct(cur.engaged_ms, prev.engaged_ms), good: true },
     ];
-    for (const d of defs) {
-      const t = el('div', 'tile');
-      t.append(el('div', 'tile-label', d.label), el('div', 'tile-value', d.value));
-      const delta = el('div', 'tile-delta');
-      if (d.delta === null || !Number.isFinite(d.delta)) delta.textContent = `nothing to compare in ${prevLabel}`;
-      else {
-        const better = d.good ? d.delta > 0 : d.delta < 0;
-        const txt = d.pp ? `${d.delta > 0 ? '+' : d.delta < 0 ? '−' : '±'}${Math.abs(Math.round(d.delta * 100))} pts` : signed(d.delta);
-        const s = el('span', d.delta === 0 ? '' : better ? 'up' : 'down', `${d.delta > 0 ? '▲' : d.delta < 0 ? '▼' : ''} ${txt}`.trim());
-        delta.append(s, document.createTextNode(` vs ${prevLabel}`));
-      }
-      t.append(delta);
-      host.append(t);
+    host.append(...defs.map((d) => tile(d, prevLabel)));
+  }
+  type TileDef = { label: string; value: string; delta: number | null; good: boolean; pp?: boolean };
+  function tile(d: TileDef, prevLabel: string) {
+    const t = el('div', 'tile');
+    t.append(el('div', 'tile-label', d.label), el('div', 'tile-value', d.value));
+    const delta = el('div', 'tile-delta');
+    if (d.delta === null || !Number.isFinite(d.delta)) delta.textContent = `nothing to compare in ${prevLabel}`;
+    else {
+      const better = d.good ? d.delta > 0 : d.delta < 0;
+      const txt = d.pp ? `${d.delta > 0 ? '+' : d.delta < 0 ? '−' : '±'}${Math.abs(Math.round(d.delta * 100))} pts` : signed(d.delta);
+      const s = el('span', d.delta === 0 ? '' : better ? 'up' : 'down', `${d.delta > 0 ? '▲' : d.delta < 0 ? '▼' : ''} ${txt}`.trim());
+      delta.append(s, document.createTextNode(` vs ${prevLabel}`));
     }
+    t.append(delta);
+    return t;
   }
   const compactOr = (n: number) => (n >= 10000 ? compact.format(n) : nf.format(n));
 
   // ---- trend line with previous period
   function trend(r: Report, from: Date, to: Date) {
-    const host = $('trend');
-    const hourly = r.range.hourly;
-    const m = state.metric;
+    $('trend-title').textContent = state.metric === 'visitors' ? 'Visitors' : 'Page views';
+    line($('trend'), $('trend-legend'), r.series, state.metric, r.range.hourly, from, to, {
+      name: state.metric === 'visitors' ? 'visitors' : 'views', title: $('trend-title').textContent!, empty: 'No visits in this range yet.',
+    });
+  }
+
+  function line(
+    host: HTMLElement, legend: HTMLElement, series: { current: Point[]; previous: Point[] }, m: 'visitors' | 'views',
+    hourly: boolean, from: Date, to: Date, words: { name: string; title: string; empty: string },
+  ) {
     const cur = buckets(from, to, hourly);
     const n0 = shiftDays(from, to);
     const prev = cur.map((d) => back(d, n0));
     const index = (pts: Point[]) => new Map(pts.map((p) => [p.t, p]));
-    const ci = index(r.series.current), pi = index(r.series.previous);
+    const ci = index(series.current), pi = index(series.previous);
     const a = cur.map((d) => ci.get(keyOf(d, hourly))?.[m] ?? 0);
     const b = prev.map((d) => pi.get(keyOf(d, hourly))?.[m] ?? 0);
-    $('trend-title').textContent = m === 'visitors' ? 'Visitors' : 'Page views';
-    const legend = $('trend-legend');
     legend.replaceChildren();
     const li = (cls: string, text: string) => { const s = el('span'); s.append(el('i', cls), document.createTextNode(text)); return s; };
     legend.append(li('', window_().label), li('prev', 'Previous period'));
 
     host.replaceChildren();
-    if (!a.some(Boolean) && !b.some(Boolean)) { host.append(el('div', 'empty', 'No visits in this range yet.')); return; }
+    if (!a.some(Boolean) && !b.some(Boolean)) { host.append(el('div', 'empty', words.empty)); return; }
     const W = host.clientWidth, H = host.clientHeight;
     const pl = 40, pr = 12, pt = 8, pb = 24;
     const iw = W - pl - pr, ih = H - pt - pb;
@@ -211,7 +221,7 @@ export function start(board: HTMLElement): () => void {
     const n = cur.length;
     const x = (i: number) => pl + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
     const y = (v: number) => pt + ih - (v / max) * ih;
-    const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${$('trend-title').textContent} over time` });
+    const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${words.title} over time` });
     const grid = svgEl('g', { class: 'grid' }), axis = svgEl('g', { class: 'axis' });
     for (let k = 0; k <= 4; k++) {
       const v = (max / 4) * k;
@@ -241,7 +251,7 @@ export function start(board: HTMLElement): () => void {
       cross.setAttribute('x1', String(x(i))); cross.setAttribute('x2', String(x(i))); cross.setAttribute('visibility', 'visible');
       hot.setAttribute('cx', String(x(i))); hot.setAttribute('cy', String(y(a[i]))); hot.setAttribute('visibility', 'visible');
       const label = (d: Date) => (hourly ? `${fmtDay(d)}, ${d.toLocaleTimeString('en-US', { hour: 'numeric' })}` : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }));
-      const name = m === 'visitors' ? 'visitors' : 'views';
+      const name = words.name;
       showTip(cx, cy, label(cur[i]), [
         { color: cssVar('--series'), value: nf.format(a[i]), label: name },
         { color: cssVar('--prev'), value: nf.format(b[i]), label: `${name} on ${label(prev[i])}` },
@@ -265,6 +275,23 @@ export function start(board: HTMLElement): () => void {
       at(focusI, rect.left + (x(focusI) / W) * rect.width, rect.top + (y(a[focusI]) / H) * rect.height);
     });
     host.append(svg);
+  }
+
+  // ---- GitHub profile views, which the site filters never touch
+  function github(r: Report, from: Date, to: Date, prevLabel: string) {
+    const g = r.github;
+    const m = state.ghMetric;
+    const { current: c, previous: p } = g.summary;
+    $('gh-tiles').replaceChildren(
+      tile({ label: 'Profile views', value: compactOr(c.views), delta: pct(c.views, p.views), good: true }, prevLabel),
+      tile({ label: 'Viewers', value: compactOr(c.visitors), delta: pct(c.visitors, p.visitors), good: true }, prevLabel),
+    );
+    const since = g.firstHit ? new Date(g.firstHit) : null;
+    line($('gh-trend'), $('gh-legend'), g.series, m, r.range.hourly, from, to, {
+      name: m === 'visitors' ? 'viewers' : 'profile views',
+      title: m === 'visitors' ? 'GitHub profile viewers' : 'GitHub profile views',
+      empty: since ? 'No profile views in this range.' : 'Counting starts with the next visit to github.com/hummusonrails.',
+    });
   }
 
   // ---- week over week and month over month
@@ -558,6 +585,7 @@ export function start(board: HTMLElement): () => void {
   function controls() {
     document.querySelectorAll<HTMLButtonElement>('[data-range]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.range === state.range)));
     document.querySelectorAll<HTMLButtonElement>('[data-metric]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.metric === state.metric)));
+    document.querySelectorAll<HTMLButtonElement>('[data-gh-metric]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.ghMetric === state.ghMetric)));
     $('custom').hidden = state.range !== 'custom';
   }
 
@@ -587,6 +615,12 @@ export function start(board: HTMLElement): () => void {
     controls();
     if (last) draw(last.r, last.from, last.to);
   }));
+  document.querySelectorAll<HTMLButtonElement>('[data-gh-metric]').forEach((b) => b.addEventListener('click', () => {
+    state.ghMetric = b.dataset.ghMetric as 'visitors' | 'views';
+    writeHash();
+    controls();
+    if (last) draw(last.r, last.from, last.to);
+  }));
   document.querySelectorAll<HTMLElement>('[data-panel]').forEach((panel) => {
     panel.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((t) => t.addEventListener('click', () => {
       state.tabs[panel.dataset.panel!] = t.dataset.tab!;
@@ -603,6 +637,7 @@ export function start(board: HTMLElement): () => void {
     const prevLabel = state.range === 'today' ? 'yesterday' : state.range === 'yesterday' ? 'the day before' : 'the previous period';
     tiles(r.summary.current, r.summary.previous, prevLabel);
     trend(r, from, to);
+    github(r, from, to, prevLabel);
     growth('weeks', r.growth.weeks, r.growth.weekToDate);
     growth('months', r.growth.months, r.growth.monthToDate);
     document.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => list(p, r));

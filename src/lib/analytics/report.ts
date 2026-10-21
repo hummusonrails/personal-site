@@ -169,13 +169,31 @@ export async function report(q: ReportQuery, run: Runner) {
       }),
     );
 
+  // GitHub profile views (github_profile_hits): no visitor, page or source is
+  // known, so the site's filters never apply. A 'viewer' hit is one browser's
+  // first load of the day, so its count stands in for visitors.
+  const GH = `SELECT COALESCE(sum(kind = 'viewer'), 0) AS visitors, COALESCE(sum(kind = 'view'), 0) AS views
+                FROM github_profile_hits WHERE ts >= ? AND ts < ?`;
+  const ghTotals = (r: number[]) =>
+    run(GH, r).then(([x]) => ({ t: "", visitors: num(x.visitors), views: num(x.views) }) as Point);
+  const ghSeries = (r: number[]) => {
+    const l = local(r[0], r[1]);
+    const fmt = q.hourly ? "%Y-%m-%dT%H" : "%Y-%m-%dT00";
+    return run(
+      `SELECT strftime('${fmt}', ${l.sql} / 1000, 'unixepoch') AS t, COALESCE(sum(kind = 'viewer'), 0) AS visitors,
+              COALESCE(sum(kind = 'view'), 0) AS views
+         FROM github_profile_hits WHERE ts >= ? AND ts < ? GROUP BY 1 ORDER BY 1`,
+      [...l.args, ...r],
+    ).then(points);
+  };
+
   const iso = (v: unknown) => (v === null || v === undefined ? null : new Date(num(v)).toISOString());
 
   const [
     summaryCur, summaryPrev, seriesCur, seriesPrev, weeks, months, pages, entries, channels, referrers,
     referrerUrls, campaigns, source, medium, campaign, content, term, countries, regions, cities,
     devices, browsers, os, languages, outbound, live, bounds, weekToDate, monthToDate,
-    aiVisits,
+    aiVisits, ghCur, ghPrev, ghSeriesCur, ghSeriesPrev, ghBounds,
   ] = await Promise.all([
     summary(cur), summary(prev), series(cur), series(prev),
     growth("week"), growth("month"),
@@ -223,6 +241,8 @@ export async function report(q: ReportQuery, run: Runner) {
     run(`SELECT min(ts) AS first FROM analytics_hits`, []),
     toDate("week"), toDate("month"),
     visits(" AND channel = 'AI assistants'"),
+    ghTotals(cur), ghTotals(prev), ghSeries(cur), ghSeries(prev),
+    run(`SELECT min(ts) AS first FROM github_profile_hits`, []),
   ]);
 
   return {
@@ -237,6 +257,11 @@ export async function report(q: ReportQuery, run: Runner) {
     countries, regions, cities, devices, browsers, os, languages,
     outbound,
     ai: { visits: aiVisits },
+    github: {
+      firstHit: iso(ghBounds[0]?.first),
+      summary: { current: ghCur, previous: ghPrev },
+      series: { current: ghSeriesCur, previous: ghSeriesPrev },
+    },
   };
 }
 

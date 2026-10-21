@@ -168,3 +168,9 @@
 .desk .geo [data-panel='geo'] .tabs { margin-bottom: 12px; display: inline-flex; }
 .desk .card .note { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; max-width: 760px; }
 @media (max-width: 768px) { .desk .controls { top: -16px; } }
+
+/* GitHub profile */
+.desk #gh h2 .hint { font-weight: 400; margin-left: 8px; text-decoration: none; }
+.desk #gh h2 .hint:hover { text-decoration: underline; }
+.desk .gh-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: 12px; margin-bottom: 14px; }
+@media (max-width: 560px) { .desk .gh-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

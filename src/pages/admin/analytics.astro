@@ -174,6 +174,24 @@ const tabs = (list: [string, string][]) => list;
         <div class="list" data-body></div>
       </section>
 
+      <section class="card span-all" id="gh">
+        <div class="card-head">
+          <h2>GitHub profile <a class="hint" href="https://github.com/hummusonrails" target="_blank" rel="noopener noreferrer">github.com/hummusonrails</a></h2>
+          <div class="seg" role="radiogroup" aria-label="GitHub profile metric" id="gh-metric">
+            <button type="button" data-gh-metric="views" role="radio" aria-checked="false">Profile views</button>
+            <button type="button" data-gh-metric="visitors" role="radio" aria-checked="false">Viewers</button>
+          </div>
+        </div>
+        <div class="gh-tiles" id="gh-tiles"></div>
+        <div class="legend" id="gh-legend"></div>
+        <div class="chart chart-sm" id="gh-trend"></div>
+        <p class="note" id="gh-note">
+          Counted by two invisible images in the profile README. GitHub fetches every README image through its own
+          proxy, which hides who is looking, so there are no sources, places or devices here, and your own visits
+          count too. A viewer is one browser on one UTC day. The site filters above do not apply to this card.
+        </p>
+      </section>
+
       <p class="foot">
         Visitors are counted without cookies: a visitor is one browser on one day, so a person who comes back on three
         days counts three times across a range. Bots, crawlers, the admin area and your own browser are left out. Click
