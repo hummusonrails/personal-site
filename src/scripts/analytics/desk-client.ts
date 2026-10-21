@@ -6,6 +6,9 @@
 import { pageHref, webHref } from './desk-links';
 import { IGNORE_KEY } from './track';
 
+// Mirrors GITHUB_REF in lib/analytics/report.ts, the tag on profile links.
+const GITHUB_REF = 'github-profile';
+
 type Row = { key: string; visitors: number; views: number; [k: string]: unknown };
 type Point = { t: string; visitors: number; views: number };
 type Summary = { visitors: number; views: number; bounces: number; engaged_ms: number };
@@ -16,7 +19,10 @@ type Report = {
   summary: { current: Summary; previous: Summary };
   series: { current: Point[]; previous: Point[] };
   growth: { weeks: Point[]; months: Point[]; weekToDate: Point; monthToDate: Point };
-  github: { firstHit: string | null; summary: { current: Point; previous: Point }; series: { current: Point[]; previous: Point[] } };
+  github: {
+    firstHit: string | null; summary: { current: Point; previous: Point }; series: { current: Point[]; previous: Point[] };
+    clicks: { current: Point; previous: Point };
+  };
   [panel: string]: unknown;
 };
 
@@ -282,9 +288,22 @@ export function start(board: HTMLElement): () => void {
     const g = r.github;
     const m = state.ghMetric;
     const { current: c, previous: p } = g.summary;
+    const k = g.clicks;
+    const clicked = tile({ label: 'Clicked through to the site', value: compactOr(k.current.visitors), delta: pct(k.current.visitors, k.previous.visitors), good: true }, prevLabel);
+    if (k.current.visitors) {
+      const go = el('button', 'tile-link', 'Filter the desk to these visitors') as HTMLButtonElement;
+      go.type = 'button';
+      go.addEventListener('click', () => {
+        state.filters = { source: GITHUB_REF };
+        load();
+        board.scrollIntoView({ behavior: 'smooth' });
+      });
+      clicked.append(go);
+    }
     $('gh-tiles').replaceChildren(
       tile({ label: 'Profile views', value: compactOr(c.views), delta: pct(c.views, p.views), good: true }, prevLabel),
       tile({ label: 'Viewers', value: compactOr(c.visitors), delta: pct(c.visitors, p.visitors), good: true }, prevLabel),
+      clicked,
     );
     const since = g.firstHit ? new Date(g.firstHit) : null;
     line($('gh-trend'), $('gh-legend'), g.series, m, r.range.hourly, from, to, {
@@ -404,6 +423,10 @@ export function start(board: HTMLElement): () => void {
   });
   const views = (label: string): Col => ({ label, value: (r) => nf.format(r.views) });
   const visitorsCol: Col = { label: 'Visitors', value: (r) => nf.format(r.visitors) };
+  const gh = (r: Report) => r.github as unknown as Record<string, Row[]>;
+  const named = (k: string, names: Record<string, string>) => (k === '(none)' ? 'Not reported' : names[k] || k);
+  const ghCols: Col[] = [{ label: 'Viewers', value: (r) => nf.format(r.visitors) }, views('Views')];
+  const ghEmpty = 'No profile views in this range.';
   const LISTS: Record<string, ListDef> = {
     channels: { rows: (r) => r.channels as Row[], filter: 'channel', label: (x) => x.key },
     referrers: {
@@ -453,6 +476,15 @@ export function start(board: HTMLElement): () => void {
       rows: (r) => (r.ai as Record<string, Row[]>).visits, label: (x) => x.key, sub: landed, filter: visitFilter,
       empty: 'No visits from AI assistants in this range. ChatGPT tags its links with utm_source=chatgpt.com; others send their domain.',
     },
+    ghDevices: { rows: (r) => gh(r).devices, label: (x) => named(x.key, {}), cols: ghCols, empty: ghEmpty },
+    ghScreens: {
+      rows: (r) => gh(r).screens, cols: ghCols, empty: ghEmpty,
+      label: (x) => named(x.key, { phone: 'Phone width', tablet: 'Tablet width', laptop: 'Laptop width', large: 'Large screen' }),
+      sub: (x) => ({ phone: 'under 544px', tablet: '544 to 1011px', laptop: '1012 to 1439px', large: '1440px and up' } as Record<string, string>)[x.key] || '',
+    },
+    ghInputs: { rows: (r) => gh(r).inputs, cols: ghCols, empty: ghEmpty, label: (x) => named(x.key, { touch: 'Touchscreen', mouse: 'Mouse or trackpad' }) },
+    ghDensity: { rows: (r) => gh(r).density, cols: ghCols, empty: ghEmpty, label: (x) => named(x.key, { '1x': 'Standard', '2x': 'High density (Retina)' }) },
+    ghThemes: { rows: (r) => gh(r).themes, cols: [{ label: 'Viewers', value: (r) => nf.format(r.visitors) }], empty: ghEmpty, label: (x) => named(x.key, { dark: 'Dark', light: 'Light' }) },
     devices: { rows: (r) => r.devices as Row[], filter: 'device', label: (x) => x.key },
     browsers: { rows: (r) => r.browsers as Row[], filter: 'browser', label: (x) => x.key },
     os: { rows: (r) => r.os as Row[], filter: 'os', label: (x) => x.key },

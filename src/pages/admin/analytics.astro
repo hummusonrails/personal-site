@@ -183,12 +183,27 @@ const tabs = (list: [string, string][]) => list;
           </div>
         </div>
         <div class="gh-tiles" id="gh-tiles"></div>
-        <div class="legend" id="gh-legend"></div>
-        <div class="chart chart-sm" id="gh-trend"></div>
-        <p class="note" id="gh-note">
-          Counted by two invisible images in the profile README. GitHub fetches every README image through its own
-          proxy, which hides who is looking, so there are no sources, places or devices here, and your own visits
-          count too. A viewer is one browser on one UTC day. The site filters above do not apply to this card.
+        <div class="gh-grid">
+          <div>
+            <div class="legend" id="gh-legend"></div>
+            <div class="chart chart-sm" id="gh-trend"></div>
+          </div>
+          <div data-panel="gh">
+            <div class="tabs" role="tablist">
+              {tabs([['ghDevices', 'Device'], ['ghScreens', 'Screen'], ['ghInputs', 'Input'], ['ghDensity', 'Display'], ['ghThemes', 'Theme']]).map(([k, l]) => (
+                <button type="button" role="tab" data-tab={k}>{l}</button>
+              ))}
+            </div>
+            <div class="list" data-body></div>
+          </div>
+        </div>
+        <p class="note">
+          Counted by invisible images in the profile README. GitHub fetches every README image through its own proxy,
+          which hides the viewer's address and browser, so places, languages and browsers cannot be known here, and
+          your own visits count too. What is shown is what each viewer's browser picked by itself: the image matching
+          its screen width, touch or mouse, pixel density and GitHub theme. A viewer is one browser on one UTC day.
+          Profile links to this site are tagged, so anyone who clicks through shows up in full above: use the link on
+          the last tile. The site filters do not apply to this card.
         </p>
       </section>
 

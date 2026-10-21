@@ -44,6 +44,14 @@ export function visitSource(stored: Source | null, env: { referrer: string; sear
   return stored ?? { r: '', q: '' };
 }
 
+/** The query string without campaign tags (utm_*, ref), "" when nothing else is left. */
+export function untagged(search: string): string {
+  const q = new URLSearchParams(search);
+  for (const k of [...q.keys()]) if (/^(utm_[a-z]+|ref)$/i.test(k)) q.delete(k);
+  const rest = q.toString();
+  return rest ? `?${rest}` : '';
+}
+
 function ignoredHere() {
   try {
     return localStorage.getItem(IGNORE_KEY) === '1';
@@ -108,4 +116,9 @@ export function track() {
     // private mode
   }
   send({ k: 'pv', id, r: src.r, q: src.q || undefined, ti: document.title });
+
+  // The visit's tags are kept for the session above, so they come off the
+  // address bar: a copied link does not carry them on to someone else.
+  const clean = untagged(location.search);
+  if (clean !== location.search) history.replaceState(history.state, '', `${location.pathname}${clean}${location.hash}`);
 }

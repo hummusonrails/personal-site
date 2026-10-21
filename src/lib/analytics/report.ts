@@ -15,6 +15,8 @@ export const FILTERS: Record<string, string> = {
 };
 
 export const NONE = "(none)";
+/** The ref tag on every github.com/hummusonrails link to the site. */
+export const GITHUB_REF = "github-profile";
 
 export interface ReportQuery {
   from: Date;
@@ -176,6 +178,22 @@ export async function report(q: ReportQuery, run: Runner) {
                 FROM github_profile_hits WHERE ts >= ? AND ts < ?`;
   const ghTotals = (r: number[]) =>
     run(GH, r).then(([x]) => ({ t: "", visitors: num(x.visitors), views: num(x.views) }) as Point);
+  // What the viewers' browsers reported; theme comes from its own image.
+  const ghBy = (col: string, kinds = "'view', 'viewer'", visitorKind = "viewer") =>
+    run(
+      `SELECT COALESCE(${col}, '${NONE}') AS key, COALESCE(sum(kind = '${visitorKind}'), 0) AS visitors,
+              COALESCE(sum(kind = 'view'), 0) AS views
+         FROM github_profile_hits WHERE ts >= ? AND ts < ? AND kind IN (${kinds}) GROUP BY 1 ORDER BY 2 DESC, 3 DESC`,
+      cur,
+    ).then(ranked);
+  // Profile links to the site carry ref=github-profile, so these visits come
+  // with everything the site records.
+  const ghClicks = (r: number[]) =>
+    run(
+      `SELECT count(DISTINCT visitor) AS visitors, count(*) AS views FROM analytics_hits
+        WHERE kind = 'pv' AND ts >= ? AND ts < ? AND utm_source = '${GITHUB_REF}'`,
+      r,
+    ).then(([x]) => ({ t: "", visitors: num(x.visitors), views: num(x.views) }) as Point);
   const ghSeries = (r: number[]) => {
     const l = local(r[0], r[1]);
     const fmt = q.hourly ? "%Y-%m-%dT%H" : "%Y-%m-%dT00";
@@ -194,6 +212,7 @@ export async function report(q: ReportQuery, run: Runner) {
     referrerUrls, campaigns, source, medium, campaign, content, term, countries, regions, cities,
     devices, browsers, os, languages, outbound, live, bounds, weekToDate, monthToDate,
     aiVisits, ghCur, ghPrev, ghSeriesCur, ghSeriesPrev, ghBounds,
+    ghDevices, ghScreens, ghInputs, ghDensity, ghThemes, ghClicksCur, ghClicksPrev,
   ] = await Promise.all([
     summary(cur), summary(prev), series(cur), series(prev),
     growth("week"), growth("month"),
@@ -243,6 +262,8 @@ export async function report(q: ReportQuery, run: Runner) {
     visits(" AND channel = 'AI assistants'"),
     ghTotals(cur), ghTotals(prev), ghSeries(cur), ghSeries(prev),
     run(`SELECT min(ts) AS first FROM github_profile_hits`, []),
+    ghBy("device"), ghBy("screen"), ghBy("input"), ghBy("density"), ghBy("theme", "'theme'", "theme"),
+    ghClicks(cur), ghClicks(prev),
   ]);
 
   return {
@@ -261,6 +282,8 @@ export async function report(q: ReportQuery, run: Runner) {
       firstHit: iso(ghBounds[0]?.first),
       summary: { current: ghCur, previous: ghPrev },
       series: { current: ghSeriesCur, previous: ghSeriesPrev },
+      clicks: { current: ghClicksCur, previous: ghClicksPrev },
+      devices: ghDevices, screens: ghScreens, inputs: ghInputs, density: ghDensity, themes: ghThemes,
     },
   };
 }

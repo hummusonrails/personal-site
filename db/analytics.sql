@@ -40,12 +40,19 @@ CREATE TABLE IF NOT EXISTS admin_login_failures (
 );
 CREATE INDEX IF NOT EXISTS admin_login_failures_ts ON admin_login_failures (ts);
 
--- Views of the github.com/hummusonrails profile, counted by two invisible
--- images in its README (see src/pages/api/gh). GitHub's image proxy hides
--- every viewer, so a hit is only a time and which image was fetched:
--- 'view' on every load, 'viewer' once per browser per UTC day.
+-- Views of the github.com/hummusonrails profile, counted by invisible images
+-- in its README (see src/pages/api/gh). GitHub's image proxy hides every
+-- viewer, so a hit carries only what the viewer's browser chose: which
+-- <picture> source matched its screen width, input and pixel density, or its
+-- GitHub theme. 'view' arrives on every load; 'viewer' and 'theme' once per
+-- browser per UTC day.
 CREATE TABLE IF NOT EXISTS github_profile_hits (
   ts INTEGER NOT NULL, -- epoch milliseconds
-  kind TEXT NOT NULL
+  kind TEXT NOT NULL,
+  device TEXT,  -- Mobile, Tablet, Desktop
+  screen TEXT,  -- phone, tablet, laptop, large
+  input TEXT,   -- touch, mouse
+  density TEXT, -- 1x, 2x
+  theme TEXT    -- dark, light (kind 'theme' only)
 );
 CREATE INDEX IF NOT EXISTS github_profile_hits_ts ON github_profile_hits (ts, kind);
