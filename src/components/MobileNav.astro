@@ -7,7 +7,7 @@ import {NAVIGATION} from '@/consts';
     aria-label="Open Menu"
     aria-expanded="false"
     aria-controls="mobileMenuContainer"
-    class="md:hidden toggle-menu p-2 hover:text-[var(--text-primary)] transition-colors"
+    class="md:hidden toggle-menu p-2 hover:text-(--text-primary) transition-colors"
 >
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -25,7 +25,7 @@ import {NAVIGATION} from '@/consts';
     <div class="flex justify-end p-6">
         <button
             id="mobileMenuClose"
-            class="toggle-menu p-2 hover:text-[var(--text-primary)] transition-colors"
+            class="toggle-menu p-2 hover:text-(--text-primary) transition-colors"
             aria-label="Close Menu"
         >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@ import {NAVIGATION} from '@/consts';
         {NAVIGATION.map(({href, title}) => (
             <a
                 href={href}
-                class="mobile-nav-link block py-4 text-2xl font-medium text-dark-text hover:text-[var(--text-primary)] border-b border-dark-border last:border-0 transition-colors"
+                class="mobile-nav-link block py-4 text-2xl font-medium text-dark-text hover:text-(--text-primary) border-b border-dark-border last:border-0 transition-colors"
             >
                 {title}
             </a>

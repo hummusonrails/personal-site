@@ -55,7 +55,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
             <!-- Theater Container -->
             <div class="theater-container relative mb-12" role="region" aria-label="Video theater">
                 <!-- Movie Screen -->
-                <div class="screen-wrapper relative bg-gradient-to-b from-dark-bg to-dark-surface p-8 rounded-lg">
+                <div class="screen-wrapper relative bg-linear-to-b from-dark-bg to-dark-surface p-8 rounded-lg">
                     <!-- Red Theater Curtains -->
                     <div class="curtains absolute inset-0 z-10 pointer-events-none">
                         <svg viewBox="0 0 1000 600" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -226,7 +226,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {recentTalks.map((talk) => (
                         <button
-                            class="talk-card card text-left focus:ring-2 focus:ring-[var(--text-muted)] focus:outline-none transition-colors cursor-pointer group"
+                            class="talk-card card text-left focus:ring-2 focus:ring-(--text-muted) focus:outline-hidden transition-colors cursor-pointer group"
                             data-youtube-id={talk.youtubeId || ''}
                             data-has-video={talk.youtubeId ? 'true' : 'false'}
                             data-title={talk.data.presentation}
@@ -237,7 +237,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                             })}
                             aria-label={`Play ${talk.data.presentation} from ${talk.data.conference}${talk.youtubeId ? '' : ' (video not yet available)'}`}
                         >
-                            <div class="aspect-video bg-dark-surface rounded overflow-hidden mb-4 relative">
+                            <div class="aspect-video bg-dark-surface rounded-sm overflow-hidden mb-4 relative">
                                 {talk.youtubeId ? (
                                     <>
                                         <img
@@ -261,7 +261,7 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                                     </div>
                                 )}
                             </div>
-                            <h3 class="font-semibold mb-2 group-hover:text-[var(--text-primary)] transition-colors">
+                            <h3 class="font-semibold mb-2 group-hover:text-(--text-primary) transition-colors">
                                 {talk.data.presentation}
                             </h3>
                             <p class="text-sm text-dark-text-secondary">
@@ -288,10 +288,10 @@ const firstVideoWithYouTube = recentTalks.find(talk => talk.youtubeId !== null);
                                 href={talk.data.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="card focus:ring-2 focus:ring-[var(--text-muted)] focus:outline-none transition-colors group"
+                                class="card focus:ring-2 focus:ring-(--text-muted) focus:outline-hidden transition-colors group"
                                 aria-label={`View ${talk.data.presentation} from ${talk.data.conference} (opens in new tab)`}
                             >
-                                <h3 class="font-semibold mb-2 group-hover:text-[var(--text-primary)] transition-colors">
+                                <h3 class="font-semibold mb-2 group-hover:text-(--text-primary) transition-colors">
                                     {talk.data.presentation}
                                 </h3>
                                 <p class="text-sm text-dark-text-secondary">

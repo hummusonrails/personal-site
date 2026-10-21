@@ -14,7 +14,7 @@ const {presentation, conference, region, date, image, link} = Astro.props;
 <tr class="hover:bg-dark-surface/50 transition-colors">
     <td class="px-6 py-4">
         <div class="flex items-center gap-4">
-            <div class="h-10 w-10 rounded-lg overflow-hidden border border-dark-border flex-shrink-0">
+            <div class="h-10 w-10 rounded-lg overflow-hidden border border-dark-border shrink-0">
                 <img class="h-full w-full object-cover" src={image || "/placeholder.svg"} alt="" />
             </div>
             <div class="font-medium text-white">
@@ -38,7 +38,7 @@ const {presentation, conference, region, date, image, link} = Astro.props;
     </td>
 
     <td class="px-6 py-4 text-right">
-        <a href={link} class="text-[var(--text-primary)] hover:text-[var(--text-primary)] transition-colors font-medium text-sm" target="_blank" rel="noopener noreferrer">
+        <a href={link} class="text-(--text-primary) hover:text-(--text-primary) transition-colors font-medium text-sm" target="_blank" rel="noopener noreferrer">
             Watch ->
         </a>
     </td>

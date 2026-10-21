@@ -23,7 +23,7 @@ import WORKSHOPS from "@/data/workshops.json";
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {WORKSHOPS.map((project) => (
                     <div class="card group flex flex-col">
-                        <h3 class="text-xl font-semibold mb-3 group-hover:text-[var(--text-primary)] transition-colors">
+                        <h3 class="text-xl font-semibold mb-3 group-hover:text-(--text-primary) transition-colors">
                             {project.title}
                         </h3>
                         <p class="text-dark-text-secondary mb-6 line-clamp-2">
@@ -33,7 +33,7 @@ import WORKSHOPS from "@/data/workshops.json";
                             <a href={project.link}
                                target="_blank"
                                rel="noopener noreferrer"
-                               class="text-sm text-[var(--text-primary)] hover:text-[var(--text-primary)] transition-colors font-medium">
+                               class="text-sm text-(--text-primary) hover:text-(--text-primary) transition-colors font-medium">
                                 View Workshop ->
                             </a>
                         </div>

@@ -3,6 +3,7 @@ import mdx from '@astrojs/mdx';
 import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
+import tailwindcss from '@tailwindcss/vite';
 
 import {SITE_METADATA} from "./src/consts.js";
 
@@ -10,6 +11,8 @@ import {SITE_METADATA} from "./src/consts.js";
 export default defineConfig({
     site: SITE_METADATA.siteUrl,
     integrations: [mdx(), sitemap({filter: (page) => !page.includes('/privacy') && !/\/admin(\/|$)/.test(new URL(page).pathname)}), react()],
+    // Tailwind 4, imported in src/styles/global.css.
+    vite: {plugins: [tailwindcss()]},
     output: 'server',
     compressHTML: true,
     adapter: vercel({

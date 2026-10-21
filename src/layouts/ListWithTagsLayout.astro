@@ -86,7 +86,7 @@ const tagsCollection = await getCollection("tags");
 
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Sidebar -->
-        <aside class="lg:w-56 flex-shrink-0">
+        <aside class="lg:w-56 shrink-0">
           <div class="sticky top-4 py-4">
             <h3 class="font-semibold mb-3 text-base">
               {isBlogPage ? (
@@ -102,13 +102,13 @@ const tagsCollection = await getCollection("tags");
                 return (
                   <div key={slug}>
                     {isSamePath(`/tags/${slug}`) ? (
-                      <div class="text-[var(--text-primary)] font-medium py-1.5 px-3 rounded">
+                      <div class="text-(--text-primary) font-medium py-1.5 px-3 rounded-sm">
                         {data.name} ({count})
                       </div>
                     ) : (
                       <Link
                         href={`/tags/${slug}`}
-                        class="block py-1.5 px-3 text-dark-text-secondary hover:text-white rounded transition-colors no-underline"
+                        class="block py-1.5 px-3 text-dark-text-secondary hover:text-white rounded-sm transition-colors no-underline"
                         aria-label={`View posts tagged ${data.name}`}
                       >
                         {data.name} ({count})
@@ -129,7 +129,7 @@ const tagsCollection = await getCollection("tags");
               if (!post) return null;
 
               return (
-                <article class="group border-b border-[var(--dark-border)] py-6 last:border-b-0" key={entry.slug}>
+                <article class="group border-b border-(--dark-border) py-6 last:border-b-0" key={entry.slug}>
                   <div class="space-y-3 md:grid md:grid-cols-4 md:gap-6 md:space-y-0">
                     <div class="md:col-span-1">
                       <time class="text-sm text-dark-text-muted font-mono">
@@ -138,7 +138,7 @@ const tagsCollection = await getCollection("tags");
                     </div>
                     <div class="md:col-span-3 space-y-2">
                       <div>
-                        <h2 class="text-xl font-semibold mb-2 group-hover:text-[var(--text-primary)] transition-colors">
+                        <h2 class="text-xl font-semibold mb-2 group-hover:text-(--text-primary) transition-colors">
                           <Link href={`/blog/${entry.slug}`} class="no-underline">
                             {post.title}
                           </Link>

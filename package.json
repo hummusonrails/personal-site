@@ -43,7 +43,7 @@
     "satori": "^0.19.2",
     "sharp": "^0.35.5",
     "slugify": "^1.6.6",
-    "tailwindcss": "^3.3.3",
+    "tailwindcss": "^4.3.3",
     "tiktoken": "^1.0.15",
     "topojson-client": "^3.1.0",
     "turndown": "^7.2.2",
@@ -51,11 +51,16 @@
     "world-atlas": "^2.0.2"
   },
   "overrides": {
-    "path-to-regexp": "6.3.0"
+    "path-to-regexp": "6.3.0",
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "^7.1.6"
+    },
+    "argparse": "^2.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.6",
-    "@tailwindcss/typography": "^0.5.10",
+    "@tailwindcss/forms": "^0.5.11",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/d3-geo": "^3.1.1",
     "@types/node": "^22.9.0",
     "@types/react": "^19.2.14",
@@ -63,7 +68,6 @@
     "@types/topojson-client": "^3.1.5",
     "@types/topojson-specification": "^1.0.5",
     "@types/turndown": "^5.0.6",
-    "autoprefixer": "^10.5.4",
     "typescript": "^5.6.3",
     "vitest": "^5.0.5",
     "webpack-cli": "^5.1.4",
