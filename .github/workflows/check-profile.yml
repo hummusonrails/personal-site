@@ -1,0 +1,52 @@
+name: Check greenberg.md
+
+on:
+  schedule:
+    # Every Monday at 11am UTC (an hour after the dev.to import)
+    - cron: "0 11 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check the profile
+        id: check
+        continue-on-error: true
+        run: node scripts/check-profile.mjs
+
+      # One open issue at a time: a new finding is added as a comment, and the
+      # issue closes itself on the first clean run.
+      - name: Open or update the issue
+        if: steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create greenberg-md --color FF9F45 --description "greenberg.md profile check" 2>/dev/null || true
+          issue=$(gh issue list --label greenberg-md --state open --json number --jq '.[0].number')
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body-file profile-check.md
+          else
+            gh issue create --title "greenberg.md needs attention" --label greenberg-md --body-file profile-check.md
+          fi
+
+      - name: Close the issue
+        if: steps.check.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          issue=$(gh issue list --label greenberg-md --state open --json number --jq '.[0].number')
+          if [ -n "$issue" ]; then
+            gh issue close "$issue" --comment "$(cat profile-check.md)"
+          fi

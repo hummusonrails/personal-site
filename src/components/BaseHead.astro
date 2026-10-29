@@ -5,6 +5,8 @@ import '@/styles/global.css';
 import {SITE_METADATA} from "@/consts";
 import GoogleTag from './GoogleTag.astro';
 import Track from './Track.astro';
+import {personJsonLd} from '@/lib/profile';
+import {PROFILE} from '@/data/profile';
 
 interface Props {
     title: string;
@@ -16,6 +18,10 @@ interface Props {
 
 const {title, description, image = '/static/images/twitter-card.png', canonicalUrl, noindex = false} = Astro.props;
 const canonicalURL = canonicalUrl || new URL(Astro.url.pathname, Astro.site).toString();
+// The pages about Ben carry the same Person that greenberg.md describes.
+const personSchema = ['/', '/about', '/media'].includes(Astro.url.pathname.replace(/\/$/, '') || '/')
+    ? JSON.stringify(personJsonLd()).replace(/</g, '\\u003c')
+    : null;
 ---
 
 <!-- Global Metadata -->
@@ -80,3 +86,5 @@ const canonicalURL = canonicalUrl || new URL(Astro.url.pathname, Astro.site).toS
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff"/>
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000"/>
 <link rel="alternate" type="application/rss+xml" href="/rss.xml"/>
+<link rel="alternate" type="text/markdown" href={`${PROFILE.canonical}index.md`} title="Ben Greenberg, profile for AI agents"/>
+{personSchema && <script type="application/ld+json" set:html={personSchema}/>}

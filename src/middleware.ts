@@ -1,6 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
 import { isAuthenticated } from './lib/auth';
 import { ConflictError } from './lib/github';
+import { PROFILE, isProfileHost } from './data/profile';
 
 const PUBLIC_ADMIN_PATHS = ['/admin/login', '/api/admin/auth'];
 
@@ -27,8 +28,27 @@ function originHost(request: Request): string | null {
   }
 }
 
+// greenberg.md is one page in two formats. Browsers ask for text/html and get
+// the page for people; curl, fetch and agents ask for anything else and get
+// the Markdown. /index.md always answers Markdown.
+function profileHost(request: Request, url: URL, next: (path?: string) => Promise<Response>) {
+  if (url.host.toLowerCase().startsWith('www.')) return Response.redirect(`${PROFILE.canonical}${url.pathname.slice(1)}`, 301);
+  const path = url.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/robots.txt' || path === '/llms.txt') return next();
+  if (path === '/index.md' || path === '/greenberg.md') return next('/agent-profile.md');
+  if (path === '/' || path === '/index.html') {
+    const wantsHtml = (request.headers.get('accept') || '').includes('text/html');
+    return next(wantsHtml ? '/agent-profile' : '/agent-profile.md');
+  }
+  return Response.redirect(PROFILE.canonical, 301);
+}
+
 export const onRequest = defineMiddleware(async ({ request, url }, next) => {
   const path = url.pathname;
+
+  if (isProfileHost(url.host)) return profileHost(request, url, next);
+  // The profile lives on its own domain only.
+  if (/^\/agent-profile(\.md)?\/?$/.test(path)) return Response.redirect(PROFILE.canonical, 301);
 
   // Only protect /admin and /api/admin routes
   const isAdminRoute = /^\/(api\/)?admin(\/|$)/.test(path);

@@ -1,0 +1,143 @@
+---
+// greenberg.md for people: the same Markdown agents read, rendered for a
+// browser, with the schema.org Person alongside it.
+import { marked } from 'marked';
+import { buildProfile, personJsonLd } from '@/lib/profile';
+import { PROFILE } from '@/data/profile';
+
+export const prerender = false;
+
+const { markdown, lastUpdated } = await buildProfile();
+const body = markdown.replace(/^---\n[\s\S]*?\n---\n/, '');
+const slug = (s: string) => s.toLowerCase().replace(/<[^>]+>/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const html = (await marked.parse(body))
+  .replace(/<h([23])>(.*?)<\/h\1>/g, (_, n, inner) => `<h${n} id="${slug(inner)}">${inner}</h${n}>`)
+  .replace('<h2 id="rules-for-using-this-file">Rules for using this file</h2>', '<h2 id="rules-for-using-this-file">Rules for using this file <span class="badge">Agents: read first</span></h2>')
+  .replace(/<a href="(https?:[^"]+)">/g, '<a href="$1" rel="noopener">');
+
+const description = `${PROFILE.headline}. A profile of ${PROFILE.name} written for AI agents, with a source for every fact.`;
+const jsonLd = JSON.stringify(personJsonLd(lastUpdated)).replace(/</g, '\\u003c');
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+Astro.response.headers.set('Vary', 'Accept');
+Astro.response.headers.set('Link', `<${PROFILE.canonical}index.md>; rel="alternate"; type="text/markdown"`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{PROFILE.name} | greenberg.md</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={PROFILE.canonical} />
+    <link rel="alternate" type="text/markdown" href={`${PROFILE.canonical}index.md`} title="Markdown for agents" />
+    <meta name="robots" content="index, follow, max-snippet:-1" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:url" content={PROFILE.canonical} />
+    <meta property="og:title" content={`${PROFILE.name} | greenberg.md`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${PROFILE.site}/static/images/twitter-card.png`} />
+    <meta property="profile:first_name" content="Ben" />
+    <meta property="profile:last_name" content="Greenberg" />
+    <meta property="profile:username" content={PROFILE.handle} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${PROFILE.handle}`} />
+    <meta name="theme-color" content="#141311" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script type="application/ld+json" set:html={jsonLd} />
+    <style is:inline>
+      @font-face { font-family: 'Sohne'; src: url('/fonts/Sohne-Buch.otf') format('opentype'); font-weight: 400; font-display: swap; }
+      @font-face { font-family: 'Sohne'; src: url('/fonts/Sohne-Halbfett.otf') format('opentype'); font-weight: 600; font-display: swap; }
+      @font-face { font-family: 'Sohne Mono'; src: url('/fonts/SohneMono-Buch.otf') format('opentype'); font-weight: 400; font-display: swap; }
+      :root {
+        color-scheme: dark light;
+        --bg: #141311;
+        --surface: #1d1b18;
+        --border: #32302b;
+        --text: #f5efe6;
+        --text-2: #b8ae9f;
+        --muted: #8a8072;
+        --accent: #ff9f45;
+        --accent-text: #ffa85c;
+        --wash: rgba(255, 159, 69, 0.12);
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #ffffff;
+          --surface: #f5f5f6;
+          --border: #e4e4e7;
+          --text: #141417;
+          --text-2: #55555e;
+          --muted: #898992;
+          --accent: #e85d04;
+          --accent-text: #b23a00;
+          --wash: rgba(232, 93, 4, 0.08);
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text-2);
+        font: 17px/1.65 'Sohne', ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 46rem; margin: 0 auto; padding: 3rem 1rem 5rem; }
+      .bar {
+        font: 0.8rem/1.5 'Sohne Mono', ui-monospace, monospace;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        padding: 0.7rem 0.9rem;
+        margin-bottom: 2.5rem;
+        overflow-wrap: anywhere;
+      }
+      .bar code { color: var(--accent-text); }
+      h1, h2, h3, strong { color: var(--text); font-weight: 600; }
+      h1 { font-size: clamp(2.4rem, 8vw, 3.6rem); line-height: 1; letter-spacing: -0.03em; margin: 0 0 1.2rem; }
+      h2 { font-size: 1.35rem; margin: 2.8rem 0 0.9rem; letter-spacing: -0.01em; }
+      h2::before { content: '## '; color: var(--accent); font-family: 'Sohne Mono', ui-monospace, monospace; }
+      h3 { font-size: 1.05rem; margin: 1.8rem 0 0.6rem; }
+      blockquote { margin: 0 0 1rem; padding: 0; color: var(--text); font-size: 1.15rem; border: 0; }
+      blockquote p { margin: 0; }
+      a { color: var(--accent-text); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+      a:hover { color: var(--accent); }
+      ul { padding-left: 1.2rem; }
+      li { margin: 0.35rem 0; }
+      li::marker { color: var(--accent); }
+      code { font-family: 'Sohne Mono', ui-monospace, monospace; font-size: 0.88em; }
+      .badge {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 0.4rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        background: var(--wash);
+        color: var(--accent-text);
+        font: 600 0.65rem/1.4 'Sohne Mono', ui-monospace, monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      #rules-for-using-this-file + ul {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        border-radius: 0.6rem;
+        padding: 1rem 1.2rem 1rem 2.2rem;
+      }
+      footer { margin-top: 4rem; font-size: 0.85rem; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <p class="bar">
+        This is the version for people. Agents and terminals get Markdown: <code>curl greenberg.md</code>
+      </p>
+      <article set:html={html} />
+      <footer>
+        Last updated {lastUpdated}. More at <a href={PROFILE.site}>bengreenberg.dev</a>.
+      </footer>
+    </main>
+  </body>
+</html>
