@@ -179,3 +179,13 @@
 .desk .gh-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 @media (max-width: 860px) { .desk .gh-grid { grid-template-columns: minmax(0, 1fr); } }
 .desk .gh-grid [data-panel='gh'] .tabs { margin-bottom: 12px; display: inline-flex; }
+
+/* greenberg.md */
+.desk #gm h2 .hint { font-weight: 400; margin-left: 8px; text-decoration: none; }
+.desk #gm h2 .hint:hover { text-decoration: underline; }
+.desk #gm .note a { color: var(--gold); }
+.desk .gm-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.desk .gm-tiles .tile-link { border: 0; background: transparent; color: var(--gold); font-weight: 600; font-size: 12.5px; padding: 4px 0 0; }
+.desk .gm-tiles .tile-link:hover { text-decoration: underline; }
+.desk .gm-row { margin-top: 20px; }
+.desk #gm [data-panel] .tabs { margin-bottom: 12px; display: inline-flex; }

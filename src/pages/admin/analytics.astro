@@ -207,6 +207,58 @@ const tabs = (list: [string, string][]) => list;
         </p>
       </section>
 
+      <section class="card span-all" id="gm">
+        <div class="card-head">
+          <h2>greenberg.md <a class="hint" href="https://greenberg.md/" target="_blank" rel="noopener noreferrer">profile for AI agents</a></h2>
+          <div class="seg" role="radiogroup" aria-label="greenberg.md metric" id="gm-metric">
+            <button type="button" data-gm-metric="views" role="radio" aria-checked="false">Reads</button>
+            <button type="button" data-gm-metric="visitors" role="radio" aria-checked="false">Readers</button>
+          </div>
+        </div>
+        <div class="gm-tiles" id="gm-tiles"></div>
+        <div class="gh-grid">
+          <div>
+            <div class="legend" id="gm-legend"></div>
+            <div class="chart chart-sm" id="gm-trend"></div>
+          </div>
+          <div data-panel="gm">
+            <div class="tabs" role="tablist">
+              {tabs([['gmReaders', 'Who'], ['gmKinds', 'Type'], ['gmFormats', 'Format'], ['gmRobots', 'robots.txt'], ['gmAgents', 'User agents']]).map(([k, l]) => (
+                <button type="button" role="tab" data-tab={k}>{l}</button>
+              ))}
+            </div>
+            <div class="list" data-body></div>
+          </div>
+        </div>
+        <div class="gh-grid gm-row">
+          <div data-panel="gmPlaces">
+            <div class="tabs" role="tablist">
+              {tabs([['gmCountries', 'Countries'], ['gmCities', 'Cities']]).map(([k, l]) => (
+                <button type="button" role="tab" data-tab={k}>{l}</button>
+              ))}
+            </div>
+            <div class="list" data-body></div>
+          </div>
+          <div data-panel="gmPeople">
+            <div class="tabs" role="tablist">
+              {tabs([['gmSources', 'Sources'], ['gmOutbound', 'Links followed'], ['gmDevices', 'Device'], ['gmBrowsers', 'Browser'], ['gmOs', 'OS'], ['gmLanguages', 'Language']]).map(([k, l]) => (
+                <button type="button" role="tab" data-tab={k}>{l}</button>
+              ))}
+            </div>
+            <div class="list" data-body></div>
+          </div>
+        </div>
+        <p class="note">
+          Every request to greenberg.md is counted on the server, so AI assistants, crawlers and terminals show up even
+          though they never run JavaScript. Who is read from the user agent: an AI assistant fetched the page while
+          answering someone, AI search and AI training are crawlers, a person opened the page in a browser. Sources,
+          devices, time on page and links followed are for people only. A reader is one address and user agent on one
+          UTC day. People who click through to this site are tagged and show up in full above. Your own browser is left
+          out once you open <a href="https://greenberg.md/#not-me" target="_blank" rel="noopener noreferrer">greenberg.md/#not-me</a>
+          in it; your own curl requests still count. The site filters do not apply to this card.
+        </p>
+      </section>
+
       <p class="foot">
         Visitors are counted without cookies: a visitor is one browser on one day, so a person who comes back on three
         days counts three times across a range. Bots, crawlers, the admin area and your own browser are left out. Click

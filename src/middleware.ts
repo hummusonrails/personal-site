@@ -1,7 +1,9 @@
 import { defineMiddleware } from 'astro:middleware';
 import { isAuthenticated } from './lib/auth';
 import { ConflictError } from './lib/github';
+import { randomUUID } from 'node:crypto';
 import { PROFILE, isProfileHost } from './data/profile';
+import { recordProfileView, type ProfileFormat } from './lib/analytics/profile-hits';
 
 const PUBLIC_ADMIN_PATHS = ['/admin/login', '/api/admin/auth'];
 
@@ -30,23 +32,34 @@ function originHost(request: Request): string | null {
 
 // greenberg.md is one page in two formats. Browsers ask for text/html and get
 // the page for people; curl, fetch and agents ask for anything else and get
-// the Markdown. /index.md always answers Markdown.
-function profileHost(request: Request, url: URL, next: (path?: string) => Promise<Response>) {
+// the Markdown. /index.md always answers Markdown. Every answer is counted for
+// the analytics desk.
+async function profileHost(request: Request, url: URL, locals: App.Locals, next: (path?: string) => Promise<Response>) {
   if (url.host.toLowerCase().startsWith('www.')) return Response.redirect(`${PROFILE.canonical}${url.pathname.slice(1)}`, 301);
   const path = url.pathname.replace(/\/+$/, '') || '/';
-  if (path === '/robots.txt' || path === '/llms.txt') return next();
-  if (path === '/index.md' || path === '/greenberg.md') return next('/agent-profile.md');
-  if (path === '/' || path === '/index.html') {
+  if (path === '/api/profile-beacon') return next();
+
+  let format: ProfileFormat;
+  let target: string | undefined;
+  if (path === '/robots.txt') format = 'robots';
+  else if (path === '/llms.txt') format = 'llms';
+  else if (path === '/index.md' || path === '/greenberg.md') [format, target] = ['md', '/agent-profile.md'];
+  else if (path === '/' || path === '/index.html') {
     const wantsHtml = (request.headers.get('accept') || '').includes('text/html');
-    return next(wantsHtml ? '/agent-profile' : '/agent-profile.md');
-  }
-  return Response.redirect(PROFILE.canonical, 301);
+    [format, target] = wantsHtml ? ['html', '/agent-profile'] : ['md', '/agent-profile.md'];
+  } else return Response.redirect(PROFILE.canonical, 301);
+
+  // The HTML page carries this id so its beacon can add time on page.
+  locals.profileViewId = randomUUID();
+  const res = await next(target);
+  if (request.method === 'GET' && res.ok) await recordProfileView(request, url, locals.profileViewId, format);
+  return res;
 }
 
-export const onRequest = defineMiddleware(async ({ request, url }, next) => {
+export const onRequest = defineMiddleware(async ({ request, url, locals }, next) => {
   const path = url.pathname;
 
-  if (isProfileHost(url.host)) return profileHost(request, url, next);
+  if (isProfileHost(url.host)) return profileHost(request, url, locals, next);
   // The profile lives on its own domain only.
   if (/^\/agent-profile(\.md)?\/?$/.test(path)) return Response.redirect(PROFILE.canonical, 301);
 

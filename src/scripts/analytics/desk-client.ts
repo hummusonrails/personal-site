@@ -6,8 +6,10 @@
 import { pageHref, webHref } from './desk-links';
 import { IGNORE_KEY } from './track';
 
-// Mirrors GITHUB_REF in lib/analytics/report.ts, the tag on profile links.
+// Mirror GITHUB_REF and PROFILE_REF in lib/analytics/report.ts, the tags on
+// links to the site from the GitHub profile and from greenberg.md.
 const GITHUB_REF = 'github-profile';
+const PROFILE_REF = 'greenberg.md';
 
 type Row = { key: string; visitors: number; views: number; [k: string]: unknown };
 type Point = { t: string; visitors: number; views: number };
@@ -22,6 +24,11 @@ type Report = {
   github: {
     firstHit: string | null; summary: { current: Point; previous: Point }; series: { current: Point[]; previous: Point[] };
     clicks: { current: Point; previous: Point };
+  };
+  profile: {
+    firstHit: string | null; summary: { current: Record<string, number>; previous: Record<string, number> };
+    series: { current: Point[]; previous: Point[] }; clicks: { current: Point; previous: Point };
+    [list: string]: unknown;
   };
   [panel: string]: unknown;
 };
@@ -47,6 +54,7 @@ export function start(board: HTMLElement): () => void {
   // ---- state, kept in the URL hash so a reload or bookmark returns to the same view
   const state = {
     range: '30d', from: '', to: '', metric: 'visitors' as 'visitors' | 'views', ghMetric: 'views' as 'visitors' | 'views',
+    gmMetric: 'views' as 'visitors' | 'views',
     filters: {} as Record<string, string>,
     tabs: {} as Record<string, string>,
   };
@@ -57,6 +65,7 @@ export function start(board: HTMLElement): () => void {
     state.to = h.get('to') || '';
     state.metric = h.get('metric') === 'views' ? 'views' : 'visitors';
     state.ghMetric = h.get('gh') === 'visitors' ? 'visitors' : 'views';
+    state.gmMetric = h.get('gm') === 'visitors' ? 'visitors' : 'views';
     state.filters = {};
     for (const k of Object.keys(FILTER_LABEL)) { const v = h.get(`f.${k}`); if (v) state.filters[k] = v; }
   };
@@ -65,6 +74,7 @@ export function start(board: HTMLElement): () => void {
     if (state.range === 'custom') { h.set('from', state.from); h.set('to', state.to); }
     if (state.metric !== 'visitors') h.set('metric', state.metric);
     if (state.ghMetric !== 'views') h.set('gh', state.ghMetric);
+    if (state.gmMetric !== 'views') h.set('gm', state.gmMetric);
     for (const [k, v] of Object.entries(state.filters)) h.set(`f.${k}`, v);
     history.replaceState(null, '', `#${h}`);
   };
@@ -313,6 +323,44 @@ export function start(board: HTMLElement): () => void {
     });
   }
 
+  // ---- greenberg.md, read by agents, crawlers and people; the site filters never touch it
+  function profile(r: Report, from: Date, to: Date, prevLabel: string) {
+    const g = r.profile;
+    const m = state.gmMetric;
+    const { current: c, previous: p } = g.summary;
+    const k = g.clicks;
+    const t = (label: string, key: string) =>
+      tile({ label, value: compactOr(c[key]), delta: pct(c[key], p[key]), good: true }, prevLabel);
+    const clicked = tile({ label: 'Clicked through to the site', value: compactOr(k.current.visitors), delta: pct(k.current.visitors, k.previous.visitors), good: true }, prevLabel);
+    if (k.current.visitors) {
+      const go = el('button', 'tile-link', 'Filter the desk to these visitors') as HTMLButtonElement;
+      go.type = 'button';
+      go.addEventListener('click', () => {
+        state.filters = { source: PROFILE_REF };
+        load();
+        board.scrollIntoView({ behavior: 'smooth' });
+      });
+      clicked.append(go);
+    }
+    $('gm-tiles').replaceChildren(
+      t('Reads', 'views'),
+      t('Readers', 'visitors'),
+      t('AI assistants', 'assistant'),
+      t('AI crawlers', 'crawlers'),
+      t('Search engines', 'search'),
+      t('Terminals and scripts', 'terminal'),
+      t('People in a browser', 'people'),
+      tile({ label: 'Time on page (people)', value: dur(c.engaged_ms), delta: pct(c.engaged_ms, p.engaged_ms), good: true }, prevLabel),
+      clicked,
+    );
+    const since = g.firstHit ? new Date(g.firstHit) : null;
+    line($('gm-trend'), $('gm-legend'), g.series, m, r.range.hourly, from, to, {
+      name: m === 'visitors' ? 'readers' : 'reads',
+      title: m === 'visitors' ? 'greenberg.md readers' : 'greenberg.md reads',
+      empty: since ? 'No reads in this range.' : 'Counting starts with the next request to greenberg.md.',
+    });
+  }
+
   // ---- week over week and month over month
   function growth(kind: 'weeks' | 'months', pts: Point[], soFar: Point) {
     const m = state.metric;
@@ -427,6 +475,10 @@ export function start(board: HTMLElement): () => void {
   const named = (k: string, names: Record<string, string>) => (k === '(none)' ? 'Not reported' : names[k] || k);
   const ghCols: Col[] = [{ label: 'Viewers', value: (r) => nf.format(r.visitors) }, views('Views')];
   const ghEmpty = 'No profile views in this range.';
+  const gm = (r: Report) => r.profile as unknown as Record<string, Row[]>;
+  const gmCols: Col[] = [{ label: 'Readers', value: (r) => nf.format(r.visitors) }, views('Reads')];
+  const gmEmpty = 'No reads in this range.';
+  const FORMATS: Record<string, string> = { md: 'Markdown', html: 'HTML page', llms: 'llms.txt' };
   const LISTS: Record<string, ListDef> = {
     channels: { rows: (r) => r.channels as Row[], filter: 'channel', label: (x) => x.key },
     referrers: {
@@ -485,6 +537,34 @@ export function start(board: HTMLElement): () => void {
     ghInputs: { rows: (r) => gh(r).inputs, cols: ghCols, empty: ghEmpty, label: (x) => named(x.key, { touch: 'Touchscreen', mouse: 'Mouse or trackpad' }) },
     ghDensity: { rows: (r) => gh(r).density, cols: ghCols, empty: ghEmpty, label: (x) => named(x.key, { '1x': 'Standard', '2x': 'High density (Retina)' }) },
     ghThemes: { rows: (r) => gh(r).themes, cols: [{ label: 'Viewers', value: (r) => nf.format(r.visitors) }], empty: ghEmpty, label: (x) => named(x.key, { dark: 'Dark', light: 'Light' }) },
+    gmReaders: { rows: (r) => gm(r).readers, cols: gmCols, empty: gmEmpty, label: (x) => x.key, sub: (x) => String(x.kind || '') },
+    gmKinds: { rows: (r) => gm(r).kinds, cols: gmCols, empty: gmEmpty, label: (x) => x.key },
+    gmFormats: { rows: (r) => gm(r).formats, cols: gmCols, empty: gmEmpty, label: (x) => FORMATS[x.key] || x.key },
+    gmRobots: {
+      rows: (r) => gm(r).robots, cols: [{ label: 'Readers', value: (r) => nf.format(r.visitors) }, views('Fetches')],
+      empty: 'Nobody fetched robots.txt in this range.', label: (x) => x.key, sub: (x) => String(x.kind || ''),
+    },
+    gmAgents: { rows: (r) => gm(r).agents, cols: gmCols, empty: gmEmpty, label: (x) => x.key, sub: (x) => String(x.kind || '') },
+    gmCountries: {
+      rows: (r) => gm(r).countries, cols: gmCols, empty: gmEmpty,
+      label: (x) => (x.key === '(none)' ? 'Unknown' : `${flag(x.key)}  ${country(x.key)}`),
+    },
+    gmCities: {
+      rows: (r) => gm(r).cities, cols: gmCols, empty: gmEmpty,
+      label: (x) => `${flag(String(x.country || ''))}  ${x.key}`, sub: (x) => (x.country ? country(String(x.country)) : ''),
+    },
+    gmSources: {
+      rows: (r) => gm(r).sources, cols: gmCols, empty: 'No people in this range.', label: (x) => x.key,
+      sub: (x) => (x.channel && x.channel !== x.key ? String(x.channel) : ''),
+    },
+    gmOutbound: {
+      rows: (r) => gm(r).outbound, cols: [visitorsCol, views('Clicks')], empty: 'No links followed in this range.', label: (x) => x.key,
+      href: (x) => (/^[a-z0-9.-]+\.[a-z]{2,}\//i.test(x.key) ? `https://${x.key}` : null),
+    },
+    gmDevices: { rows: (r) => gm(r).devices, cols: gmCols, empty: 'No people in this range.', label: (x) => x.key },
+    gmBrowsers: { rows: (r) => gm(r).browsers, cols: gmCols, empty: 'No people in this range.', label: (x) => x.key },
+    gmOs: { rows: (r) => gm(r).os, cols: gmCols, empty: 'No people in this range.', label: (x) => x.key },
+    gmLanguages: { rows: (r) => gm(r).languages, cols: gmCols, empty: gmEmpty, label: (x) => `${language(x.key)} (${x.key})` },
     devices: { rows: (r) => r.devices as Row[], filter: 'device', label: (x) => x.key },
     browsers: { rows: (r) => r.browsers as Row[], filter: 'browser', label: (x) => x.key },
     os: { rows: (r) => r.os as Row[], filter: 'os', label: (x) => x.key },
@@ -618,6 +698,7 @@ export function start(board: HTMLElement): () => void {
     document.querySelectorAll<HTMLButtonElement>('[data-range]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.range === state.range)));
     document.querySelectorAll<HTMLButtonElement>('[data-metric]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.metric === state.metric)));
     document.querySelectorAll<HTMLButtonElement>('[data-gh-metric]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.ghMetric === state.ghMetric)));
+    document.querySelectorAll<HTMLButtonElement>('[data-gm-metric]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.gmMetric === state.gmMetric)));
     $('custom').hidden = state.range !== 'custom';
   }
 
@@ -653,6 +734,12 @@ export function start(board: HTMLElement): () => void {
     controls();
     if (last) draw(last.r, last.from, last.to);
   }));
+  document.querySelectorAll<HTMLButtonElement>('[data-gm-metric]').forEach((b) => b.addEventListener('click', () => {
+    state.gmMetric = b.dataset.gmMetric as 'visitors' | 'views';
+    writeHash();
+    controls();
+    if (last) draw(last.r, last.from, last.to);
+  }));
   document.querySelectorAll<HTMLElement>('[data-panel]').forEach((panel) => {
     panel.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((t) => t.addEventListener('click', () => {
       state.tabs[panel.dataset.panel!] = t.dataset.tab!;
@@ -670,6 +757,7 @@ export function start(board: HTMLElement): () => void {
     tiles(r.summary.current, r.summary.previous, prevLabel);
     trend(r, from, to);
     github(r, from, to, prevLabel);
+    profile(r, from, to, prevLabel);
     growth('weeks', r.growth.weeks, r.growth.weekToDate);
     growth('months', r.growth.months, r.growth.monthToDate);
     document.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => list(p, r));

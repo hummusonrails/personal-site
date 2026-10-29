@@ -56,3 +56,36 @@ CREATE TABLE IF NOT EXISTS github_profile_hits (
   theme TEXT    -- dark, light (kind 'theme' only)
 );
 CREATE INDEX IF NOT EXISTS github_profile_hits_ts ON github_profile_hits (ts, kind);
+
+-- Requests to greenberg.md (see src/lib/analytics/profile-hits.ts). Recorded
+-- on the server, so agents and terminals that never run JavaScript count too.
+-- kind: 'view' (the profile in any format), 'robots' (robots.txt), 'out' (a
+-- link followed from the HTML page). reader and reader_kind name who asked,
+-- from the user agent (see readers.ts); device, browser and os are kept for
+-- people only.
+CREATE TABLE IF NOT EXISTS profile_hits (
+  id TEXT PRIMARY KEY NOT NULL,
+  ts INTEGER NOT NULL, -- epoch milliseconds
+  kind TEXT NOT NULL,
+  visitor TEXT NOT NULL,
+  format TEXT NOT NULL, -- md, html, llms, robots
+  reader TEXT NOT NULL,
+  reader_kind TEXT NOT NULL,
+  ua TEXT,
+  target TEXT,
+  referrer TEXT,
+  ref_host TEXT,
+  channel TEXT,
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  country TEXT,
+  region TEXT,
+  city TEXT,
+  device TEXT,
+  browser TEXT,
+  os TEXT,
+  lang TEXT,
+  engaged_ms INTEGER
+);
+CREATE INDEX IF NOT EXISTS profile_hits_kind_ts ON profile_hits (kind, ts);

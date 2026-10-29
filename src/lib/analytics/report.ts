@@ -17,6 +17,8 @@ export const FILTERS: Record<string, string> = {
 export const NONE = "(none)";
 /** The ref tag on every github.com/hummusonrails link to the site. */
 export const GITHUB_REF = "github-profile";
+/** The ref tag on greenberg.md's links to the site, and its referrer host. */
+export const PROFILE_REF = "greenberg.md";
 
 export interface ReportQuery {
   from: Date;
@@ -205,6 +207,46 @@ export async function report(q: ReportQuery, run: Runner) {
     ).then(points);
   };
 
+  // greenberg.md (profile_hits): every request, recorded on the server. Its
+  // own card, so the site's filters never apply. A reader is one visitor hash
+  // (address and user agent) on one UTC day, like the site's visitors.
+  const GM = `kind = 'view' AND ts >= ? AND ts < ?`;
+  const gmTotals = (r: number[]) =>
+    run(
+      `SELECT count(DISTINCT visitor) AS visitors, count(*) AS views,
+              COALESCE(sum(reader_kind = 'AI assistant'), 0) AS assistant,
+              COALESCE(sum(reader_kind IN ('AI search', 'AI training')), 0) AS crawlers,
+              COALESCE(sum(reader_kind = 'Search engine'), 0) AS search,
+              COALESCE(sum(reader_kind = 'Person'), 0) AS people,
+              COALESCE(sum(reader_kind = 'Terminal or script'), 0) AS terminal,
+              COALESCE(round(avg(CASE WHEN reader_kind = 'Person' THEN engaged_ms END)), 0) AS engaged_ms
+         FROM profile_hits WHERE ${GM}`,
+      r,
+    ).then(([x]) => Object.fromEntries(Object.entries(x).map(([k, v]) => [k, num(v)])) as Record<string, number>);
+  const gmSeries = (r: number[]) => {
+    const l = local(r[0], r[1]);
+    const fmt = q.hourly ? "%Y-%m-%dT%H" : "%Y-%m-%dT00";
+    return run(
+      `SELECT strftime('${fmt}', ${l.sql} / 1000, 'unixepoch') AS t, count(DISTINCT visitor) AS visitors, count(*) AS views
+         FROM profile_hits WHERE ${GM} GROUP BY 1 ORDER BY 1`,
+      [...l.args, ...r],
+    ).then(points);
+  };
+  // Grouped by the first column, or the first two with pair set.
+  const gmBy = (cols: string, { extra = "", kind = "view", limit = 100, pair = false } = {}) =>
+    run(
+      `SELECT ${cols}, count(DISTINCT visitor) AS visitors, count(*) AS views
+         FROM profile_hits WHERE kind = '${kind}' AND ts >= ? AND ts < ?${extra}
+        GROUP BY 1${pair ? ", 2" : ""} ORDER BY visitors DESC, views DESC LIMIT ${limit}`,
+      cur,
+    ).then(ranked);
+  const gmClicks = (r: number[]) =>
+    run(
+      `SELECT count(DISTINCT visitor) AS visitors, count(*) AS views FROM analytics_hits
+        WHERE kind = 'pv' AND ts >= ? AND ts < ? AND (utm_source = '${PROFILE_REF}' OR ref_host = '${PROFILE_REF}')`,
+      r,
+    ).then(([x]) => ({ t: "", visitors: num(x.visitors), views: num(x.views) }) as Point);
+
   const iso = (v: unknown) => (v === null || v === undefined ? null : new Date(num(v)).toISOString());
 
   const [
@@ -266,6 +308,29 @@ export async function report(q: ReportQuery, run: Runner) {
     ghClicks(cur), ghClicks(prev),
   ]);
 
+  const [
+    gmCur, gmPrev, gmSeriesCur, gmSeriesPrev, gmBounds, gmClicksCur, gmClicksPrev,
+    gmReaders, gmKinds, gmFormats, gmCountries, gmCities, gmSources, gmDevices, gmBrowsers, gmOs, gmLanguages,
+    gmOutbound, gmRobots, gmAgents,
+  ] = await Promise.all([
+    gmTotals(cur), gmTotals(prev), gmSeries(cur), gmSeries(prev),
+    run(`SELECT min(ts) AS first FROM profile_hits`, []),
+    gmClicks(cur), gmClicks(prev),
+    gmBy(`reader AS key, reader_kind AS kind`, { pair: true }),
+    gmBy(`reader_kind AS key`),
+    gmBy(`format AS key`),
+    gmBy(`COALESCE(country, '${NONE}') AS key`, { limit: 250 }),
+    gmBy(`city AS key, country`, { extra: " AND city IS NOT NULL", pair: true }),
+    gmBy(`COALESCE(ref_host, channel) AS key, channel`, { extra: " AND reader_kind = 'Person'", pair: true }),
+    gmBy(`device AS key`, { extra: " AND device IS NOT NULL" }),
+    gmBy(`browser AS key`, { extra: " AND browser IS NOT NULL" }),
+    gmBy(`os AS key`, { extra: " AND os IS NOT NULL" }),
+    gmBy(`lang AS key`, { extra: " AND lang IS NOT NULL" }),
+    gmBy(`target AS key`, { kind: "out" }),
+    gmBy(`reader AS key, reader_kind AS kind`, { kind: "robots", pair: true }),
+    gmBy(`ua AS key, reader AS kind`, { extra: " AND ua IS NOT NULL", pair: true }),
+  ]);
+
   return {
     range: { from: q.from.toISOString(), to: q.to.toISOString(), hourly: q.hourly, tz: q.tz },
     firstHit: iso(bounds[0]?.first),
@@ -284,6 +349,15 @@ export async function report(q: ReportQuery, run: Runner) {
       series: { current: ghSeriesCur, previous: ghSeriesPrev },
       clicks: { current: ghClicksCur, previous: ghClicksPrev },
       devices: ghDevices, screens: ghScreens, inputs: ghInputs, density: ghDensity, themes: ghThemes,
+    },
+    profile: {
+      firstHit: iso(gmBounds[0]?.first),
+      summary: { current: gmCur, previous: gmPrev },
+      series: { current: gmSeriesCur, previous: gmSeriesPrev },
+      clicks: { current: gmClicksCur, previous: gmClicksPrev },
+      readers: gmReaders, kinds: gmKinds, formats: gmFormats, countries: gmCountries, cities: gmCities,
+      sources: gmSources, devices: gmDevices, browsers: gmBrowsers, os: gmOs, languages: gmLanguages,
+      outbound: gmOutbound, robots: gmRobots, agents: gmAgents,
     },
   };
 }

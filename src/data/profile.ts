@@ -80,5 +80,5 @@ export const PROFILE = {
 export const CURRENT_RECOGNITION = PROFILE.recognition.filter((r) => r.current).map((r) => r.name);
 export const FORMER_RECOGNITION = PROFILE.recognition.filter((r) => !r.current).map((r) => r.name);
 
-const PROFILE_HOSTS = new Set(['greenberg.md', 'www.greenberg.md']);
+export const PROFILE_HOSTS = new Set(['greenberg.md', 'www.greenberg.md']);
 export const isProfileHost = (host: string) => PROFILE_HOSTS.has(host.toLowerCase().replace(/:\d+$/, ''));

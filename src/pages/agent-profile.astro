@@ -9,11 +9,15 @@ export const prerender = false;
 
 const { markdown, lastUpdated } = await buildProfile();
 const body = markdown.replace(/^---\n[\s\S]*?\n---\n/, '');
+// Links back to the site are tagged, so the people who click through show up
+// on the site's analytics as coming from here.
+const tagged = (href: string) => (href.startsWith(PROFILE.site) ? `${href}${href.includes('?') ? '&amp;' : '?'}ref=greenberg.md` : href);
+const viewId = Astro.locals.profileViewId ?? '';
 const slug = (s: string) => s.toLowerCase().replace(/<[^>]+>/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const html = (await marked.parse(body))
   .replace(/<h([23])>(.*?)<\/h\1>/g, (_, n, inner) => `<h${n} id="${slug(inner)}">${inner}</h${n}>`)
   .replace('<h2 id="rules-for-using-this-file">Rules for using this file</h2>', '<h2 id="rules-for-using-this-file">Rules for using this file <span class="badge">Agents: read first</span></h2>')
-  .replace(/<a href="(https?:[^"]+)">/g, '<a href="$1" rel="noopener">');
+  .replace(/<a href="(https?:[^"]+)">/g, (_, href: string) => `<a href="${tagged(href)}" rel="noopener">`);
 
 const description = `${PROFILE.headline}. A profile of ${PROFILE.name} written for AI agents, with a source for every fact.`;
 const jsonLd = JSON.stringify(personJsonLd(lastUpdated)).replace(/</g, '\\u003c');
@@ -139,5 +143,56 @@ Astro.response.headers.set('Link', `<${PROFILE.canonical}index.md>; rel="alterna
         Last updated {lastUpdated}. More at <a href={PROFILE.site}>bengreenberg.dev</a>.
       </footer>
     </main>
+    <script is:inline define:vars={{ viewId }}>
+      // Time on page and followed links for the analytics desk. A browser that
+      // opened greenberg.md/#not-me is Ben's: it takes its own views back out.
+      (() => {
+        if (!viewId || navigator.webdriver) return;
+        const send = (d) => {
+          const body = JSON.stringify(d);
+          if (!navigator.sendBeacon?.('/api/profile-beacon', new Blob([body], { type: 'text/plain' }))) {
+            fetch('/api/profile-beacon', { method: 'POST', body, keepalive: true }).catch(() => {});
+          }
+        };
+        let mine = false;
+        try {
+          if (location.hash === '#not-me') localStorage.setItem('gm_ignore', '1');
+          mine = localStorage.getItem('gm_ignore') === '1';
+        } catch {}
+        if (mine) return send({ k: 'drop', id: viewId });
+
+        let shown = document.visibilityState === 'visible' ? Date.now() : 0;
+        let engaged = 0;
+        let sent = 0;
+        const flush = () => {
+          if (shown) {
+            engaged += Date.now() - shown;
+            shown = document.visibilityState === 'visible' ? Date.now() : 0;
+          }
+          if (engaged - sent >= 1000) {
+            sent = engaged;
+            send({ k: 'eng', id: viewId, e: engaged });
+          }
+        };
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden') flush();
+          else shown = Date.now();
+        });
+        addEventListener('pagehide', flush);
+        document.addEventListener('click', (e) => {
+          const a = e.target?.closest?.('a[href]');
+          if (!a) return;
+          let x;
+          try {
+            const u = new URL(a.href, location.href);
+            if (/^https?:$/.test(u.protocol) && u.hostname === location.hostname) return;
+            x = /^https?:$/.test(u.protocol) ? `${u.hostname}${u.pathname}` : `${u.protocol}${u.pathname}`;
+          } catch {
+            return;
+          }
+          send({ k: 'out', id: crypto.randomUUID(), x });
+        }, { capture: true });
+      })();
+    </script>
   </body>
 </html>
